@@ -10,7 +10,7 @@ class system {
                'tmux',
                'htop',
                'tree']:
-        ensure => latest,
+        ensure => installed,
         require => Exec['apt-get update'],
     }
 
@@ -30,7 +30,7 @@ class system {
                'cython',
                # matplotlib
                'python-matplotlib']:
-        ensure => latest,
+        ensure => installed,
         require => Exec['apt-get update'],
     }
 }
@@ -43,7 +43,7 @@ class python {
                'neo',
                'ipython',
                'git+git://github.com/ctn-waterloo/nengo_theano.git']:
-        ensure => latest,
+        ensure => installed,
         provider => 'pip',
     }
 }
