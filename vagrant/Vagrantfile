@@ -13,6 +13,10 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "/Users/amtinits/dotfiles", "/home/vagrant/dotfiles"
   config.vm.synced_folder "/Users/amtinits/projects/Brainspawn", "/home/vagrant/Brainspawn"
 
+  # SSH settings
+  config.ssh.forward_agent = true
+  config.ssh.forward_x11 = true
+
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "."
     puppet.manifest_file  = "manifest.pp"
