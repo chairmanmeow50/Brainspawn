@@ -10,8 +10,7 @@ needs. These are the lines starting with `config.vm.synced_folder`. See the
 1. Boot the VM with `vagrant up`.  This will take a while, since it'll be
 downloading a base Ubuntu image for the VM, booting the machine, and installing
 packages.
-1. Once booted, you can SSH into the box. You'll want to enable X forwarding, so
-run a command like this: `vagrant ssh -- -Y`
+1. Once booted, you can SSH into the box with `vagrant ssh`.
 
 [0]: https://www.virtualbox.org/wiki/Downloads
 [1]: http://docs.vagrantup.com/v2/installation/index.html
