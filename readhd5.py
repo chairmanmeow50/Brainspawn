@@ -1,4 +1,4 @@
-jrom neo import io
+from neo import io
 
 # instantiates a io object that can read neo hdf5 files
 r = io.NeoHdf5IO( filename = "spa_sequence/sequence.hd5" )
