@@ -5,6 +5,7 @@ import matplotlib.animation as animation
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 class Rules:
     def A(state='A'):
@@ -35,7 +36,8 @@ pThal = net.make_probe('thal.rule', dt_sample=0.001)
 # pGPi = net.make_probe('BG.GPi', dt_sample=0.001, data_type='spikes')
 # pState = net.make_probe('state.buffer', dt_sample=0.001, data_type='spikes')
 
-# net.run(1)
+# this initial tick takes a long time (~2 seconds)
+net.run(0.001)
 # net.write_data_to_hdf5('sequence.hd5')
 
 fig = plt.figure()
@@ -55,5 +57,9 @@ def animate(i):
     Pxx, freqs, bins, im = ax2.specgram(x, Fs=Fs, cmap=cm.gist_heat)
     return line, im
 
-ani = animation.FuncAnimation(fig, animate, interval=30, blit=True)
+# set the animation interval based on the time to animate one step
+t0 = time.time()
+animate(0)
+interval = max(0, 30 - 1000 * (time.time() - t0))
+ani = animation.FuncAnimation(fig, animate, interval=interval, blit=True)
 plt.show()
