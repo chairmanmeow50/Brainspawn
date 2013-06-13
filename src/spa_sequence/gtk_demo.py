@@ -13,7 +13,7 @@ from matplotlib.figure import Figure
 from numpy import arange, sin, pi
 
 import spa_sequence
-import old_plots
+from old_plots.xy_plot import XY_Plot
 
 # uncomment to select /GTK/GTKAgg/GTKCairo
 #from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
@@ -69,10 +69,12 @@ class MenuExample:
         tools_menu.show()
 
         view_menu = gtk.MenuItem("View")
+        view_submenu = gtk.Menu()
+        view_menu.set_submenu(view_submenu)
         xy_plot_menu_item = gtk.MenuItem("XY plot") 
         xy_plot_menu_item.connect("activate", self.xy_plot)
         xy_plot_menu_item.show()
-        view_menu.append(xy_plot_menu_item)
+        view_submenu.append(xy_plot_menu_item)
         
         view_menu.show()
 
@@ -200,11 +202,15 @@ class MenuExample:
         print "%s" % string
 
     def xy_plot(self, widget):
+        print "xy plot"
+        self.timer.stop()
         xy = XY_Plot()
         self.canvas = FigureCanvas(xy.get_figure()) 
         self.timer = self.canvas.new_timer(interval=100)
         self.timer.add_callback(xy.update_line)
         self.canvas.show()
+        self.timer.start()
+        self.playing = True
 
 def main():
     gtk.main()
