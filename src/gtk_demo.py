@@ -1,18 +1,10 @@
 #!/usr/bin/env python
 
-# example menu.py
-
 import pygtk
 pygtk.require('2.0')
 import gtk
-import matplotlib.pyplot as plt
 
-import gtk
-
-from matplotlib.figure import Figure
-from numpy import arange, sin, pi
-
-import spa_sequence
+import spectrogram
 from old_plots.xy_plot import XY_Plot
 
 # uncomment to select /GTK/GTKAgg/GTKCairo
@@ -119,9 +111,9 @@ class MenuExample:
         #s = sin(2*pi*t)
         #a.plot(t,s)
 
-        self.spec = spa_sequence.Spectrogram()
-        figure = self.spec.get_figure()
-        #ani = spec.start_animate(figure, spec.animate)
+        self.spec = spectrogram.Spectrogram()
+        figure = self.spec.fig
+        #ani = spec.start_animate()
         #figure.show()
  
         self.canvas = FigureCanvas(figure)  # a gtk.DrawingArea
@@ -212,11 +204,6 @@ class MenuExample:
         self.timer.start()
         self.playing = True
 
-def main():
-    gtk.main()
-    return 0
-
 if __name__ == "__main__":
     MenuExample()
-    main()
-
+    gtk.main()
