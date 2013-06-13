@@ -1,5 +1,5 @@
 import spa
-import nengo.nef_theano as nef
+import nengo_theano as nef
 
 import matplotlib.animation as animation
 import matplotlib.cm as cm
@@ -29,37 +29,55 @@ class Sequence(spa.SPA):
 
     input = spa.Input(0.1, state='D')
 
-net = nef.Network('Sequence', seed=1)
-seq = Sequence(net)
+class Spectrogram():
+    def __init__(self):
+        
+        self.net = nef.Network('Sequence', seed=1)
+        seq = Sequence(self.net)
 
-pThal = net.make_probe('thal.rule', dt_sample=0.001)
-# pGPi = net.make_probe('BG.GPi', dt_sample=0.001, data_type='spikes')
-# pState = net.make_probe('state.buffer', dt_sample=0.001, data_type='spikes')
+        self.pThal = self.net.make_probe('thal.rule', dt_sample=0.001)
+        # pGPi = net.make_probe('BG.GPi', dt_sample=0.001, data_type='spikes')
+        # pState = net.make_probe('state.buffer', dt_sample=0.001, data_type='spikes')
 
-# this initial tick takes a long time (~2 seconds)
-net.run(0.001)
-# net.write_data_to_hdf5('sequence.hd5')
+        # this initial tick takes a long time (~2 seconds)
+        self.net.run(0.001)
+        # net.write_data_to_hdf5('sequence.hd5')
 
-fig = plt.figure()
-ax1 = plt.subplot(211)
-line, = ax1.plot([], [])
-ax2 = plt.subplot(212, sharex=ax1)
-Fs = 1.0 / pThal.dt_sample  # the sampling frequency
+        self.fig = plt.figure()
+        ax1 = plt.subplot(211)
+        self.line, = ax1.plot([], [])
+        self.ax2 = plt.subplot(212, sharex=ax1)
+        self.Fs = 1.0 / self.pThal.dt_sample  # the sampling frequency
 
-def animate(i):
+        # set the animation interval based on the time to animate one step
+    def start_animate(self, animate_fig, animate_func):
+        self.t0 = time.time()
+        self.animate(0)
+        interval = max(0, 30 - 1000 * (time.time() - self.t0))
+        return animation.FuncAnimation(animate_fig, animate_func, interval=interval, blit=True)
+        #plt.show()
+
+    def get_interval(self):
+        return max(0, 30 - 1000 * (time.time() - self.t0))
+
+    def get_figure(self):
+        return self.fig
+
+    def animate(self, i):
+        print "ANIMATING!!"
     # run the simulator for another step
-    net.run(0.005)
+        self.net.run(0.005)
 
     # plot the output
-    x = pThal.get_data()[:,0]  # the signal
-    t = np.linspace(0.0, net.run_time, x.size)
-    line.set_data(t, x)
-    Pxx, freqs, bins, im = ax2.specgram(x, Fs=Fs, cmap=cm.gist_heat)
-    return line, im
+        x = self.pThal.get_data()[:,0]  # the signal
+        t = np.linspace(0.0, self.net.run_time, x.size)
+        self.line.set_data(t, x)
+        Pxx, freqs, bins, im = self.ax2.specgram(x, Fs=self.Fs, cmap=cm.gist_heat)
+        return self.line, im
 
-# set the animation interval based on the time to animate one step
-t0 = time.time()
-animate(0)
-interval = max(0, 30 - 1000 * (time.time() - t0))
-ani = animation.FuncAnimation(fig, animate, interval=interval, blit=True)
-plt.show()
+
+#spec = Spectrogram()
+#figure = spec.get_figure()
+#ani = spec.start_animate(figure, spec.animate)
+#plt.show()
+
