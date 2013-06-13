@@ -1,5 +1,5 @@
 import spa
-import nengo.nef_theano as nef
+import nengo_theano as nef
 
 import matplotlib.animation as animation
 import matplotlib.cm as cm
