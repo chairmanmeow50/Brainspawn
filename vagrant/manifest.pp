@@ -42,7 +42,7 @@ class python {
                'tables',
                'neo',
                'ipython',
-               'git+git://github.com/ctn-waterloo/nengo_theano.git']:
+               'git+git://github.com/amtinits/nengo_theano.git']:
         ensure => installed,
         provider => 'pip',
     }
