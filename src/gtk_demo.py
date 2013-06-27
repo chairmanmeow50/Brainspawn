@@ -13,6 +13,8 @@ from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanva
 
 class MenuExample:
     def __init__(self):
+        self.playing = False
+        
         # create a new window
         window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         window.set_size_request(200, 100)
@@ -74,9 +76,9 @@ class MenuExample:
         help_menu.show()
 
         # A vbox to put a menu and a button in:
-        vbox = gtk.VBox(False, 0)
-        window.add(vbox)
-        vbox.show()
+        self.vbox = gtk.VBox(False, 0)
+        window.add(self.vbox)
+        self.vbox.show()
 
         # Create a menu-bar to hold the menus and add it to our main window
         menu_bar = gtk.MenuBar()
@@ -96,7 +98,7 @@ class MenuExample:
         menu_bar.append (tools_menu)
         menu_bar.append (view_menu)
         menu_bar.append (help_menu)
-        vbox.pack_start(menu_bar, False, False, 2)
+        self.vbox.pack_start(menu_bar, False, False, 2)
 
         frame = gtk.Frame(label="Spectrogram")
         frame.set_size_request(300, 300)
@@ -116,12 +118,16 @@ class MenuExample:
         #ani = spec.start_animate()
         #figure.show()
  
+ 
+        #self.xy = XY_Plot()
+        #self.canvas = FigureCanvas(self.xy.get_figure()) 
+ 
         self.canvas = FigureCanvas(figure)  # a gtk.DrawingArea
         self.timer = self.canvas.new_timer(interval=100)
         self.timer.add_callback(self.update_canvas)
         self.canvas.show()
 
-        vbox.add(self.canvas) 
+        self.vbox.add(self.canvas) 
 
         controller_hbox = gtk.HBox(False, 10)
         controller_hbox.set_size_request(300, 50)
@@ -153,7 +159,7 @@ class MenuExample:
         spinner.show()
         
         #vbox.add(controller_hbox)
-        vbox.pack_start(controller_hbox, False, False, 0)
+        self.vbox.pack_start(controller_hbox, False, False, 0)
         controller_hbox.set_size_request(300, 50)
         controller_hbox.show()
 
@@ -161,12 +167,17 @@ class MenuExample:
         # the screen at once.
         window.set_size_request(500, 500)
         window.show()
-        self.timer.start()
-        self.playing = True
+        self.xy = XY_Plot()
+        self.i=0
+        #self.timer.start()
+        #self.playing = True
 
     def update_canvas(self):
+        self.xy.update_line(self.i, self.xy.data, self.xy.l)
+        self.i=(self.i+1) % 25
         self.spec.animate(1)
         self.canvas.draw() 
+        self.canvas2.draw()
 
     def play_pause_button(self, widget):
         if (self.playing == True):
@@ -195,12 +206,17 @@ class MenuExample:
 
     def xy_plot(self, widget):
         print "xy plot"
+
+        
         self.timer.stop()
-        xy = XY_Plot()
-        self.canvas = FigureCanvas(xy.get_figure()) 
-        self.timer = self.canvas.new_timer(interval=100)
-        self.timer.add_callback(xy.update_line)
-        self.canvas.show()
+        #self.xy = XY_Plot()
+        self.canvas2 = FigureCanvas(self.xy.get_figure()) 
+        self.timer = self.canvas2.new_timer(interval=100)
+        self.timer.add_callback(self.update_canvas)
+        #self.timer.add_callback(self.xy.update_line, 25, self.xy.data, self.xy.l)
+        self.canvas2.show()
+        
+        self.vbox.add(self.canvas2)
         self.timer.start()
         self.playing = True
 

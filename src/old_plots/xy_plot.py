@@ -4,6 +4,7 @@ import matplotlib.animation as animation
 
 class XY_Plot():
     def update_line(self, num, data, line):
+        print num
         line.set_data(data[...,:num])
         return line,
 
@@ -21,6 +22,7 @@ class XY_Plot():
         plt.xlim(0, 1)
         plt.ylim(0, 1)
         plt.xlabel('x')
+        #plt.ion()
         plt.title('XY Plot')
 #line_ani.save('lines.mp4')
 
