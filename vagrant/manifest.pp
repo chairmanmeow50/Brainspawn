@@ -42,6 +42,8 @@ class python {
                'tables',
                'neo',
                'ipython',
+               'pytest',
+               'sphinx',
                'git+git://github.com/amtinits/nengo_theano.git']:
         ensure => installed,
         provider => 'pip',
