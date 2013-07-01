@@ -9,7 +9,8 @@ class system {
     package { ['vim',
                'tmux',
                'htop',
-               'tree']:
+               'tree',
+               'make']:
         ensure => installed,
         require => Exec['apt-get update'],
     }

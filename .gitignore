@@ -2,3 +2,6 @@ Vagrantfile
 .vagrant/
 *.pyc
 *.swp
+
+# Ignores for documentation files/folders
+_build
