@@ -9,6 +9,7 @@ import view.components.spectrogram as spectrogram
 import simulator
 import simulator.watchers
 from old_plots.xy_plot import XY_Plot
+from old_plots.voltage_grid import Voltage_Grid_Plot
 
 # uncomment to select /GTK/GTKAgg/GTKCairo
 #from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
@@ -39,7 +40,7 @@ class MenuExample:
         self.xy_canvas = FigureCanvas(self.xy_plot.get_figure())
         self.i=0
         
-        self.voltage_grid = XY_Plot()
+        self.voltage_grid = Voltage_Grid_Plot()
         self.vg_canvas = FigureCanvas(self.voltage_grid.get_figure())
         
         
@@ -214,12 +215,15 @@ class MenuExample:
         #self.playing = True
 
     def update_canvas(self):
-        self.xy_plot.update_line(self.i, self.xy_plot.data, self.xy_plot.l)
+        #self.xy_plot.update_line(self.i, self.xy_plot.data, self.xy_plot.l)
+        self.xy_plot.tick()
+        self.voltage_grid.tick()
         self.i=(self.i+1) % 25
         self.sim.tick()
         self.spectrogram.tick()
         self.xy_canvas.draw()
         self.spec_canvas.draw()
+        self.vg_canvas.draw()
         #self.canvas.draw() 
         #self.canvas2.draw()
 
