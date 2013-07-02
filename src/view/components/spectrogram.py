@@ -16,6 +16,9 @@ class Spectrogram(object):
         self.ax2 = plt.subplot(212, sharex=ax1)
         self.Fs = Fs # the sampling frequency
 
+    def get_figure(self):
+        return self.fig
+
     def tick(self):
         # plot the output
         data = self.data.get(self.simulator.min_tick) # the signal

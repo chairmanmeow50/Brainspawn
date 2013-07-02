@@ -1,10 +1,13 @@
 #!/usr/bin/env python
+from spa_sequence.spa_sequence import net, pThal
 
 import pygtk
 pygtk.require('2.0')
 import gtk
 
-import spectrogram
+import view.components.spectrogram as spectrogram
+import simulator
+import simulator.watchers
 from old_plots.xy_plot import XY_Plot
 
 # uncomment to select /GTK/GTKAgg/GTKCairo
@@ -14,6 +17,31 @@ from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanva
 class MenuExample:
     def __init__(self):
         self.playing = False
+        
+        self.sim = simulator.Simulator(net, net.dt)
+        self.sim.add_watcher(simulator.watchers.LFPSpectrogramWatcher())
+        self.sim.watcher_manager.add_object("pThal", pThal)
+        self.spectrogram = None
+
+        net.run(0.001) #run for one timestep
+        
+        for name, type, data in [("pThal", "LFP Spectrogram", None)]:
+            if name in self.sim.watcher_manager.objects.keys():
+                for (t, view_class, args) in self.sim.watcher_manager.list_watcher_views(name):
+                    if t == type:
+                        component = view_class(self.sim, name, **args)
+                        # we know we only have the spectrogram in our example
+                        self.spectrogram = component
+        
+        self.spec_canvas = FigureCanvas(self.spectrogram.get_figure())
+        
+        self.xy_plot = XY_Plot()
+        self.xy_canvas = FigureCanvas(self.xy_plot.get_figure())
+        self.i=0
+        
+        self.voltage_grid = XY_Plot()
+        self.vg_canvas = FigureCanvas(self.voltage_grid.get_figure())
+        
         
         # create a new window
         window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -65,10 +93,24 @@ class MenuExample:
         view_menu = gtk.MenuItem("View")
         view_submenu = gtk.Menu()
         view_menu.set_submenu(view_submenu)
-        xy_plot_menu_item = gtk.MenuItem("XY plot") 
-        xy_plot_menu_item.connect("activate", self.xy_plot)
+        
+        spectrogram_menu_item = gtk.CheckMenuItem("Spectrogram")
+        spectrogram_menu_item.connect("activate", self.toggle_plot, self.spec_canvas)
+        spectrogram_menu_item.set_active(True)
+        spectrogram_menu_item.show()
+        view_submenu.append(spectrogram_menu_item)
+        
+        xy_plot_menu_item = gtk.CheckMenuItem("XY plot") 
+        xy_plot_menu_item.connect("activate", self.toggle_plot, self.xy_canvas)
         xy_plot_menu_item.show()
         view_submenu.append(xy_plot_menu_item)
+        
+        voltage_grid_menu_item = gtk.CheckMenuItem("Voltage Grid")
+        voltage_grid_menu_item.connect("activate", self.toggle_plot, self.vg_canvas)
+        voltage_grid_menu_item.show()
+        view_submenu.append(voltage_grid_menu_item)
+        
+        
         
         view_menu.show()
 
@@ -113,8 +155,7 @@ class MenuExample:
         #s = sin(2*pi*t)
         #a.plot(t,s)
 
-        self.spec = spectrogram.Spectrogram()
-        figure = self.spec.fig
+        figure = self.spectrogram.get_figure()
         #ani = spec.start_animate()
         #figure.show()
  
@@ -125,9 +166,8 @@ class MenuExample:
         self.canvas = FigureCanvas(figure)  # a gtk.DrawingArea
         self.timer = self.canvas.new_timer(interval=100)
         self.timer.add_callback(self.update_canvas)
-        self.canvas.show()
+        self.spec_canvas.show()
 
-        self.vbox.add(self.canvas) 
 
         controller_hbox = gtk.HBox(False, 10)
         controller_hbox.set_size_request(300, 50)
@@ -162,22 +202,26 @@ class MenuExample:
         self.vbox.pack_start(controller_hbox, False, False, 0)
         controller_hbox.set_size_request(300, 50)
         controller_hbox.show()
+        
+        self.vbox.add(self.spec_canvas) 
+
 
         # always display the window as the last step so it all splashes on
         # the screen at once.
         window.set_size_request(500, 500)
         window.show()
-        self.xy = XY_Plot()
-        self.i=0
         #self.timer.start()
         #self.playing = True
 
     def update_canvas(self):
-        self.xy.update_line(self.i, self.xy.data, self.xy.l)
+        self.xy_plot.update_line(self.i, self.xy_plot.data, self.xy_plot.l)
         self.i=(self.i+1) % 25
-        self.spec.animate(1)
-        self.canvas.draw() 
-        self.canvas2.draw()
+        self.sim.tick()
+        self.spectrogram.tick()
+        self.xy_canvas.draw()
+        self.spec_canvas.draw()
+        #self.canvas.draw() 
+        #self.canvas2.draw()
 
     def play_pause_button(self, widget):
         if (self.playing == True):
@@ -204,7 +248,16 @@ class MenuExample:
     def menuitem_response(self, widget, string):
         print "%s" % string
 
-    def xy_plot(self, widget):
+    def toggle_plot(self, widget, canvas):
+        if (widget.get_active()):
+            #new_canvas = FigureCanvas(plot.get_figure())
+            canvas.show()
+            self.vbox.add(canvas)
+        else:
+            self.vbox.remove(canvas)
+        
+
+    def xy_plotz_f(self, widget):
         print "xy plot"
 
         
