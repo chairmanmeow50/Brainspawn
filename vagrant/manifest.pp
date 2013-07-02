@@ -9,7 +9,8 @@ class system {
     package { ['vim',
                'tmux',
                'htop',
-               'tree']:
+               'tree',
+               'make']:
         ensure => installed,
         require => Exec['apt-get update'],
     }
@@ -42,6 +43,8 @@ class python {
                'tables',
                'neo',
                'ipython',
+               'pytest',
+               'sphinx',
                'git+git://github.com/amtinits/nengo_theano.git']:
         ensure => installed,
         provider => 'pip',
