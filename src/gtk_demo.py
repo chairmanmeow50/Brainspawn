@@ -20,14 +20,14 @@ from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanva
 class MenuExample:
     def __init__(self):
         self.playing = False
-        
+
         self.sim = simulator.Simulator(net, net.dt)
         self.sim.add_watcher(simulator.watchers.LFPSpectrogramWatcher())
         self.sim.watcher_manager.add_object("pThal", pThal)
         self.spectrogram = None
 
         net.run(0.001) #run for one timestep
-        
+
         for name, type, data in [("pThal", "LFP Spectrogram", None)]:
             if name in self.sim.watcher_manager.objects.keys():
                 for (t, view_class, args) in self.sim.watcher_manager.list_watcher_views(name):
@@ -35,22 +35,22 @@ class MenuExample:
                         component = view_class(self.sim, name, **args)
                         # we know we only have the spectrogram in our example
                         self.spectrogram = component
-        
+
         self.spec_canvas = FigureCanvas(self.spectrogram.get_figure())
-        
+
         self.xy_plot = XY_Plot()
         self.xy_canvas = FigureCanvas(self.xy_plot.get_figure())
         self.i=0
-        
+
         self.voltage_grid = Voltage_Grid_Plot()
         self.vg_canvas = FigureCanvas(self.voltage_grid.get_figure())
-        
+
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_size_request(200, 100)
         self.window.set_title("Nengo Python Visualizer")
         self.window.connect("delete_event", lambda w,e: gtk.main_quit())
-        
+
         file_menu = gtk.MenuItem("File")
         file_submenu = gtk.Menu()
         file_menu.set_submenu(file_submenu)
@@ -68,23 +68,23 @@ class MenuExample:
         view_menu = gtk.MenuItem("View")
         view_submenu = gtk.Menu()
         view_menu.set_submenu(view_submenu)
-        
+
         spectrogram_menu_item = gtk.CheckMenuItem("Spectrogram")
         spectrogram_menu_item.connect("activate", self.toggle_plot, self.spec_canvas)
         spectrogram_menu_item.set_active(True)
         spectrogram_menu_item.show()
         view_submenu.append(spectrogram_menu_item)
-        
-        xy_plot_menu_item = gtk.CheckMenuItem("XY plot") 
+
+        xy_plot_menu_item = gtk.CheckMenuItem("XY plot")
         xy_plot_menu_item.connect("activate", self.toggle_plot, self.xy_canvas)
         xy_plot_menu_item.show()
         view_submenu.append(xy_plot_menu_item)
-        
+
         voltage_grid_menu_item = gtk.CheckMenuItem("Voltage Grid")
         voltage_grid_menu_item.connect("activate", self.toggle_plot, self.vg_canvas)
         voltage_grid_menu_item.show()
         view_submenu.append(voltage_grid_menu_item)
-        
+
         view_menu.show()
 
         help_menu = gtk.MenuItem("Help")
@@ -97,7 +97,7 @@ class MenuExample:
         menu_bar = gtk.MenuBar()
         menu_bar.show()
         menu_bar.set_size_request(300, 30)
-        
+
         menu_bar.append (file_menu)
         menu_bar.append (tools_menu)
         menu_bar.append (view_menu)
@@ -108,7 +108,7 @@ class MenuExample:
         frame.set_size_request(300, 300)
 
         figure = self.spectrogram.get_figure()
- 
+
         self.canvas = FigureCanvas(figure)  # a gtk.DrawingArea
         self.timer = self.canvas.new_timer(interval=200)
         self.timer.add_callback(self.update_canvas)
@@ -119,10 +119,10 @@ class MenuExample:
         play_button = gtk.Button("Play")
         play_button.set_size_request(50, 20)
         play_button.connect("clicked", self.play_pause_button)
-        
+
         controller_hbox.pack_start(play_button, False, False, 10)
         play_button.show()
-        
+
         stop_button = gtk.Button("Stop")
         stop_button.show()
         stop_button.connect("clicked", self.stop_button)
@@ -141,23 +141,23 @@ class MenuExample:
         rate_label.set_alignment(0, 0.5)
         controller_hbox.pack_start(rate_label, False, True, 0)
         rate_label.show()
-   
+
         adj = gtk.Adjustment(1.0, 1.0, 31.0, 1.0, 5.0, 0.0)
         spinner = gtk.SpinButton(adj, 0, 0)
         spinner.set_wrap(True)
         controller_hbox.pack_start(spinner, False, True, 0)
         spinner.show()
-        
+
         self.vbox.pack_start(controller_hbox, False, False, 0)
         controller_hbox.set_size_request(300, 50)
         controller_hbox.show()
-        
-        self.vbox.add(self.spec_canvas) 
-        
+
+        self.vbox.add(self.spec_canvas)
+
 
         self.window.set_size_request(500, 500)
         self.window.show()
-        
+
     def hscale_change(self, widget):
         print "scale moved"
         self.update_canvas()
@@ -165,7 +165,7 @@ class MenuExample:
     def update_canvas(self):
         self.sim.tick()
         #self.hscale_adjustment.set_upper(self.sim.max_tick)
-        
+
         if (self.xy_canvas.get_visible()):
             self.xy_plot.tick()
             self.xy_canvas.draw()
@@ -176,7 +176,7 @@ class MenuExample:
         if (self.spec_canvas.get_visible()):
             self.spectrogram.tick()
             self.spec_canvas.draw()
-        
+
 
     def play_pause_button(self, widget):
         if (self.playing == True):
