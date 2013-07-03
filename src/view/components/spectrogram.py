@@ -21,16 +21,18 @@ class Spectrogram(object):
 
     def tick(self):
         # plot the output
-        data = self.data.get(self.simulator.min_tick) # the signal
-        t = np.linspace(self.simulator.min_tick, self.simulator.min_tick +
+        start = self.simulator.min_tick
+        count = self.simulator.current_tick - self.simulator.min_tick
+        data = self.data.get(start, count) # the signal
+        t = np.linspace(start, start +
                 data.size * self.simulator.dt, data.size)
-        print "min: " + str(self.simulator.min_tick) + ", max: " + str(data.size * self.simulator.dt) + ", size: " + str(data.size)
-        
+        #print "min: " + str(self.simulator.min_tick) + ", max: " + str(data.size * self.simulator.dt) + ", size: " + str(data.size)
+
         tsize = t.size
         if (tsize > 200):
             t = t[tsize-200:tsize]
             data = data[tsize-200:tsize]
-        
+
         self.line.set_data(t, data)
         Pxx, freqs, bins, im = self.ax2.specgram(data, Fs=self.Fs,
                 cmap=cm.gist_heat)

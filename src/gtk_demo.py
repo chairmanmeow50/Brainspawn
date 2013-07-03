@@ -111,7 +111,7 @@ class MenuExample:
 
         self.canvas = FigureCanvas(figure)  # a gtk.DrawingArea
         self.timer = self.canvas.new_timer(interval=200)
-        self.timer.add_callback(self.update_canvas)
+        self.timer.add_callback(self.tick)
         self.spec_canvas.show()
 
         controller_hbox = gtk.HBox(False, 10)
@@ -159,12 +159,19 @@ class MenuExample:
         self.window.show()
 
     def hscale_change(self, widget):
-        print "scale moved"
+        self.sim.current_tick = (self.hscale_adjustment.get_value())
+        self.update_canvas()
+
+    def tick(self):
+        self.sim.tick()
+
+        self.hscale_adjustment.set_upper(self.sim.max_tick)
+        self.hscale_adjustment.set_lower(self.sim.min_tick)
+        #self.hscale_adjustment.set_value(self.sim.current_tick) # well, we'll need to find a way to keep this updated at some point
+
         self.update_canvas()
 
     def update_canvas(self):
-        self.sim.tick()
-        #self.hscale_adjustment.set_upper(self.sim.max_tick)
 
         if (self.xy_canvas.get_visible()):
             self.xy_plot.tick()
