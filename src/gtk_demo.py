@@ -103,7 +103,7 @@ class MenuExample:
         figure = self.spectrogram.get_figure()
  
         self.canvas = FigureCanvas(figure)  # a gtk.DrawingArea
-        self.timer = self.canvas.new_timer(interval=100)
+        self.timer = self.canvas.new_timer(interval=200)
         self.timer.add_callback(self.update_canvas)
         self.spec_canvas.show()
 
@@ -121,9 +121,14 @@ class MenuExample:
         stop_button.connect("clicked", self.stop_button)
         controller_hbox.pack_start(stop_button, False, False, 10)
 
-        hscale = gtk.HScale(adjustment=None)
+        self.hscale_adjustment = gtk.Adjustment()
+        hscale = gtk.HScale(adjustment=self.hscale_adjustment)
         controller_hbox.add(hscale)
         hscale.show()
+        self.hscale_adjustment.set_lower(0)
+        self.hscale_adjustment.set_upper(10)
+        self.hscale_adjustment.set_value(self.hscale_adjustment.get_upper())
+        self.hscale_adjustment.connect("value-changed", self.hscale_change)
 
         rate_label = gtk.Label("Rate:")
         rate_label.set_alignment(0, 0.5)
@@ -145,9 +150,14 @@ class MenuExample:
 
         window.set_size_request(500, 500)
         window.show()
+        
+    def hscale_change(self, widget):
+        print "scale moved"
+        self.update_canvas()
 
     def update_canvas(self):
         self.sim.tick()
+        #self.hscale_adjustment.set_upper(self.sim.max_tick)
         
         if (self.xy_canvas.get_visible()):
             self.xy_plot.tick()
