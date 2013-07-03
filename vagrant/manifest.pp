@@ -29,8 +29,9 @@ class system {
                'libhdf5-serial-dev',
                'python-numexpr',
                'cython',
-               # matplotlib
-               'python-matplotlib']:
+               # other packages
+               'python-matplotlib',
+               'imagemagick']:
         ensure => installed,
         require => Exec['apt-get update'],
     }

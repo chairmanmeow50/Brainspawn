@@ -1,9 +1,13 @@
 #!/usr/bin/env python
+import os
+import subprocess
+import tempfile
 from spa_sequence.spa_sequence import net, pThal
 
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 
 import view.components.spectrogram as spectrogram
 import simulator
@@ -42,18 +46,21 @@ class MenuExample:
         self.vg_canvas = FigureCanvas(self.voltage_grid.get_figure())
         
         # create a new window
-        window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        window.set_size_request(200, 100)
-        window.set_title("Nengo Python Visualizer")
-        window.connect("delete_event", lambda w,e: gtk.main_quit())
+        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.set_size_request(200, 100)
+        self.window.set_title("Nengo Python Visualizer")
+        self.window.connect("delete_event", lambda w,e: gtk.main_quit())
         
-        menu = gtk.Menu()
-
         file_menu = gtk.MenuItem("File")
+        file_submenu = gtk.Menu()
+        file_menu.set_submenu(file_submenu)
+
+        export_pdf_menu_item = gtk.MenuItem("Export to PDF")
+        export_pdf_menu_item.connect('activate', self.on_export_pdf)
+        export_pdf_menu_item.show()
+        file_submenu.append(export_pdf_menu_item)
 
         file_menu.show()
-
-        file_menu.set_submenu(menu)
 
         tools_menu = gtk.MenuItem("Tools")
         tools_menu.show()
@@ -84,7 +91,7 @@ class MenuExample:
         help_menu.show()
 
         self.vbox = gtk.VBox(False, 0)
-        window.add(self.vbox)
+        self.window.add(self.vbox)
         self.vbox.show()
 
         menu_bar = gtk.MenuBar()
@@ -148,8 +155,8 @@ class MenuExample:
         self.vbox.add(self.spec_canvas) 
         
 
-        window.set_size_request(500, 500)
-        window.show()
+        self.window.set_size_request(500, 500)
+        self.window.show()
         
     def hscale_change(self, widget):
         print "scale moved"
@@ -203,6 +210,57 @@ class MenuExample:
         else:
             canvas.set_visible(False)
             self.vbox.remove(canvas)
+
+    def on_export_pdf(self, widget):
+        filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE,
+                                    "screenshot.pdf")
+        if filename:
+            gobject.timeout_add(1000, self._capture_window, filename)
+
+    def _capture_window(self, filename):
+            width, height = self.window.get_size()
+            pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8,
+                                    width, height)
+            img = pixbuf.get_from_drawable(self.window.window,
+                                           self.window.get_colormap(),
+                                           0, 0, 0, 0, width, height)
+
+            with tempfile.NamedTemporaryFile(suffix=".png") as temp:
+                img.save(temp.name, "png")
+                subprocess.check_call(["convert", temp.name, filename])
+
+            return False
+
+    def file_browse(self, action, name="", ext="", ext_name=""):
+        if (action == gtk.FILE_CHOOSER_ACTION_OPEN):
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                       gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+        else:
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                       gtk.STOCK_SAVE, gtk.RESPONSE_OK)
+
+        dialog = gtk.FileChooserDialog(title="Select File", action=action,
+                                       buttons=buttons)
+        dialog.set_current_folder(os.getcwd())
+        dialog.set_current_name(name)
+
+        if ext:
+            filt = gtk.FileFilter()
+            filt.set_name(ext_name if ext_name else ext)
+            filt.add_pattern("*." + ext)
+            dialog.add_filter(filt)
+
+        filt = gtk.FileFilter()
+        filt.set_name("All files")
+        filt.add_pattern("*")
+        dialog.add_filter(filt)
+
+        result = ""
+        if dialog.run() == gtk.RESPONSE_OK:
+            result = dialog.get_filename()
+        dialog.destroy()
+        return result
+
 
 if __name__ == "__main__":
     MenuExample()
