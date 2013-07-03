@@ -27,5 +27,5 @@ net = nef.Network('Sequence', seed=1)
 seq = Sequence(net)
 
 pThal = net.make_probe('thal.rule', dt_sample=0.001)
-pGPi = net.make_probe('BG.GPi', dt_sample=0.001, data_type='spikes')
-pState = net.make_probe('state.buffer', dt_sample=0.001, data_type='spikes')
+#pGPi = net.make_probe('BG.GPi', dt_sample=0.001, data_type='spikes')
+#pState = net.make_probe('state.buffer', dt_sample=0.001, data_type='spikes')
