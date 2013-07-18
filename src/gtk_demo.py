@@ -10,6 +10,9 @@ import gtk
 import gobject
 
 import view.components.spectrogram as spectrogram
+#import view.components.input_panel as Input_Panel
+from view.components.input_panel import Input_Panel
+from view.components.controller_panel import Controller_Panel
 import simulator
 import simulator.watchers
 from old_plots.xy_plot import XY_Plot
@@ -17,8 +20,11 @@ from old_plots.voltage_grid import Voltage_Grid_Plot
 
 from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanvas
 
-class MenuExample:
+class MainFrame:
     def __init__(self):
+        
+        
+        self.vbox = gtk.VBox(False, 0)
         self.playing = False
 
         self.sim = simulator.Simulator(net, net.dt)
@@ -63,6 +69,16 @@ class MenuExample:
         file_menu.show()
 
         tools_menu = gtk.MenuItem("Tools")
+        tools_submenu = gtk.Menu()
+        tools_menu.set_submenu(tools_submenu)
+        
+        self.input_panel = Input_Panel()
+        
+        input_panel_menu_item = gtk.CheckMenuItem("Input Panel")
+        input_panel_menu_item.connect("activate", self.toggle_panel, self.input_panel)
+        input_panel_menu_item.show()
+        tools_submenu.append(input_panel_menu_item)
+        
         tools_menu.show()
 
         view_menu = gtk.MenuItem("View")
@@ -71,7 +87,7 @@ class MenuExample:
 
         spectrogram_menu_item = gtk.CheckMenuItem("Spectrogram")
         spectrogram_menu_item.connect("activate", self.toggle_plot, self.spec_canvas)
-        spectrogram_menu_item.set_active(True)
+        #spectrogram_menu_item.set_active(True)
         spectrogram_menu_item.show()
         view_submenu.append(spectrogram_menu_item)
 
@@ -90,9 +106,17 @@ class MenuExample:
         help_menu = gtk.MenuItem("Help")
         help_menu.show()
 
-        self.vbox = gtk.VBox(False, 0)
-        self.window.add(self.vbox)
+        #self.window.add(self.vbox)
         self.vbox.show()
+        
+        self.control_panel = gtk.HBox(False, 0)
+        self.control_panel.show()
+        
+        self.hbox = gtk.HBox(False, 0)
+        self.window.add(self.hbox)
+        self.hbox.add(self.vbox)
+        self.hbox.add(self.control_panel)
+        self.hbox.show()
 
         menu_bar = gtk.MenuBar()
         menu_bar.show()
@@ -114,49 +138,16 @@ class MenuExample:
         self.timer.add_callback(self.tick)
         self.spec_canvas.show()
 
-        controller_hbox = gtk.HBox(False, 10)
-        controller_hbox.set_size_request(300, 50)
-        play_button = gtk.Button("Play")
-        play_button.set_size_request(50, 20)
-        play_button.connect("clicked", self.play_pause_button)
+        self.controller_panel = Controller_Panel(self)
 
-        controller_hbox.pack_start(play_button, False, False, 10)
-        play_button.show()
-
-        stop_button = gtk.Button("Stop")
-        stop_button.show()
-        stop_button.connect("clicked", self.stop_button)
-        controller_hbox.pack_start(stop_button, False, False, 10)
-
-        self.hscale_adjustment = gtk.Adjustment()
-        hscale = gtk.HScale(adjustment=self.hscale_adjustment)
-        controller_hbox.add(hscale)
-        hscale.show()
-        self.hscale_adjustment.set_lower(0)
-        self.hscale_adjustment.set_upper(10)
-        self.hscale_adjustment.set_value(self.hscale_adjustment.get_upper())
-        self.hscale_adjustment.connect("value-changed", self.hscale_change)
-
-        rate_label = gtk.Label("Rate:")
-        rate_label.set_alignment(0, 0.5)
-        controller_hbox.pack_start(rate_label, False, True, 0)
-        rate_label.show()
-
-        adj = gtk.Adjustment(1.0, 1.0, 31.0, 1.0, 5.0, 0.0)
-        spinner = gtk.SpinButton(adj, 0, 0)
-        spinner.set_wrap(True)
-        controller_hbox.pack_start(spinner, False, True, 0)
-        spinner.show()
-
-        self.vbox.pack_start(controller_hbox, False, False, 0)
-        controller_hbox.set_size_request(300, 50)
-        controller_hbox.show()
-
-        self.vbox.add(self.spec_canvas)
-
+        self.vbox.pack_start(self.controller_panel, False, False, 0)
+#         controller_hbox.set_size_request(300, 50)
+        self.controller_panel.show()
 
         self.window.set_size_request(500, 500)
         self.window.show()
+        
+        spectrogram_menu_item.set_active(True)
 
     def hscale_change(self, widget):
         self.sim.current_tick = (self.hscale_adjustment.get_value())
@@ -165,8 +156,8 @@ class MenuExample:
     def tick(self):
         self.sim.tick()
 
-        self.hscale_adjustment.set_upper(self.sim.max_tick)
-        self.hscale_adjustment.set_lower(self.sim.min_tick)
+        self.controller_panel.hscale_adjustment.set_upper(self.sim.max_tick)
+        self.controller_panel.hscale_adjustment.set_lower(self.sim.min_tick)
         #self.hscale_adjustment.set_value(self.sim.current_tick) # well, we'll need to find a way to keep this updated at some point
 
         self.update_canvas()
@@ -217,6 +208,14 @@ class MenuExample:
         else:
             canvas.set_visible(False)
             self.vbox.remove(canvas)
+            
+    def toggle_panel(self, widget, panel):
+        if (widget.get_active()):
+            panel.set_visible(True)
+            self.control_panel.add(panel)
+        else:
+            panel.set_visible(False)
+            self.control_panel.remove(panel)
 
     def on_export_pdf(self, widget):
         filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE,
@@ -234,6 +233,8 @@ class MenuExample:
 
             with tempfile.NamedTemporaryFile(suffix=".png") as temp:
                 img.save(temp.name, "png")
+                print "temp: " + str(temp.name)
+                print "filename: " + str(filename)
                 subprocess.check_call(["convert", temp.name, filename])
 
             return False
@@ -270,5 +271,5 @@ class MenuExample:
 
 
 if __name__ == "__main__":
-    MenuExample()
+    MainFrame()
     gtk.main()
