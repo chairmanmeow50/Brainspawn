@@ -13,6 +13,7 @@ import view.components.spectrogram as spectrogram
 #import view.components.input_panel as Input_Panel
 from view.components.input_panel import Input_Panel
 from view.components.controller_panel import Controller_Panel
+from view.components.menu_bar import Menu_Bar
 import simulator
 import simulator.watchers
 from old_plots.xy_plot import XY_Plot
@@ -23,7 +24,6 @@ from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanva
 class MainFrame:
     def __init__(self):
         
-        
         self.vbox = gtk.VBox(False, 0)
         self.playing = False
 
@@ -31,6 +31,9 @@ class MainFrame:
         self.sim.add_watcher(simulator.watchers.LFPSpectrogramWatcher())
         self.sim.watcher_manager.add_object("pThal", pThal)
         self.spectrogram = None
+        
+        self.all_plots = []
+        self.all_canvas = []
 
         net.run(0.001) #run for one timestep
 
@@ -43,121 +46,63 @@ class MainFrame:
                         self.spectrogram = component
 
         self.spec_canvas = FigureCanvas(self.spectrogram.get_figure())
+        self.all_plots.append(self.spectrogram)
+        self.all_canvas.append(self.spec_canvas)
 
         self.xy_plot = XY_Plot()
         self.xy_canvas = FigureCanvas(self.xy_plot.get_figure())
-        self.i=0
+        self.all_plots.append(self.xy_plot)
+        self.all_canvas.append(self.xy_canvas)
 
         self.voltage_grid = Voltage_Grid_Plot()
         self.vg_canvas = FigureCanvas(self.voltage_grid.get_figure())
+        self.all_plots.append(self.voltage_grid)
+        self.all_canvas.append(self.vg_canvas)
 
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_size_request(200, 100)
         self.window.set_title("Nengo Python Visualizer")
         self.window.connect("delete_event", lambda w,e: gtk.main_quit())
-
-        file_menu = gtk.MenuItem("File")
-        file_submenu = gtk.Menu()
-        file_menu.set_submenu(file_submenu)
-
-        export_pdf_menu_item = gtk.MenuItem("Export to PDF")
-        export_pdf_menu_item.connect('activate', self.on_export_pdf)
-        export_pdf_menu_item.show()
-        file_submenu.append(export_pdf_menu_item)
-
-        file_menu.show()
-
-        tools_menu = gtk.MenuItem("Tools")
-        tools_submenu = gtk.Menu()
-        tools_menu.set_submenu(tools_submenu)
         
-        self.input_panel = Input_Panel()
+        self.input_panel = Input_Panel(self)
+        self.controller_panel = Controller_Panel(self)
+        self.menu_bar = Menu_Bar(self)
         
-        input_panel_menu_item = gtk.CheckMenuItem("Input Panel")
-        input_panel_menu_item.connect("activate", self.toggle_panel, self.input_panel)
-        input_panel_menu_item.show()
-        tools_submenu.append(input_panel_menu_item)
-        
-        tools_menu.show()
-
-        view_menu = gtk.MenuItem("View")
-        view_submenu = gtk.Menu()
-        view_menu.set_submenu(view_submenu)
-
-        spectrogram_menu_item = gtk.CheckMenuItem("Spectrogram")
-        spectrogram_menu_item.connect("activate", self.toggle_plot, self.spec_canvas)
-        #spectrogram_menu_item.set_active(True)
-        spectrogram_menu_item.show()
-        view_submenu.append(spectrogram_menu_item)
-
-        xy_plot_menu_item = gtk.CheckMenuItem("XY plot")
-        xy_plot_menu_item.connect("activate", self.toggle_plot, self.xy_canvas)
-        xy_plot_menu_item.show()
-        view_submenu.append(xy_plot_menu_item)
-
-        voltage_grid_menu_item = gtk.CheckMenuItem("Voltage Grid")
-        voltage_grid_menu_item.connect("activate", self.toggle_plot, self.vg_canvas)
-        voltage_grid_menu_item.show()
-        view_submenu.append(voltage_grid_menu_item)
-
-        view_menu.show()
-
-        help_menu = gtk.MenuItem("Help")
-        help_menu.show()
-
-        #self.window.add(self.vbox)
-        self.vbox.show()
-        
-        self.control_panel = gtk.HBox(False, 0)
-        self.control_panel.show()
-        
-        self.hbox = gtk.HBox(False, 0)
-        self.window.add(self.hbox)
-        self.hbox.add(self.vbox)
-        self.hbox.add(self.control_panel)
-        self.hbox.show()
-
-        menu_bar = gtk.MenuBar()
-        menu_bar.show()
-        menu_bar.set_size_request(300, 30)
-
-        menu_bar.append (file_menu)
-        menu_bar.append (tools_menu)
-        menu_bar.append (view_menu)
-        menu_bar.append (help_menu)
-        self.vbox.pack_start(menu_bar, False, False, 2)
-
-        frame = gtk.Frame(label="Spectrogram")
-        frame.set_size_request(300, 300)
+        self.graph_vbox = gtk.VBox(False, 0)
 
         figure = self.spectrogram.get_figure()
 
         self.canvas = FigureCanvas(figure)  # a gtk.DrawingArea
         self.timer = self.canvas.new_timer(interval=200)
         self.timer.add_callback(self.tick)
-        self.spec_canvas.show()
 
-        self.controller_panel = Controller_Panel(self)
+        self.graph_vbox.pack_start(self.canvas, False, False, 0)
 
+        self.vbox.pack_start(self.menu_bar, False, False, 0)
         self.vbox.pack_start(self.controller_panel, False, False, 0)
-#         controller_hbox.set_size_request(300, 50)
+        self.vbox.pack_start(self.graph_vbox, False, False, 0)
+        self.window.add(self.vbox)
+        
+        self.menu_bar.show()
         self.controller_panel.show()
+        self.spec_canvas.show()
+        self.graph_vbox.show()
+        self.vbox.show()
 
         self.window.set_size_request(500, 500)
         self.window.show()
         
-        spectrogram_menu_item.set_active(True)
+        self.menu_bar.spectrogram_menu_item.set_active(True)
 
-    def hscale_change(self, widget):
-        self.sim.current_tick = (self.hscale_adjustment.get_value())
+    def hscale_change(self, range, scroll, value):
+        self.sim.current_tick = value
         self.update_canvas()
 
     def tick(self):
         self.sim.tick()
-
-        self.controller_panel.hscale_adjustment.set_upper(self.sim.max_tick)
-        self.controller_panel.hscale_adjustment.set_lower(self.sim.min_tick)
+        
+        self.controller_panel.update_slider(self.sim.min_tick, self.sim.max_tick)
         #self.hscale_adjustment.set_value(self.sim.current_tick) # well, we'll need to find a way to keep this updated at some point
 
         self.update_canvas()
@@ -187,6 +132,10 @@ class MainFrame:
     def stop_button(self, widget):
         self.timer.stop()
         self.playing = False
+        
+    def reset_button(self, widget):
+        self.stop_button(widget)
+        self.clear_all_graphs()
 
     def button_press(self, widget, event):
         if event.type == gtk.gdk.BUTTON_PRESS:
@@ -216,6 +165,13 @@ class MainFrame:
         else:
             panel.set_visible(False)
             self.control_panel.remove(panel)
+            
+    def clear_all_graphs(self):
+        map(lambda x:x.clear(), self.all_plots)
+        
+    def repaint_all_canvas(self):
+        map(lambda x:x.draw(), self.all_canvas)
+        
 
     def on_export_pdf(self, widget):
         filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE,

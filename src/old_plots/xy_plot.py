@@ -14,6 +14,10 @@ class XY_Plot():
         
     def get_figure(self):
         return self.figure
+    
+    def clear(self):
+        self.s = np.empty(self.t.size)
+        self.l.set_ydata(self.s)
 
     def __init__(self):
         #self.i = 0

@@ -16,6 +16,9 @@ class Spectrogram(object):
         self.ax2 = plt.subplot(212, sharex=ax1)
         self.Fs = Fs # the sampling frequency
 
+    def clear(self):
+        print "Not implemented yet"
+
     def get_figure(self):
         return self.fig
 

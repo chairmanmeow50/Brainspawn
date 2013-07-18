@@ -10,6 +10,9 @@ class Voltage_Grid_Plot():
     def get_figure(self):
         return self.figure
     
+    def clear(self):
+        print "Not implemented yet"
+    
     def random_color(self):
         set_of_colors = []
         # white
