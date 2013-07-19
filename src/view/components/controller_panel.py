@@ -80,9 +80,7 @@ class Controller_Panel(gtk.HBox):
     def set_slider(self, value):
         self.hscale.set_value(value)
         
-    def update_slider(self, min, max):
-        self.hscale_adjustment.set_upper(max)
-        self.hscale_adjustment.set_lower(min)
-        self.start_label.set_text(str(min))
-        self.end_label.set_text(str(max))
-        self.hscale.set_value(max)
+    def update_slider(self, min, max, current, dt):
+        self.start_label.set_text(str(min * dt))
+        self.end_label.set_text(str(max * dt))
+        #self.hscale.set_value(max_tick)

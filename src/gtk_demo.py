@@ -111,8 +111,8 @@ class MainFrame:
     def tick(self):
         self.sim.tick()
         
-        self.controller_panel.update_slider(self.sim.min_tick, self.sim.max_tick)
-        #self.hscale_adjustment.set_value(self.sim.current_tick) # well, we'll need to find a way to keep this updated at some point
+        self.controller_panel.update_slider(self.sim.min_tick, self.sim.max_tick,
+                                            self.sim.current_tick, self.sim.dt)
 
         self.update_canvas()
 
@@ -144,6 +144,8 @@ class MainFrame:
         self.timer.stop()
         self.playing = False
         self.controller_panel.toggle_play(self.playing)
+        # TODO - reset sim
+        self.jump_to(widget, self.sim.min_tick)
         self.clear_all_graphs()
         
     def jump_to_front(self, widget):

@@ -22,20 +22,16 @@ class Datalog:
     def tick(self, limit=None):
         self.semaphore.acquire()
         try:
-            # value is a 1 + n dimension array, where
-            # value.shape[0], or len(value) is time dimension
-            # n is the dimension of the data
             value = self.func(*self.args, **self.kwargs)
         except Exception, e:
             print("Tick error:", self.func,
                    self.args, self.kwargs, '\n', e)
             value = None
         if self.length is None:
-            self.length = len(value) # first dimension of shape is len()
+            self.length = len(value)
         else:
             if len(value) < self.length:
-                padding_zero_shape = (self.length - len(value),) + value.shape[1:]
-                value = numpy.append(value, numpy.zeros(padding_zero_shape))
+                value = numpy.append(value, numpy.zeros(self.length - len(value)))
             elif len(value) > self.length:
                 value = value[:self.length]
         if (len(self.data) == 0):
@@ -62,8 +58,6 @@ class Datalog:
         self.tick()
 
     def update_filter(self, dt_tau):
-        #TODO - verify with multidimensional data, and numpy arrays
-        # Check with Terry to verify what this function should do
         self.semaphore.acquire()
         self.parent.processing = True
         if dt_tau not in self.filtered:
@@ -78,9 +72,9 @@ class Datalog:
             decay = math.exp(-dt_tau)
             n = len(self.data[0])
             for i in range(len(filtered_data), len(unfiltered_data)):
-                last_filtered_element = [numpy.append(last_filtered_element[j] * decay, unfiltered_data[i][j] * (1 - decay))
-                        for j in range(n)]
-                filtered_data = numpy.append(filtered_data, last_filtered_element)
+                last_filtered_element = numpy.array([last_filtered_element[j] * decay + unfiltered_data[i][j] * (1 - decay)
+                        for j in range(n)])
+                filtered_data = numpy.append(filtered_data, [last_filtered_element], axis=0)
         self.parent.processing = False
         self.semaphore.release()
         return filtered_data
@@ -103,15 +97,13 @@ class Datalog:
             result = numpy.array([])
         elif offset > start:
             # no data before offset, pad with zeros
-            padding_zero_shape = (offset - start,) + data.shape[1:]
-            result = numpy.zeros(padding_zero_shape)
+            result = numpy.zeros(offset - start)
             result = numpy.append(result, data[:count - offset + start], axis=0)
         else:
             result = data[start - offset:start - offset + count]
         if len(result) < int(count):
             # pad with zeros
-            padding_zero_shape = (int(count)- len(result),) + data.shape[1:]
-            result = numpy.append(result, numpy.zeros(padding_zero_shape), axis=0)
+            result = numpy.append(result, numpy.zeros(int(count)- len(result)), axis=0)
         self.semaphore.release()
         return result
 
