@@ -98,8 +98,9 @@ class Datalog:
             r = numpy.append(r, d[:count - off + start], axis=0)
         else:
             r = d[start - off:start - off + count]
-        if len(r) < count:
-            r = numpy.append(r, numpy.zeros(count - len(r)))
+        if len(r) < int(count):
+            z = numpy.zeros((int(count) - len(r), d.shape[1]))
+            r = numpy.append(r, z, axis=0)
         self.semaphore.release()
         return r
 

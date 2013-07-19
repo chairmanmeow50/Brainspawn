@@ -8,19 +8,27 @@ class Voltage_Grid_Plot():
         count = self.simulator.current_tick - self.simulator.min_tick
         data = self.data.get(start, count) # the signal
         
-        for i in xrange(0, self.dimension, 1):
-            for j in xrange(0, self.dimension, 1):
-                x = len(data) - i - 1
-                # row should be == data len - 1
-                # column should be == 
-                voltage = data[x][j]
-                self.rect_array[i][j].set_facecolor(self.voltage_color(voltage))
+        if (len(data) > 0):
+            if (len(data[0]) == self.dimension):
+                for i in xrange(0, self.dimension, 1):
+                    for j in xrange(0, self.dimension, 1):
+                        if (i < len(data) - 1):
+                            x = len(data) - i - 1
+                            # row should be == data len - 1
+                            # column should be == 
+#                             print "shape: " + str(data.shape)
+                            voltage = data[x][j]
+                            self.rect_array[i][j].set_facecolor(self.voltage_color(voltage))
+        else:
+            self.clear()
                
     def get_figure(self):
         return self.figure
     
     def clear(self):
-        print "Not implemented yet"
+        for i in xrange(0, self.dimension, 1):
+            for j in xrange(0, self.dimension, 1):
+                self.rect_array[i][j].set_facecolor("#000000")
         
     def voltage_color(self, voltage):
         set_of_colors = []
@@ -84,7 +92,7 @@ class Voltage_Grid_Plot():
         data = self.data.get(start, count) # the signal
         
         self.dimension = len(data[0])
-        print "dimension:" + str(self.dimension)
+#         print "dimension:" + str(self.dimension)
         
         self.figure = plt.figure()
         

@@ -150,9 +150,8 @@ class MainFrame:
         self.jump_to(widget, self.sim.min_tick)
         
     def jump_to(self, widget, value):
-        self.timer.stop()
-        self.playing = False
-        self.controller_panel.toggle_play(self.playing)
+        self.playing = True
+        self.play_pause_button(widget)
         self.sim.current_tick = value
         self.controller_panel.set_slider(self.sim.current_tick)
         self.update_canvas()

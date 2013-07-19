@@ -41,11 +41,11 @@ class Controller_Panel(gtk.HBox):
         self.add(self.hscale)
         self.hscale.show()
         self.hscale_adjustment.set_lower(0)
-        self.hscale_adjustment.set_upper(10)
+        self.hscale_adjustment.set_upper(1)
         self.hscale_adjustment.set_value(self.hscale_adjustment.get_upper())
         self.hscale.connect("change-value", main_frame.hscale_change)
         
-        jump_end_button = self.create_button(gtk.STOCK_MEDIA_NEXT, "clicked", main_frame.jump_to_front)
+        jump_end_button = self.create_button(gtk.STOCK_MEDIA_NEXT, "clicked", main_frame.jump_to_end)
         jump_end_button.show()
         self.pack_start(jump_end_button, False, False, 10)
 
@@ -81,6 +81,8 @@ class Controller_Panel(gtk.HBox):
         self.hscale.set_value(value)
         
     def update_slider(self, min, max):
+        self.hscale_adjustment.set_upper(max)
+        self.hscale_adjustment.set_lower(min)
         self.start_label.set_text(str(min))
         self.end_label.set_text(str(max))
-        #self.hscale.set_value(max_tick)
+        self.hscale.set_value(max)
