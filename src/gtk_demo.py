@@ -7,7 +7,7 @@ from spa_sequence.spa_sequence import net, pThal
 import pygtk
 pygtk.require('2.0')
 import gtk
-import gobject
+import cairo
 
 import view.components.spectrogram as spectrogram
 #import view.components.input_panel as Input_Panel
@@ -140,20 +140,19 @@ class MainFrame:
             self.playing = True
             self.controller_panel.toggle_play(self.playing)
 
-    def stop_button(self, widget):
+    def reset_button(self, widget):
         self.timer.stop()
         self.playing = False
         self.controller_panel.toggle_play(self.playing)
-        
-    def reset_button(self, widget):
-        self.stop_button(widget)
         self.clear_all_graphs()
         
     def jump_to_front(self, widget):
         self.jump_to(widget, self.sim.min_tick)
         
     def jump_to(self, widget, value):
-        self.stop_button(widget)
+        self.timer.stop()
+        self.playing = False
+        self.controller_panel.toggle_play(self.playing)
         self.sim.current_tick = value
         self.controller_panel.set_slider(self.sim.current_tick)
         self.update_canvas()
@@ -201,23 +200,13 @@ class MainFrame:
         filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE,
                                     "screenshot.pdf")
         if filename:
-            gobject.timeout_add(1000, self._capture_window, filename)
-
-    def _capture_window(self, filename):
-            width, height = self.window.get_size()
-            pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8,
-                                    width, height)
-            img = pixbuf.get_from_drawable(self.window.window,
-                                           self.window.get_colormap(),
-                                           0, 0, 0, 0, width, height)
-
-            with tempfile.NamedTemporaryFile(suffix=".png") as temp:
-                img.save(temp.name, "png")
-                print "temp: " + str(temp.name)
-                print "filename: " + str(filename)
-                subprocess.check_call(["convert", temp.name, filename])
-
-            return False
+            with open(filename, "wb") as f:
+                cr = cairo.Context(cairo.PDFSurface(f, *self.window.get_size()))
+                cr.set_source_surface(self.window.window.cairo_create().get_target())
+                cr.set_operator(cairo.OPERATOR_SOURCE)
+                cr.paint()
+                cr.show_page()
+                cr.get_target().finish()
 
     def file_browse(self, action, name="", ext="", ext_name=""):
         if (action == gtk.FILE_CHOOSER_ACTION_OPEN):
