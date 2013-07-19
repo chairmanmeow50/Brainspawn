@@ -29,6 +29,7 @@ class MainFrame:
 
         self.sim = simulator.Simulator(net, net.dt)
         self.sim.add_watcher(simulator.watchers.LFPSpectrogramWatcher())
+        self.sim.add_watcher(simulator.watchers.XYWatcher())
         self.sim.watcher_manager.add_object("pThal", pThal)
         self.spectrogram = None
         
@@ -44,12 +45,15 @@ class MainFrame:
                         component = view_class(self.sim, name, **args)
                         # we know we only have the spectrogram in our example
                         self.spectrogram = component
+                    elif (t == "XY"):
+                        self.xy_plot = view_class(self.sim, name, **args)
+                        
 
         self.spec_canvas = FigureCanvas(self.spectrogram.get_figure())
         self.all_plots.append(self.spectrogram)
         self.all_canvas.append(self.spec_canvas)
 
-        self.xy_plot = XY_Plot()
+#         self.xy_plot = XY_Plot()
         self.xy_canvas = FigureCanvas(self.xy_plot.get_figure())
         self.all_plots.append(self.xy_plot)
         self.all_canvas.append(self.xy_canvas)

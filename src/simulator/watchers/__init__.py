@@ -1,2 +1,3 @@
 from lfp_spectrogram_watcher import LFPSpectrogramWatcher
+from xy_watcher import XYWatcher
 from watcher import Watcher
