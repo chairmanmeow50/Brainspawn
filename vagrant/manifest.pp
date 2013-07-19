@@ -30,8 +30,7 @@ class system {
                'python-numexpr',
                'cython',
                # other packages
-               'python-matplotlib',
-               'imagemagick']:
+               'python-matplotlib']:
         ensure => installed,
         require => Exec['apt-get update'],
     }
