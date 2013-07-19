@@ -135,20 +135,19 @@ class MainFrame:
             self.playing = True
             self.controller_panel.toggle_play(self.playing)
 
-    def stop_button(self, widget):
+    def reset_button(self, widget):
         self.timer.stop()
         self.playing = False
         self.controller_panel.toggle_play(self.playing)
-        
-    def reset_button(self, widget):
-        self.stop_button(widget)
         self.clear_all_graphs()
         
     def jump_to_front(self, widget):
         self.jump_to(widget, self.sim.min_tick)
         
     def jump_to(self, widget, value):
-        self.stop_button(widget)
+        self.timer.stop()
+        self.playing = False
+        self.controller_panel.toggle_play(self.playing)
         self.sim.current_tick = value
         self.controller_panel.set_slider(self.sim.current_tick)
         self.update_canvas()
