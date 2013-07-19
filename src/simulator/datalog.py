@@ -34,7 +34,10 @@ class Datalog:
                 v = numpy.append(v, numpy.zeros(self.length - len(v)))
             elif len(v) > self.length:
                 v = v[:self.length]
-        self.data = numpy.append(self.data, v)
+        if (len(self.data) == 0):
+            self.data = numpy.array([v], ndmin = 2)
+        else:
+            self.data = numpy.append(self.data, [v], axis=0)
         if limit is not None and len(self.data) > limit:
             delta = len(self.data) - limit
             self.offset += delta
@@ -91,8 +94,8 @@ class Datalog:
         if off > start + count:
             r = numpy.array([])
         elif off > start:
-            r = numpy.zeros(off - start)
-            r = numpy.apppend(r, d[:count - off + start])
+            r = numpy.zeros((off - start, d.shape[1]))
+            r = numpy.append(r, d[:count - off + start], axis=0)
         else:
             r = d[start - off:start - off + count]
         if len(r) < count:

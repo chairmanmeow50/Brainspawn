@@ -30,6 +30,7 @@ class MainFrame:
         self.sim = simulator.Simulator(net, net.dt)
         self.sim.add_watcher(simulator.watchers.LFPSpectrogramWatcher())
         self.sim.add_watcher(simulator.watchers.XYWatcher())
+        self.sim.add_watcher(simulator.watchers.Voltage_Grid_Watcher())
         self.sim.watcher_manager.add_object("pThal", pThal)
         self.spectrogram = None
         
@@ -37,6 +38,8 @@ class MainFrame:
         self.all_canvas = []
 
         net.run(0.001) #run for one timestep
+        self.sim.tick()
+        self.sim.tick()
 
         for name, type, data in [("pThal", "LFP Spectrogram", None)]:
             if name in self.sim.watcher_manager.objects.keys():
@@ -47,6 +50,8 @@ class MainFrame:
                         self.spectrogram = component
                     elif (t == "XY"):
                         self.xy_plot = view_class(self.sim, name, **args)
+                    elif (t == "Voltage Grid"):
+                        self.voltage_grid = view_class(self.sim, name, **args)
                         
 
         self.spec_canvas = FigureCanvas(self.spectrogram.get_figure())
@@ -58,7 +63,7 @@ class MainFrame:
         self.all_plots.append(self.xy_plot)
         self.all_canvas.append(self.xy_canvas)
 
-        self.voltage_grid = Voltage_Grid_Plot()
+#         self.voltage_grid = Voltage_Grid_Plot()
         self.vg_canvas = FigureCanvas(self.voltage_grid.get_figure())
         self.all_plots.append(self.voltage_grid)
         self.all_canvas.append(self.vg_canvas)
