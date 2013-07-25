@@ -22,6 +22,8 @@ class Datalog:
     def tick(self, limit=None):
         self.semaphore.acquire()
         try:
+            # we expect value to be a n-length array
+            # (a vector of n-dimensions)
             value = self.func(*self.args, **self.kwargs)
         except Exception, e:
             print("Tick error:", self.func,
@@ -31,8 +33,10 @@ class Datalog:
             self.length = len(value)
         else:
             if len(value) < self.length:
+                # value does not have the dimensions we expect, pad it with zeros
                 value = numpy.append(value, numpy.zeros(self.length - len(value)))
             elif len(value) > self.length:
+                # value has too many dimensions, trim it
                 value = value[:self.length]
         if (len(self.data) == 0):
             self.data = numpy.array([value])
@@ -88,22 +92,33 @@ class Datalog:
             data = self.update_filter(dt_tau)
             self.semaphore.acquire()
         offset = self.offset
+        #find the dimension of the data
+        if len(data) > 0:
+            n = len(data[0])
+        else:
+            n = 0
+
         if start is None:
             start = 0
         if count is None:
             count = len(data) + offset
+
+        # pick out the correct data
+        # for no data, we use zero data,
+        # since we store it in numpy arrays
         if offset > start + count:
             # return empty 1-d array
             result = numpy.array([])
         elif offset > start:
-            # no data before offset, pad with zeros
-            result = numpy.zeros(offset - start)
-            result = numpy.append(result, data[:count - offset + start], axis=0)
+            # no data before offset, pad with None arrays of dimension n
+            zeros = [numpy.zeros(n)]*(offset - start)
+            result = numpy.append(zeros, data[:count - offset + start], axis=0)
         else:
             result = data[start - offset:start - offset + count]
         if len(result) < int(count):
-            # pad with zeros
-            result = numpy.append(result, numpy.zeros(int(count)- len(result)), axis=0)
+            # pad with None arrays of dimension n
+            zeros = [numpy.zeros(n)]*(int(count)- len(result))
+            result = numpy.append(result, zeros, axis=0)
         self.semaphore.release()
         return result
 
