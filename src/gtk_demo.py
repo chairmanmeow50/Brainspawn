@@ -17,7 +17,7 @@ import simulator.watchers
 from old_plots.xy_plot import XY_Plot
 from old_plots.voltage_grid import Voltage_Grid_Plot
 
-from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanvas
+from matplotlib.backends.backend_gtkcairo import FigureCanvasGTKCairo as FigureCanvas
 
 class MainFrame:
     def __init__(self):
@@ -52,17 +52,32 @@ class MainFrame:
                         self.voltage_grid = view_class(self.sim, name, **args)
                         
 
+        #TODO(amtinits): this should go in a super-class for all plots
+        def button_press(widget, event, canvas):
+            if event.type == gtk.gdk.BUTTON_PRESS and event.button == 3:
+                export_pdf_item = gtk.MenuItem("Export to PDF")
+                export_pdf_item.connect("activate", self.on_export_pdf, canvas)
+                export_pdf_item.show()
+                context_menu = gtk.Menu()
+                context_menu.append(export_pdf_item)
+                context_menu.popup(None, None, None, event.button, event.time)
+                return True
+            return False
+
         self.spec_canvas = FigureCanvas(self.spectrogram.get_figure())
+        self.spec_canvas.connect("event", button_press, self.spec_canvas)
         self.all_plots.append(self.spectrogram)
         self.all_canvas.append(self.spec_canvas)
 
 #         self.xy_plot = XY_Plot()
         self.xy_canvas = FigureCanvas(self.xy_plot.get_figure())
+        self.xy_canvas.connect("event", button_press, self.xy_canvas)
         self.all_plots.append(self.xy_plot)
         self.all_canvas.append(self.xy_canvas)
 
 #         self.voltage_grid = Voltage_Grid_Plot()
         self.vg_canvas = FigureCanvas(self.voltage_grid.get_figure())
+        self.vg_canvas.connect("event", button_press, self.vg_canvas)
         self.all_plots.append(self.voltage_grid)
         self.all_canvas.append(self.vg_canvas)
 
@@ -195,10 +210,14 @@ class MainFrame:
         map(lambda x:x.draw(), self.all_canvas)
         
 
-    def on_export_pdf(self, widget):
+    def on_export_pdf(self, widget, canvas=None):
         filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
-        if filename:
-            with open(filename, "wb") as f:
+        if not filename:
+            return
+        with open(filename, "wb") as f:
+            if canvas:
+                canvas.print_pdf(f)
+            else:
                 cr = cairo.Context(cairo.PDFSurface(f, *self.window.get_size()))
                 cr.set_source_surface(self.window.window.cairo_create().get_target())
                 cr.set_operator(cairo.OPERATOR_SOURCE)
