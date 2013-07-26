@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 import os
-import subprocess
-import tempfile
 from spa_sequence.spa_sequence import net, pThal
 
 import pygtk
@@ -198,8 +196,7 @@ class MainFrame:
         
 
     def on_export_pdf(self, widget):
-        filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE,
-                                    "screenshot.pdf")
+        filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
         if filename:
             with open(filename, "wb") as f:
                 cr = cairo.Context(cairo.PDFSurface(f, *self.window.get_size()))
@@ -211,14 +208,11 @@ class MainFrame:
 
     def file_browse(self, action, name="", ext="", ext_name=""):
         if (action == gtk.FILE_CHOOSER_ACTION_OPEN):
-            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                       gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)
         else:
-            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                       gtk.STOCK_SAVE, gtk.RESPONSE_OK)
-
-        dialog = gtk.FileChooserDialog(title="Select File", action=action,
-                                       buttons=buttons)
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK)
+        dialog = gtk.FileChooserDialog(title="Select File", action=action, buttons=buttons)
+        dialog.set_do_overwrite_confirmation(True)
         dialog.set_current_folder(os.getcwd())
         dialog.set_current_name(name)
 
