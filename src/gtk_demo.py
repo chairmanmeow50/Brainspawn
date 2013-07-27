@@ -141,7 +141,10 @@ class MainFrame:
         if (self.spec_canvas.get_visible()):
             self.spectrogram.tick()
             self.spec_canvas.draw()
-
+            
+    #Controller code for controller_panel
+    def format_slider_value(self, scale, value):
+        return str(value * self.sim.dt)
 
     def play_pause_button(self, widget):
         if (self.playing == True):
@@ -157,7 +160,7 @@ class MainFrame:
         self.timer.stop()
         self.playing = False
         self.controller_panel.toggle_play(self.playing)
-        # TODO - reset sim
+        self.sim.reset()
         self.jump_to(widget, self.sim.min_tick)
         self.clear_all_graphs()
         
