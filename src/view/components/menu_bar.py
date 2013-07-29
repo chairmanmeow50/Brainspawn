@@ -31,6 +31,10 @@ class Menu_Bar(gtk.MenuBar):
         tools_submenu = gtk.Menu()
         tools_menu.set_submenu(tools_submenu)
         
+        resize_menu_item = gtk.CheckMenuItem("Resize")
+        resize_menu_item.connect("activate", main_frame.toggle_resize)
+        tools_submenu.append(resize_menu_item)
+        
         input_panel_menu_item = gtk.CheckMenuItem("Input Panel")
         input_panel_menu_item.connect("activate", main_frame.toggle_panel, main_frame.input_panel)
         input_panel_menu_item.show()

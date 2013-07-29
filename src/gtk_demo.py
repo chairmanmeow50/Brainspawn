@@ -6,6 +6,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import cairo
+import math
 
 import view.components.spectrogram as spectrogram
 #import view.components.input_panel as Input_Panel
@@ -25,6 +26,8 @@ class MainFrame:
         self.vbox = gtk.VBox(False, 0)
         self.playing = False
         self.press = None
+        self.resize = False
+        self.resize_info = None
 
         self.sim = simulator.Simulator(net, net.dt)
         self.sim.add_watcher(simulator.watchers.LFPSpectrogramWatcher())
@@ -133,6 +136,12 @@ class MainFrame:
         
         self.menu_bar.spectrogram_menu_item.set_active(True)
         
+    def toggle_resize(self, widget):
+        if (widget.get_active()):
+            self.resize = True
+        else:
+            self.resize = False
+        
     def mouse_on_press(self, event):
 #         print "mouse press"
 #         print event
@@ -149,13 +158,43 @@ class MainFrame:
         
     def mouse_on_motion(self, event):
         if self.press is None: return
+        
         x0, y0, xpress, ypress = self.press
-        dx = event.x - xpress
-        dy = event.y - ypress
-#         print "x " + str(event.x)
-#         print "y " + str(event.y)
-        self.canvas_layout.move(event.canvas, int(x0 + dx), int(y0 - dy))
+        owidth, oheight = event.canvas.get_width_height()
+        
+        if (self.resize):
+#             owidth = event.canvas._pixmap_width
+#             oheight = event.canvas._pixmap_height
+            if (self.resize_info == None):
+                self.resize_info = xpress, ypress
+            old_x, old_y = self.resize_info
+            old_y = oheight - old_y
+            o_mag = self.magnitude(old_x, old_y)
+            
+            new_mag = self.magnitude(event.x, oheight - event.y)
+            self.resize_info = event.x, event.y
+            scale = new_mag / o_mag
+            scale = scale * scale
+            new_width = int(owidth * scale)
+            new_height = int(oheight * scale)
+#             print "owidth: " + str(owidth) + ", oheight: " + str(oheight)
+#             print "o_mag: " + str(o_mag) + ", new_mag: " + str(new_mag)
+#             print "scale: " + str(scale)
+            event.canvas.set_size_request(new_width, new_height)
+        else:
+            # calc dx = currx - pressx
+            dx = event.x - xpress
+            dy = ypress - event.y
+#             print "x " + str(dx)
+#             print "y " + str(dy)
+            self.canvas_layout.move(event.canvas, int(x0 + dx), int(y0 + dy))
+            
         event.canvas.draw()
+            
+    def magnitude(self, x, y):
+        sq1 = x * x
+        sq2 = y * y
+        return math.sqrt(sq1 + sq2)
         
     def mouse_on_release(self, event):
         self.press = None
