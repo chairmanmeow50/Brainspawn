@@ -27,7 +27,7 @@ class Controller_Panel(gtk.HBox):
         self.pause_button = self.create_button(gtk.STOCK_MEDIA_PAUSE, "clicked", main_frame.play_pause_button)
         self.pack_start(self.pause_button, False, False, 10)
 
-        self.start_label = gtk.Label("0")
+        self.start_label = gtk.Label("0.000")
         self.start_label.set_alignment(0, 0.5)
         self.start_label.show()
         self.pack_start(self.start_label, False, True, 0)
@@ -41,15 +41,16 @@ class Controller_Panel(gtk.HBox):
         self.add(self.hscale)
         self.hscale.show()
         self.hscale_adjustment.set_lower(0)
-        self.hscale_adjustment.set_upper(1)
+        self.hscale_adjustment.set_upper(0)
         self.hscale_adjustment.set_value(self.hscale_adjustment.get_upper())
         self.hscale.connect("change-value", main_frame.hscale_change)
+        self.hscale.connect("format-value", main_frame.format_slider_value)
         
         jump_end_button = self.create_button(gtk.STOCK_MEDIA_NEXT, "clicked", main_frame.jump_to_end)
         jump_end_button.show()
         self.pack_start(jump_end_button, False, False, 10)
 
-        self.end_label = gtk.Label("0")
+        self.end_label = gtk.Label("0.000")
         self.end_label.set_alignment(0, 0.5)
         self.end_label.show()
         self.pack_start(self.end_label, False, True, 0)
@@ -78,9 +79,14 @@ class Controller_Panel(gtk.HBox):
             self.pause_button.hide()
         
     def set_slider(self, value):
+        self.updating = True
         self.hscale.set_value(value)
         
     def update_slider(self, min, max, current, dt):
-        self.start_label.set_text(str(min * dt))
-        self.end_label.set_text(str(max * dt))
-        #self.hscale.set_value(max_tick)
+        # slider values
+        self.start_label.set_text('%.3f' % (min * dt))
+        self.end_label.set_text('%.3f' % (max * dt))
+        
+        self.hscale_adjustment.set_lower(min)
+        self.hscale_adjustment.set_upper(max)
+        self.set_slider(current)

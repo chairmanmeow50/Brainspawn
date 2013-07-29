@@ -24,3 +24,10 @@ class Simulator:
                     self.datalog_manager.tick_limit + 1)
             self.max_tick = self.datalog_manager.tick_count
         self.current_tick += 1
+        
+    def reset(self):
+        # At the moment, there is no 'reset' in the nengo_theano api
+        # TODO: ask Terry if we want to include this functionality/
+        # find a suitable workaround in the meantime.
+        #self.net.reset()
+        self.watcher_manager.reset()
