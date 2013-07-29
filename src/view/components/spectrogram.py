@@ -11,10 +11,12 @@ class Spectrogram(object):
         self.data = self.simulator.watcher_manager.activate_watcher(name,
                 func, args=args)
         self.fig = plt.figure()
+        self.fig.patch.set_facecolor('white')
         ax1 = plt.subplot(211)
         self.line, = ax1.plot([], [])
         self.ax2 = plt.subplot(212, sharex=ax1)
         self.Fs = Fs # the sampling frequency
+        
 
     def clear(self):
         print "Not implemented yet"

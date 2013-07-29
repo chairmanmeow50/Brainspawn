@@ -29,6 +29,7 @@ class XY_Plot():
         #self.i = 0
         self.simulator = simulator
         self.figure = plt.figure()
+        self.figure.patch.set_facecolor('white')
         
         self.data = self.simulator.watcher_manager.activate_watcher(name,
                 func, args=args)

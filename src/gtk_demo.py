@@ -26,6 +26,7 @@ class MainFrame:
         
         self.vbox = gtk.VBox(False, 0)
         self.playing = False
+        self.press = None
 
         self.sim = simulator.Simulator(net, net.dt)
         self.sim.add_watcher(simulator.watchers.LFPSpectrogramWatcher())
@@ -57,16 +58,31 @@ class MainFrame:
         self.spec_canvas = FigureCanvas(self.spectrogram.get_figure())
         self.all_plots.append(self.spectrogram)
         self.all_canvas.append(self.spec_canvas)
+        self.spec_canvas.mpl_connect('figure_enter_event', self.enter_figure)
+        self.spec_canvas.mpl_connect('figure_leave_event', self.leave_figure)
+        self.spec_canvas.mpl_connect('button_press_event', self.mouse_on_press)
+        self.spec_canvas.mpl_connect('button_release_event', self.mouse_on_release)
+        self.spec_canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
 
 #         self.xy_plot = XY_Plot()
         self.xy_canvas = FigureCanvas(self.xy_plot.get_figure())
         self.all_plots.append(self.xy_plot)
         self.all_canvas.append(self.xy_canvas)
+        self.xy_canvas.mpl_connect('figure_enter_event', self.enter_figure)
+        self.xy_canvas.mpl_connect('figure_leave_event', self.leave_figure)
+        self.xy_canvas.mpl_connect('button_press_event', self.mouse_on_press)
+        self.xy_canvas.mpl_connect('button_release_event', self.mouse_on_release)
+        self.xy_canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
 
 #         self.voltage_grid = Voltage_Grid_Plot()
         self.vg_canvas = FigureCanvas(self.voltage_grid.get_figure())
         self.all_plots.append(self.voltage_grid)
         self.all_canvas.append(self.vg_canvas)
+        self.vg_canvas.mpl_connect('figure_enter_event', self.enter_figure)
+        self.vg_canvas.mpl_connect('figure_leave_event', self.leave_figure)
+        self.vg_canvas.mpl_connect('button_press_event', self.mouse_on_press)
+        self.vg_canvas.mpl_connect('button_release_event', self.mouse_on_release)
+        self.vg_canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
 
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -78,7 +94,8 @@ class MainFrame:
         self.controller_panel = Controller_Panel(self)
         self.menu_bar = Menu_Bar(self)
         
-        self.graph_vbox = gtk.VBox(False, 0)
+        self.canvas_layout = gtk.Layout(None, None)
+        self.canvas_layout.set_size(600, 600)
 
         figure = self.spectrogram.get_figure()
 
@@ -86,23 +103,58 @@ class MainFrame:
         self.timer = self.canvas.new_timer(interval=200)
         self.timer.add_callback(self.tick)
 
-        self.graph_vbox.pack_start(self.canvas, False, False, 0)
-
         self.vbox.pack_start(self.menu_bar, False, False, 0)
         self.vbox.pack_start(self.controller_panel, False, False, 0)
-        self.vbox.pack_start(self.graph_vbox, False, False, 0)
+        self.vbox.pack_start(self.canvas_layout, True, True, 0)
         self.window.add(self.vbox)
         
         self.menu_bar.show()
         self.controller_panel.show()
         self.spec_canvas.show()
-        self.graph_vbox.show()
+        self.canvas_layout.show()
         self.vbox.show()
 
-        self.window.set_size_request(500, 500)
+        self.window.set_size_request(800, 600)
         self.window.show()
+        self.window.show_all()
         
         self.menu_bar.spectrogram_menu_item.set_active(True)
+        
+    def mouse_on_press(self, event):
+#         print "mouse press"
+#         print event
+#         contains, attrd = self.rect.contains(event)
+#         if not contains: return
+        canvas = event.canvas
+        x0 = self.canvas_layout.child_get_property(canvas, "x")
+        y0 = self.canvas_layout.child_get_property(canvas, "y")
+        self.press = x0, y0, event.x, event.y
+#         print "x0 " + str(x0)
+#         print "y0 " + str(y0)
+#         print "x " + str(event.x)
+#         print "y " + str(event.y)
+        
+    def mouse_on_motion(self, event):
+        if self.press is None: return
+        x0, y0, xpress, ypress = self.press
+        dx = event.x - xpress
+        dy = event.y - ypress
+#         print "x " + str(event.x)
+#         print "y " + str(event.y)
+        self.canvas_layout.move(event.canvas, int(x0 + dx), int(y0 - dy))
+        event.canvas.draw()
+        
+    def mouse_on_release(self, event):
+        self.press = None
+        event.canvas.draw()
+        
+    def leave_figure(self, event):
+        event.canvas.figure.patch.set_facecolor('white')
+        event.canvas.draw()
+        
+    def enter_figure(self, event):
+        event.canvas.figure.patch.set_facecolor('grey')
+        event.canvas.draw()
 
     def hscale_change(self, range, scroll, value):
         self.sim.current_tick = value
@@ -177,10 +229,12 @@ class MainFrame:
     def toggle_plot(self, widget, canvas):
         if (widget.get_active()):
             canvas.set_visible(True)
-            self.vbox.add(canvas)
+            canvas.set_size_request(300, 300)
+            canvas.show()
+            self.canvas_layout.put(canvas, 0, 0)
         else:
             canvas.set_visible(False)
-            self.vbox.remove(canvas)
+            self.canvas_layout.remove(canvas)
             
     def toggle_panel(self, widget, panel):
         if (widget.get_active()):

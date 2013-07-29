@@ -95,6 +95,7 @@ class Voltage_Grid_Plot():
 #         print "dimension:" + str(self.dimension)
         
         self.figure = plt.figure()
+        self.figure.patch.set_facecolor('white')
         
         self.rect_array = [[] for i in range(self.dimension)]
         plt.xlim(0, 1)
