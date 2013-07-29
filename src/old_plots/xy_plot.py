@@ -33,7 +33,7 @@ class XY_Plot():
         
         self.data = self.simulator.watcher_manager.activate_watcher(name,
                 func, args=args)
-        
+
         start = self.simulator.min_tick
         count = self.simulator.current_tick - self.simulator.min_tick
         data = self.data.get(start, count) # the signal

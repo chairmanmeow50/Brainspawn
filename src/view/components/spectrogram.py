@@ -1,25 +1,31 @@
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+import matplotlib.mlab as mlab
 import numpy as np
 
 
 class Spectrogram(object):
 
     def __init__(self, simulator, name, func, args=(), label=None, Fs=1.0):
+        self.plot_name = "spectrogram" + name
         self.simulator = simulator
         self.func = func
         self.data = self.simulator.watcher_manager.activate_watcher(name,
                 func, args=args)
-        self.fig = plt.figure()
+        self.fig = plt.figure(self.plot_name)
         self.fig.patch.set_facecolor('white')
-        ax1 = plt.subplot(211)
-        self.line, = ax1.plot([], [])
-        self.ax2 = plt.subplot(212, sharex=ax1)
+        self.ax = plt.subplot(111)
         self.Fs = Fs # the sampling frequency
         
+        plt.xlabel('Time (s)')
+        plt.ylabel('Frequency (Hz)')
+        plt.title('LFP Spectrogram')
 
     def clear(self):
-        print "Not implemented yet"
+        # set current figure
+        self.fig = plt.figure(self.plot_name)
+        # clear the axes
+        plt.cla() 
 
     def get_figure(self):
         return self.fig
@@ -29,16 +35,7 @@ class Spectrogram(object):
         start = self.simulator.min_tick
         count = self.simulator.current_tick - self.simulator.min_tick
         data = self.data.get(start, count) # the signal
-        t = np.linspace(start, start +
-                data.size * self.simulator.dt, data.size)
-        #print "min: " + str(self.simulator.min_tick) + ", max: " + str(data.size * self.simulator.dt) + ", size: " + str(data.size)
-
-        tsize = t.size
-        if (tsize > 200):
-            t = t[tsize-200:tsize]
-            data = data[tsize-200:tsize]
-
-        self.line.set_data(t, data)
-        Pxx, freqs, bins, im = self.ax2.specgram(data, Fs=self.Fs,
-                cmap=cm.gist_heat)
-        return self.line, im
+        data = np.reshape(data, -1)
+        
+        self.clear()
+        self.ax.specgram(data, Fs=self.Fs, cmap=cm.gist_heat)

@@ -115,10 +115,15 @@ class MainFrame:
 
         figure = self.spectrogram.get_figure()
 
+        # Used to control framerate for redrawing graph components
+        self.sim_rate = 6 # rate at which we call sim.tick()
+        self.framerate = 2
+        self.next_gcomponent_redraw = 0
+        
         self.canvas = FigureCanvas(figure)  # a gtk.DrawingArea
-        self.timer = self.canvas.new_timer(interval=200)
+        self.timer = self.canvas.new_timer(interval=1000/self.sim_rate)
         self.timer.add_callback(self.tick)
-
+        
         self.vbox.pack_start(self.menu_bar, False, False, 0)
         self.vbox.pack_start(self.controller_panel, False, False, 0)
         self.vbox.pack_start(self.canvas_layout, True, True, 0)
@@ -217,8 +222,13 @@ class MainFrame:
         
         self.controller_panel.update_slider(self.sim.min_tick, self.sim.max_tick,
                                             self.sim.current_tick, self.sim.dt)
+        
+        if (self.next_gcomponent_redraw == 0):
+            self.update_canvas()
+            self.next_gcomponent_redraw = self.sim_rate/self.framerate
+        else:
+            self.next_gcomponent_redraw -= 1
 
-        self.update_canvas()
 
     def update_canvas(self):
 
