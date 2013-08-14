@@ -61,6 +61,9 @@ class Controller_Panel(gtk.HBox):
 
         
     def create_button(self, stock, signal, handler):
+        """creates a button with a stock image but no label
+        also connects the signal to the handler
+        """
         button = gtk.Button(label=None)
         image = gtk.Image()
         image.set_from_stock(stock, gtk.ICON_SIZE_BUTTON)
@@ -71,6 +74,9 @@ class Controller_Panel(gtk.HBox):
         return button
     
     def toggle_play(self, is_playing):
+        """ hides the play button
+        then shows the pause button, or vice versa
+        """
         if (is_playing):
             self.play_button.hide()
             self.pause_button.show()
@@ -79,10 +85,15 @@ class Controller_Panel(gtk.HBox):
             self.pause_button.hide()
         
     def set_slider(self, value):
+        """ sets the value of the slider
+        and updates the simulator to the slider value
+        """
         self.updating = True
         self.hscale.set_value(value)
         
     def update_slider(self, min, max, current, dt):
+        """ updates the text values and range upper lower range
+        """
         # slider values
         self.start_label.set_text('%.3f' % (min * dt))
         self.end_label.set_text('%.3f' % (max * dt))

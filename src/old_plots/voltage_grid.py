@@ -4,6 +4,10 @@ import __future__
 
 class Voltage_Grid_Plot():
     def tick(self):
+        """ after a tick, gets the values of the neurons and
+        each row represents the value of the neurons
+        the columns show the values over time
+        """
         start = self.simulator.min_tick
         count = self.simulator.current_tick - self.simulator.min_tick
         data = self.data.get(start, count) # the signal
@@ -26,11 +30,15 @@ class Voltage_Grid_Plot():
         return self.figure
     
     def clear(self):
+        """ sets all the grids to black"""
         for i in xrange(0, self.dimension, 1):
             for j in xrange(0, self.dimension, 1):
                 self.rect_array[i][j].set_facecolor("#000000")
         
     def voltage_color(self, voltage):
+        """ converts the voltage value to a
+        distribution of colours between yellow
+        and white to black"""
         set_of_colors = []
         # black
         set_of_colors.append('#000000')
@@ -71,6 +79,7 @@ class Voltage_Grid_Plot():
         return set_of_colors[np.random.randint(0, 4)]
     
     def draw_rects(self):
+        """ draws the initial rectangles"""
         width = 1.0 / self.dimension
         height = 1.0 / self.dimension
         
