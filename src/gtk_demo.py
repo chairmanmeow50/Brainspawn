@@ -72,33 +72,22 @@ class MainFrame:
         self.spec_canvas.connect("event", button_press, self.spec_canvas)
         self.all_plots.append(self.spectrogram)
         self.all_canvas.append(self.spec_canvas)
-        self.spec_canvas.mpl_connect('figure_enter_event', self.enter_figure)
-        self.spec_canvas.mpl_connect('figure_leave_event', self.leave_figure)
-        self.spec_canvas.mpl_connect('button_press_event', self.mouse_on_press)
-        self.spec_canvas.mpl_connect('button_release_event', self.mouse_on_release)
-        self.spec_canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
 
-#         self.xy_plot = XY_Plot()
         self.xy_canvas = FigureCanvas(self.xy_plot.get_figure())
         self.xy_canvas.connect("event", button_press, self.xy_canvas)
         self.all_plots.append(self.xy_plot)
         self.all_canvas.append(self.xy_canvas)
-        self.xy_canvas.mpl_connect('figure_enter_event', self.enter_figure)
-        self.xy_canvas.mpl_connect('figure_leave_event', self.leave_figure)
-        self.xy_canvas.mpl_connect('button_press_event', self.mouse_on_press)
-        self.xy_canvas.mpl_connect('button_release_event', self.mouse_on_release)
-        self.xy_canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
 
-#         self.voltage_grid = Voltage_Grid_Plot()
         self.vg_canvas = FigureCanvas(self.voltage_grid.get_figure())
         self.vg_canvas.connect("event", button_press, self.vg_canvas)
         self.all_plots.append(self.voltage_grid)
         self.all_canvas.append(self.vg_canvas)
-        self.vg_canvas.mpl_connect('figure_enter_event', self.enter_figure)
-        self.vg_canvas.mpl_connect('figure_leave_event', self.leave_figure)
-        self.vg_canvas.mpl_connect('button_press_event', self.mouse_on_press)
-        self.vg_canvas.mpl_connect('button_release_event', self.mouse_on_release)
-        self.vg_canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
+        
+        map(lambda x:x.mpl_connect('figure_enter_event', self.enter_figure), self.all_canvas)
+        map(lambda x:x.mpl_connect('figure_leave_event', self.leave_figure), self.all_canvas)
+        map(lambda x:x.mpl_connect('button_press_event', self.mouse_on_press), self.all_canvas)
+        map(lambda x:x.mpl_connect('button_release_event', self.mouse_on_release), self.all_canvas)
+        map(lambda x:x.mpl_connect('motion_notify_event', self.mouse_on_motion), self.all_canvas)
 
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -148,18 +137,11 @@ class MainFrame:
             self.resize = False
         
     def mouse_on_press(self, event):
-#         print "mouse press"
-#         print event
-#         contains, attrd = self.rect.contains(event)
-#         if not contains: return
         canvas = event.canvas
         x0 = self.canvas_layout.child_get_property(canvas, "x")
         y0 = self.canvas_layout.child_get_property(canvas, "y")
-        self.press = x0, y0, event.x, event.y
-#         print "x0 " + str(x0)
-#         print "y0 " + str(y0)
-#         print "x " + str(event.x)
-#         print "y " + str(event.y)
+        widget_x, widget_y = self.canvas_layout.get_pointer()
+        self.press = x0, y0, widget_x, widget_y
         
     def mouse_on_motion(self, event):
         if self.press is None: return
@@ -167,34 +149,32 @@ class MainFrame:
         x0, y0, xpress, ypress = self.press
         owidth, oheight = event.canvas.get_width_height()
         
+        canvas_layout_x, canvas_layout_y = self.canvas_layout.get_pointer()
+        
         if (self.resize):
-#             owidth = event.canvas._pixmap_width
-#             oheight = event.canvas._pixmap_height
             if (self.resize_info == None):
                 self.resize_info = xpress, ypress
             old_x, old_y = self.resize_info
             old_y = oheight - old_y
             o_mag = self.magnitude(old_x, old_y)
             
-            new_mag = self.magnitude(event.x, oheight - event.y)
-            self.resize_info = event.x, event.y
+            new_mag = self.magnitude(canvas_layout_x, canvas_layout_y)
+            self.resize_info = canvas_layout_x, canvas_layout_y
             scale = new_mag / o_mag
             scale = scale * scale
             new_width = int(owidth * scale)
             new_height = int(oheight * scale)
-#             print "owidth: " + str(owidth) + ", oheight: " + str(oheight)
-#             print "o_mag: " + str(o_mag) + ", new_mag: " + str(new_mag)
-#             print "scale: " + str(scale)
             event.canvas.set_size_request(new_width, new_height)
         else:
             # calc dx = currx - pressx
-            dx = event.x - xpress
-            dy = ypress - event.y
-#             print "x " + str(dx)
-#             print "y " + str(dy)
-            self.canvas_layout.move(event.canvas, int(x0 + dx), int(y0 + dy))
-            
-        event.canvas.draw()
+            widget_x, widget_y = self.canvas_layout.get_pointer()
+            self.press = x0, y0, canvas_layout_x, canvas_layout_y
+            dx = canvas_layout_x - xpress
+            dy = canvas_layout_y - ypress
+            new_x = int(round(x0 + dx))
+            new_y = int(round(y0 + dy))
+            self.canvas_layout.move(event.canvas, new_x, new_y)
+            self.press = new_x, new_y, canvas_layout_x, canvas_layout_y
             
     def magnitude(self, x, y):
         sq1 = x * x
