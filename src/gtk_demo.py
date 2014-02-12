@@ -101,6 +101,7 @@ class MainFrame:
         
         self.canvas_layout = gtk.Layout(None, None)
         self.canvas_layout.set_size(600, 600)
+        self.canvas_layout.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#ffffff"))
 
         figure = self.spectrogram.get_figure()
 
