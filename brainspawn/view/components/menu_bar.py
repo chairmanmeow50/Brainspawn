@@ -62,6 +62,11 @@ class Menu_Bar(gtk.MenuBar):
         voltage_grid_menu_item.show()
         view_submenu.append(voltage_grid_menu_item)
 
+        network_view_menu_item = gtk.CheckMenuItem("Network View")
+        network_view_menu_item.connect("activate", main_frame.toggle_plot, main_frame.network_canvas)
+        network_view_menu_item.show()
+        view_submenu.append(network_view_menu_item)
+
         view_menu.show()
 
         help_menu = gtk.MenuItem("Help")

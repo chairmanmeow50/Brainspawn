@@ -9,6 +9,7 @@ import cairo
 import math
 
 import view.components.spectrogram as spectrogram
+from view.components.network_view import Network_View
 #import view.components.input_panel as Input_Panel
 from view.components.input_panel import Input_Panel
 from view.components.controller_panel import Controller_Panel
@@ -55,6 +56,7 @@ class MainFrame:
                     elif (t == "Voltage Grid"):
                         self.voltage_grid = view_class(self.sim, name, **args)
 
+        self.network_view = Network_View(self.sim)
 
         #TODO(amtinits): this should go in a super-class for all plots
         def button_press(widget, event, canvas):
@@ -82,6 +84,11 @@ class MainFrame:
         self.vg_canvas.connect("event", button_press, self.vg_canvas)
         self.all_plots.append(self.voltage_grid)
         self.all_canvas.append(self.vg_canvas)
+
+        self.network_canvas = FigureCanvas(self.network_view.get_figure())
+        self.network_canvas.connect("event", button_press, self.network_canvas)
+        self.all_plots.append(self.network_view)
+        self.all_canvas.append(self.network_canvas)
 
         map(lambda x:x.mpl_connect('figure_enter_event', self.enter_figure), self.all_canvas)
         map(lambda x:x.mpl_connect('figure_leave_event', self.leave_figure), self.all_canvas)
@@ -222,6 +229,9 @@ class MainFrame:
         #self.i=(self.i+1) % 25
         if (self.spec_canvas.get_visible()):
             self.spectrogram.tick()
+            self.spec_canvas.draw()
+        if (self.network_canvas.get_visible()):
+            self.network_view.tick()
             self.spec_canvas.draw()
 
     #Controller code for controller_panel
