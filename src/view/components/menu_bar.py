@@ -56,6 +56,11 @@ class Menu_Bar(gtk.MenuBar):
         xy_plot_menu_item.connect("activate", main_frame.toggle_plot, main_frame.xy_canvas)
         xy_plot_menu_item.show()
         view_submenu.append(xy_plot_menu_item)
+        
+        spike_raster_menu_item = gtk.CheckMenuItem("Spike Raster")
+        spike_raster_menu_item.connect("activate", main_frame.toggle_plot, main_frame.raster_canvas)
+        spike_raster_menu_item.show()
+        view_submenu.append(spike_raster_menu_item)
 
         voltage_grid_menu_item = gtk.CheckMenuItem("Voltage Grid")
         voltage_grid_menu_item.connect("activate", main_frame.toggle_plot, main_frame.vg_canvas)

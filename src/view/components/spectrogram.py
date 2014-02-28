@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import numpy as np
 
+import matplotlib.patches as mpatches
+import matplotlib.lines as mlines
 
 class Spectrogram(object):
 
@@ -20,6 +22,8 @@ class Spectrogram(object):
         plt.xlabel('Time (s)')
         plt.ylabel('Frequency (Hz)')
         plt.title('LFP Spectrogram')
+        
+        #self.draw_ui()
 
     def clear(self):
         # set current figure
@@ -29,6 +33,14 @@ class Spectrogram(object):
 
     def get_figure(self):
         return self.fig
+    
+    def get_ax(self):
+        return self.ax
+    
+    def draw_ui(self):
+        #self.ax.add_patch(mpatches.Rectangle((0,0), 5, 5))
+        x,y = np.array([[-0.06, 0.0, 0.1], [0.05, -0.05, 0.05]])
+        #self.ax.add_line(mlines.Line2D(x, y, 5, 1))
 
     def tick(self):
         # plot the output
@@ -37,5 +49,6 @@ class Spectrogram(object):
         data = self.data.get(start, count) # the signal
         data = np.reshape(data, -1)
         
-        self.clear()
+        #self.clear()
         self.ax.specgram(data, Fs=self.Fs, cmap=cm.gist_heat)
+        

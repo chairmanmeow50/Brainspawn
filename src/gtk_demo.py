@@ -17,6 +17,10 @@ import simulator
 import simulator.watchers
 from old_plots.xy_plot import XY_Plot
 from old_plots.voltage_grid import Voltage_Grid_Plot
+from old_plots.spike_raster import Spike_Raster_Plot
+
+import matplotlib.patches as mpatches
+
 
 from matplotlib.backends.backend_gtkcairo import FigureCanvasGTKCairo as FigureCanvas
 
@@ -33,6 +37,7 @@ class MainFrame:
         self.sim.add_watcher(simulator.watchers.LFPSpectrogramWatcher())
         self.sim.add_watcher(simulator.watchers.XYWatcher())
         self.sim.add_watcher(simulator.watchers.Voltage_Grid_Watcher())
+        self.sim.add_watcher(simulator.watchers.Spike_Raster_Watcher())
         self.sim.watcher_manager.add_object("pThal", pThal)
         self.spectrogram = None
         
@@ -54,6 +59,8 @@ class MainFrame:
                         self.xy_plot = view_class(self.sim, name, **args)
                     elif (t == "Voltage Grid"):
                         self.voltage_grid = view_class(self.sim, name, **args)
+                    elif (t == "Spike Raster"):
+                        self.spike_raster = view_class(self.sim, name, **args)
                         
 
         #TODO(amtinits): this should go in a super-class for all plots
@@ -62,8 +69,12 @@ class MainFrame:
                 export_pdf_item = gtk.MenuItem("Export to PDF")
                 export_pdf_item.connect("activate", self.on_export_pdf, canvas)
                 export_pdf_item.show()
+                view_hide_item = gtk.MenuItem("Hide")
+                view_hide_item.connect("activate", self.on_view_hide, canvas)
+                view_hide_item.show()
                 context_menu = gtk.Menu()
                 context_menu.append(export_pdf_item)
+                context_menu.append(view_hide_item)
                 context_menu.popup(None, None, None, event.button, event.time)
                 return True
             return False
@@ -82,6 +93,11 @@ class MainFrame:
         self.vg_canvas.connect("event", button_press, self.vg_canvas)
         self.all_plots.append(self.voltage_grid)
         self.all_canvas.append(self.vg_canvas)
+        
+        self.raster_canvas = FigureCanvas(self.spike_raster.get_figure())
+        self.raster_canvas.connect("event", button_press, self.raster_canvas)
+        self.all_plots.append(self.spike_raster)
+        self.all_canvas.append(self.raster_canvas)
         
         map(lambda x:x.mpl_connect('figure_enter_event', self.enter_figure), self.all_canvas)
         map(lambda x:x.mpl_connect('figure_leave_event', self.leave_figure), self.all_canvas)
@@ -115,7 +131,14 @@ class MainFrame:
         
         self.vbox.pack_start(self.menu_bar, False, False, 0)
         self.vbox.pack_start(self.controller_panel, False, False, 0)
+        
         self.vbox.pack_start(self.canvas_layout, True, True, 0)
+        
+        #self.ui_canvas = gtk.DrawingArea()
+        #self.ui_canvas.set_size_request(400, 400)
+        #self.ui_canvas.connect("expose-event", self.expose)
+        
+        #self.vbox.pack_start(self.ui_canvas, True, True, 0)
         self.window.add(self.vbox)
         
         self.menu_bar.show()
@@ -123,12 +146,52 @@ class MainFrame:
         self.spec_canvas.show()
         self.canvas_layout.show()
         self.vbox.show()
+        
+        
+        #self.gc = self.drawable.new_gc()
 
-        self.window.set_size_request(800, 600)
+        self.width = 800
+        self.height = 600
+        self.window.set_size_request(self.width, self.height)
         self.window.show()
+        
+        
+        #self.window.add(drawing_area);
+        
         self.window.show_all()
         
+        
+        
         self.menu_bar.spectrogram_menu_item.set_active(True)
+        
+    def expose(self, widget, event):
+
+        cr = widget.window.cairo_create()
+
+            # Makes the mask fill the entire window
+        #cr.rectangle(0.0, 0.0, 200, 200)
+    # Deletes everything in the window (since the compositing operator is clear and mask fills the entire window
+        #cr.fill()
+    # Set the compositing operator back to the default
+        #cr.set_operator(cairo.OPERATOR_OVER)
+
+    # Draw a fancy little circle for demonstration purpose
+        #cr.set_source_rgba(0.5,1.0,0.0,1)
+        #cr.arc(200/2,200/2,
+        #   200/2,0,math.pi*2)
+        #cr.fill()
+        #cr.set_line_width(9)
+        #cr.set_source_rgb(0.7, 0.2, 0.0)
+                
+        #w = self.width
+        #h = self.height
+
+        #cr.translate(w/2, h/2)
+        #cr.arc(0, 0, 50, 0, 2*math.pi)
+        #cr.stroke_preserve()
+        
+        #cr.set_source_rgb(0.3, 0.4, 0.6)
+        #cr.fill()
         
     def toggle_resize(self, widget):
         if (widget.get_active()):
@@ -186,8 +249,9 @@ class MainFrame:
         event.canvas.draw()
         
     def leave_figure(self, event):
-        event.canvas.figure.patch.set_facecolor('white')
-        event.canvas.draw()
+        if (event and event.canvas):
+            event.canvas.figure.patch.set_facecolor('white')
+            event.canvas.draw()
         
     def enter_figure(self, event):
         event.canvas.figure.patch.set_facecolor('grey')
@@ -209,6 +273,13 @@ class MainFrame:
         else:
             self.next_gcomponent_redraw -= 1
 
+    def draw_ui(self, obj):
+        my_figure = obj.get_figure()
+        my_ax = obj.get_ax()
+        
+        my_ax.add_patch(mpatches.Rectangle((1, 1), 100, 100))
+        print (dir(my_ax))
+        
 
     def update_canvas(self):
 
@@ -218,10 +289,21 @@ class MainFrame:
         if (self.vg_canvas.get_visible()):
             self.voltage_grid.tick()
             self.vg_canvas.draw()
+            
+        if (self.raster_canvas.get_visible()):
+            self.spike_raster.tick()
+            self.raster_canvas.draw()
         #self.i=(self.i+1) % 25
         if (self.spec_canvas.get_visible()):
+            
+            # draw box around canvas
+            
+            
+            #self.drawable.draw_rectangle(self.gc, False, self.spec_canvas.x, self.spec_canvas.y, 100, 100)
+            
             self.spectrogram.tick()
             self.spec_canvas.draw()
+            #self.draw_ui(self.spectrogram)
             
     #Controller code for controller_panel
     def format_slider_value(self, scale, value):
@@ -295,6 +377,9 @@ class MainFrame:
     def repaint_all_canvas(self):
         map(lambda x:x.draw(), self.all_canvas)
         
+    def on_view_hide(self, widget, canvas=None):
+        canvas.set_visible(False)
+        self.canvas_layout.remove(canvas)
 
     def on_export_pdf(self, widget, canvas=None):
         filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
