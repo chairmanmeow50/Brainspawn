@@ -15,6 +15,8 @@ class Capability(object):
     """Capability class
     """
 
+    __metaclass__ = ABCMeta
+
     @property
     def name(self):
         """
