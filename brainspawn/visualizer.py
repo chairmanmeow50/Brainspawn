@@ -349,7 +349,6 @@ class MainFrame:
         dialog.destroy()
         return result
 
-
-if __name__ == "__main__":
+def launch_visualizer():
     MainFrame()
     gtk.main()
