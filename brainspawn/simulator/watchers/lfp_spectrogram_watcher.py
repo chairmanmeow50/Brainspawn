@@ -1,6 +1,6 @@
 from nengo_theano import probe
 from watcher import Watcher
-from view.components import spectrogram
+from view.visualizations import spectrogram
 import numpy
 
 class LFPSpectrogramWatcher(Watcher):

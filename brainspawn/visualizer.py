@@ -8,7 +8,6 @@ import gtk
 import cairo
 import math
 
-import view.components.spectrogram as spectrogram
 from view.components.network_view import Network_View
 #import view.components.input_panel as Input_Panel
 from view.components.input_panel import Input_Panel
@@ -16,8 +15,9 @@ from view.components.controller_panel import Controller_Panel
 from view.components.menu_bar import Menu_Bar
 import simulator
 import simulator.watchers
-from old_plots.xy_plot import XY_Plot
-from old_plots.voltage_grid import Voltage_Grid_Plot
+from view.visualizations.xy_plot import XY_Plot
+from view.visualizations.voltage_grid import Voltage_Grid_Plot
+import view.visualizations.spectrogram as spectrogram
 
 from matplotlib.backends.backend_gtkcairo import FigureCanvasGTKCairo as FigureCanvas
 
