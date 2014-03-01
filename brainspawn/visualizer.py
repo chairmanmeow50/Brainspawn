@@ -126,14 +126,8 @@ class MainFrame:
         self.vbox.pack_start(self.canvas_layout, True, True, 0)
         self.window.add(self.vbox)
 
-        self.menu_bar.show()
-        self.controller_panel.show()
-        self.spec_canvas.show()
-        self.canvas_layout.show()
-        self.vbox.show()
 
         self.window.set_size_request(800, 600)
-        self.window.show()
         self.window.show_all()
 
         self.menu_bar.spectrogram_menu_item.set_active(True)
@@ -286,7 +280,6 @@ class MainFrame:
         if (widget.get_active()):
             canvas.set_visible(True)
             canvas.set_size_request(300, 300)
-            canvas.show()
             self.canvas_layout.put(canvas, 0, 0)
         else:
             canvas.set_visible(False)
