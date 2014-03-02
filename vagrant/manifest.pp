@@ -29,8 +29,12 @@ class system {
                'libhdf5-serial-dev',
                'python-numexpr',
                'cython',
-               # other packages
-               'python-matplotlib']:
+               # gtk3 stuff
+               'gir1.2-gtk-3.0',
+               'python-gi',
+               # matplotlib dependencies
+               'libpng12-dev',
+               'libfreetype6-dev']:
         ensure => installed,
         require => Exec['apt-get update'],
     }
@@ -46,6 +50,8 @@ class python {
                'pytest',
                'sphinx',
                'networkx',
+               'distribute',
+               'matplotlib',
                'git+git://github.com/mcchong/nengo.git',
                'git+git://github.com/amtinits/nengo_theano.git']:
         ensure => installed,

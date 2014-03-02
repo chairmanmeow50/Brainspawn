@@ -2,9 +2,12 @@
 import os
 from sample_networks.spa_sequence.spa_sequence import net, pThal
 
-import pygtk
-pygtk.require('2.0')
+from gi import pygtkcompat
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version="3.0")
 import gtk
+from gi.repository import Gtk
+from gi.repository import GObject
 import cairo
 import math
 
@@ -19,7 +22,18 @@ import simulator.watchers
 from old_plots.xy_plot import XY_Plot
 from old_plots.voltage_grid import Voltage_Grid_Plot
 
-from matplotlib.backends.backend_gtkcairo import FigureCanvasGTKCairo as FigureCanvas
+from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
+
+
+# Fix for a method that is not properly introspected
+_child_get_property = Gtk.Container.child_get_property
+def child_get_property(self, child, name):
+    v = GObject.Value()
+    v.init(int)
+    _child_get_property(self, child, name, v)
+    return v.get_int()
+Gtk.Container.child_get_property = child_get_property
+
 
 class MainFrame:
     def __init__(self):
@@ -98,7 +112,7 @@ class MainFrame:
 
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window.set_size_request(200, 100)
+        self.window.set_default_size(800, 600)
         self.window.set_title("Nengo Python Visualizer")
         self.window.connect("delete_event", lambda w,e: gtk.main_quit())
 
@@ -106,8 +120,7 @@ class MainFrame:
         self.controller_panel = Controller_Panel(self)
         self.menu_bar = Menu_Bar(self)
 
-        self.canvas_layout = gtk.Layout(None, None)
-        self.canvas_layout.set_size(600, 600)
+        self.canvas_layout = gtk.Layout()
         self.canvas_layout.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#ffffff"))
 
         figure = self.spectrogram.get_figure()
@@ -132,7 +145,6 @@ class MainFrame:
         self.canvas_layout.show()
         self.vbox.show()
 
-        self.window.set_size_request(800, 600)
         self.window.show()
         self.window.show_all()
 
@@ -194,12 +206,14 @@ class MainFrame:
         event.canvas.draw()
 
     def leave_figure(self, event):
-        event.canvas.figure.patch.set_facecolor('white')
-        event.canvas.draw()
+        if event:
+            event.canvas.figure.patch.set_facecolor('white')
+            event.canvas.draw()
 
     def enter_figure(self, event):
-        event.canvas.figure.patch.set_facecolor('grey')
-        event.canvas.draw()
+        if event:
+            event.canvas.figure.patch.set_facecolor('grey')
+            event.canvas.draw()
 
     def hscale_change(self, range, scroll, value):
         self.sim.current_tick = value
@@ -316,9 +330,11 @@ class MainFrame:
                 canvas.print_pdf(f)
             else:
                 cr = cairo.Context(cairo.PDFSurface(f, *self.window.get_size()))
-                cr.set_source_surface(self.window.window.cairo_create().get_target())
-                cr.set_operator(cairo.OPERATOR_SOURCE)
-                cr.paint()
+                rect = gtk.gdk.Rectangle()
+                rect.x = rect.y = 0
+                rect.width, rect.height = self.window.get_size()
+                self.window.size_allocate(rect)
+                self.window.draw(cr)
                 cr.show_page()
                 cr.get_target().finish()
 
