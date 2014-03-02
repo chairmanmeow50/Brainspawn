@@ -1,7 +1,7 @@
 import nengo
 import copy
-from brainspawn.simulator.adaptor import Adaptor, max_buffer_elements
-from brainspawn.simulator.capabilities.cap_factory import CapFactory
+from adaptor import Adaptor, max_buffer_elements
+from capabilities.cap_factory import CapFactory
 
 class SimManager(object):
     """

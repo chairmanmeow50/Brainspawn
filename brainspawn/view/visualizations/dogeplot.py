@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from pylab import *
-from brainspawn.view.visualizations.__visualization import Visualization
+from view.visualizations.__visualization import Visualization
 
 def class_name():
     return "DogePlot"
@@ -9,7 +9,7 @@ def class_name():
 class DogePlot(Visualization):
     """DogePlot
     """
-    
+
     def name(self):
         return "Doge Plot"
 

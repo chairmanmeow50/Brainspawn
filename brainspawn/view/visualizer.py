@@ -10,17 +10,19 @@ import glob
 import imp
 import traceback
 
-from brainspawn.view.components.input_panel import Input_Panel
-from brainspawn.view.components.controller_panel import Controller_Panel
-from brainspawn.view.components.menu_bar import Menu_Bar
-import brainspawn.simulator.sim_manager
-from brainspawn.view.visualizations.dogeplot import DogePlot
+from view.components.input_panel import Input_Panel
+from view.components.controller_panel import Controller_Panel
+from view.components.menu_bar import Menu_Bar
+import simulator.sim_manager
+# FIXME For now
+from view.visualizations.dogeplot import DogePlot
+import sample_networks.two_dimensional_rep as example
 
 from matplotlib.backends.backend_gtkcairo import FigureCanvasGTKCairo as FigureCanvas
 
 class MainFrame:
-    def __init__(self, controller):
-        self.controller = controller
+    def __init__(self, sim_manager):
+        self.sim_manager = sim_manager
 
         self.vbox = gtk.VBox(False, 0)
         self.playing = False
@@ -28,28 +30,15 @@ class MainFrame:
         self.resize = False
         self.resize_info = None
 
-        # TODO - Replace with "add_plot functionality in controller"
-        #self.xy_plot = DogePlot(self.controller.sim_manager, "Doge Plot", 2)
-        #self.controller.add_plot(self.xy_plot)
-        self.sim_manager = controller.sim_manager
-        
         self.all_plots = [] # TODO - Move plots to controller
         self.all_canvas = []
-        
-        # find all files in view/visualizations ending in .py and doesn't start with __
-        visualization_files = glob.glob('brainspawn/view/visualizations/*.py')
-        for full_file_name in visualization_files:
-            file_name = full_file_name[full_file_name.rfind('/')+1:]
-            if (file_name.startswith("__") == False):
-                plot_obj = self.load_from_file(full_file_name, self.controller.sim_manager)
-                self.register_visualization(plot_obj)
-                if (plot_obj != None):
-                    self.controller.add_plot(plot_obj)
-                    self.all_plots.append(plot_obj)
-                    self.all_canvas.append(plot_obj.canvas)
 
-        #self.all_plots.append(self.xy_plot)
-        #self.all_canvas.append(self.xy_plot.canvas)
+        # TODO - Replace with "add_plot functionality in controller"
+        plot_obj = DogePlot(self.sim_manager, "Dogeplot", 2)
+        self.add_plot(plot_obj)
+        self.all_plots.append(plot_obj)
+        self.all_canvas.append(plot_obj.canvas)
+        self.xy_plot = plot_obj
 
         # Also add to add_plot in controller
         map(lambda x:x.mpl_connect('figure_enter_event', self.enter_figure), self.all_canvas)
@@ -86,50 +75,26 @@ class MainFrame:
 
         self.vbox.pack_start(self.menu_bar, False, False, 0)
         self.vbox.pack_start(self.controller_panel, False, False, 0)
-        
+
         self.vbox.pack_start(self.canvas_layout, True, True, 0)
-        
-        #self.ui_canvas = gtk.DrawingArea()
-        #self.ui_canvas.set_size_request(400, 400)
-        #self.ui_canvas.connect("expose-event", self.expose)
-        
-        #self.vbox.pack_start(self.ui_canvas, True, True, 0)
+
         self.window.add(self.vbox)
 
         self.window.set_size_request(800, 600)
         self.window.show_all()
 
-        # hmm...
-        #self.menu_bar.xy_plot_menu_item.set_active(True)
         self.toggle_plot(self.all_plots[0])
 
-    def register_visualization(self, visualization_object):
-        if visualization_object != None:
-            print visualization_object.name()
-
-    def load_from_file(self, filepath, manager):
-        class_inst = None
-        expected_class = 'MyClass'
-    
-        mod_name,file_ext = os.path.splitext(os.path.split(filepath)[-1])
-    
-        if file_ext.lower() == '.py':
-            py_mod = imp.load_source(mod_name, filepath)
-    
-        elif file_ext.lower() == '.pyc':
-            py_mod = imp.load_compiled(mod_name, filepath)
-    
-        #if hasattr(py_mod, expected_class):
-        #class_inst = py_mod.__init__(py_mod, manager) 
-        
-        mod_class = getattr(py_mod, py_mod.class_name())
-        try:
-            class_inst = mod_class(manager)
-        except TypeError as e:
-            print "Error instantiating class " + py_mod.class_name()
-            print traceback.print_exc()
-    
-        return class_inst
+    def add_plot(self, plot):
+        """ COMPLETELY PLACEHOLDER AT THE MOMENT
+        Will move func to controller
+        """
+        node_caps = self.sim_manager.get_caps_for_obj(example.neurons)
+        for cap in node_caps:
+            print (cap.name, cap.get_out_dimensions(example.neurons))
+            if (cap.name is 'output'):
+                out_cap = cap
+        self.sim_manager.connect_to_obj(example.neurons, out_cap, plot.update)
 
     def toggle_resize(self, widget):
         if (widget.get_active()):
@@ -190,7 +155,7 @@ class MainFrame:
         if (event and event.canvas):
             event.canvas.figure.patch.set_facecolor('white')
             event.canvas.draw()
-        
+
     def enter_figure(self, event):
         event.canvas.figure.patch.set_facecolor('grey')
         event.canvas.draw()
@@ -215,10 +180,10 @@ class MainFrame:
     def draw_ui(self, obj):
         my_figure = obj.get_figure()
         my_ax = obj.get_ax()
-        
+
         my_ax.add_patch(mpatches.Rectangle((1, 1), 100, 100))
         print (dir(my_ax))
-        
+
 
     def update_canvas(self):
         if (self.xy_plot.canvas.get_visible()):
@@ -280,9 +245,9 @@ class MainFrame:
             self.canvas_layout.put(canvas, 0, 0)
         else:
             canvas.set_visible(False)
-            self.canvas_layout.remove(canvas)  
-    '''  
-            
+            self.canvas_layout.remove(canvas)
+    '''
+
     def toggle_plot(self, plot):
         if (plot.is_visible()):
             plot.canvas.set_visible(False)

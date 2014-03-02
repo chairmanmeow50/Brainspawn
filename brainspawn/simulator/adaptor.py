@@ -19,7 +19,7 @@ output signal of zero dimensions
 import collections
 import nengo
 import numpy as np
-from brainspawn.simulator.capabilities.cap_factory import CapFactory
+from capabilities.cap_factory import CapFactory
 
 max_buffer_elements = 100000 # TODO - make configurable
 
