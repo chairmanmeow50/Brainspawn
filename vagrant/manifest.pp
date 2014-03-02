@@ -45,6 +45,8 @@ class python {
                'ipython',
                'pytest',
                'sphinx',
+               'networkx',
+               'git+git://github.com/mcchong/nengo.git',
                'git+git://github.com/amtinits/nengo_theano.git']:
         ensure => installed,
         provider => 'pip',

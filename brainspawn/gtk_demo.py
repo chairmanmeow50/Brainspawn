@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-from spa_sequence.spa_sequence import net, pThal
+from sample_networks.spa_sequence.spa_sequence import net, pThal
 
 import pygtk
 pygtk.require('2.0')
@@ -14,10 +14,13 @@ from view.components.input_panel import Input_Panel
 from view.components.controller_panel import Controller_Panel
 from view.components.menu_bar import Menu_Bar
 import simulator
-import simulator.watchers
+#import simulator.watchers
 from old_plots.xy_plot import XY_Plot
 from old_plots.voltage_grid import Voltage_Grid_Plot
 from old_plots.spike_raster import Spike_Raster_Plot
+
+from simulator.sim_manager import SimManager
+from sample_networks.two_dimensional_rep import model, sin, cos, neurons
 
 import matplotlib.patches as mpatches
 
@@ -26,13 +29,28 @@ from matplotlib.backends.backend_gtkcairo import FigureCanvasGTKCairo as FigureC
 
 class MainFrame:
     def __init__(self):
-        
+
         self.vbox = gtk.VBox(False, 0)
         self.playing = False
         self.press = None
         self.resize = False
         self.resize_info = None
+        
+        sim_manager = SimManager(model, 0.001)
+        
+        node_caps = sim_manager.get_caps_for_obj(neurons)
+        for cap in node_caps:
+            print (cap.name, cap.get_out_dimensions(neurons))
+            if (cap.name is 'output'):
+                out_cap = cap
+        
+        self.xy_plot = XY_Plot()
+        self.voltage_grid = Voltage_Grid_Plot()
+        
+        
+        sim_manager.connect_to_obj(neurons, out_cap, self.xy_plot.update_graph)
 
+        '''
         self.sim = simulator.Simulator(net, net.dt)
         self.sim.add_watcher(simulator.watchers.LFPSpectrogramWatcher())
         self.sim.add_watcher(simulator.watchers.XYWatcher())
@@ -40,7 +58,7 @@ class MainFrame:
         self.sim.add_watcher(simulator.watchers.Spike_Raster_Watcher())
         self.sim.watcher_manager.add_object("pThal", pThal)
         self.spectrogram = None
-        
+
         self.all_plots = []
         self.all_canvas = []
 
@@ -62,6 +80,7 @@ class MainFrame:
                     elif (t == "Spike Raster"):
                         self.spike_raster = view_class(self.sim, name, **args)
                         
+        '''
 
         #TODO(amtinits): this should go in a super-class for all plots
         def button_press(widget, event, canvas):
@@ -110,13 +129,14 @@ class MainFrame:
         self.window.set_size_request(200, 100)
         self.window.set_title("Nengo Python Visualizer")
         self.window.connect("delete_event", lambda w,e: gtk.main_quit())
-        
+
         self.input_panel = Input_Panel(self)
         self.controller_panel = Controller_Panel(self)
         self.menu_bar = Menu_Bar(self)
-        
+
         self.canvas_layout = gtk.Layout(None, None)
         self.canvas_layout.set_size(600, 600)
+        self.canvas_layout.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#ffffff"))
 
         figure = self.spectrogram.get_figure()
 
@@ -124,11 +144,11 @@ class MainFrame:
         self.sim_rate = 6 # rate at which we call sim.tick()
         self.framerate = 2
         self.next_gcomponent_redraw = 0
-        
+
         self.canvas = FigureCanvas(figure)  # a gtk.DrawingArea
         self.timer = self.canvas.new_timer(interval=1000/self.sim_rate)
         self.timer.add_callback(self.tick)
-        
+
         self.vbox.pack_start(self.menu_bar, False, False, 0)
         self.vbox.pack_start(self.controller_panel, False, False, 0)
         
@@ -140,7 +160,7 @@ class MainFrame:
         
         #self.vbox.pack_start(self.ui_canvas, True, True, 0)
         self.window.add(self.vbox)
-        
+
         self.menu_bar.show()
         self.controller_panel.show()
         self.spec_canvas.show()
@@ -159,68 +179,37 @@ class MainFrame:
         #self.window.add(drawing_area);
         
         self.window.show_all()
-        
-        
-        
+
         self.menu_bar.spectrogram_menu_item.set_active(True)
-        
-    def expose(self, widget, event):
 
-        cr = widget.window.cairo_create()
-
-            # Makes the mask fill the entire window
-        #cr.rectangle(0.0, 0.0, 200, 200)
-    # Deletes everything in the window (since the compositing operator is clear and mask fills the entire window
-        #cr.fill()
-    # Set the compositing operator back to the default
-        #cr.set_operator(cairo.OPERATOR_OVER)
-
-    # Draw a fancy little circle for demonstration purpose
-        #cr.set_source_rgba(0.5,1.0,0.0,1)
-        #cr.arc(200/2,200/2,
-        #   200/2,0,math.pi*2)
-        #cr.fill()
-        #cr.set_line_width(9)
-        #cr.set_source_rgb(0.7, 0.2, 0.0)
-                
-        #w = self.width
-        #h = self.height
-
-        #cr.translate(w/2, h/2)
-        #cr.arc(0, 0, 50, 0, 2*math.pi)
-        #cr.stroke_preserve()
-        
-        #cr.set_source_rgb(0.3, 0.4, 0.6)
-        #cr.fill()
-        
     def toggle_resize(self, widget):
         if (widget.get_active()):
             self.resize = True
         else:
             self.resize = False
-        
+
     def mouse_on_press(self, event):
         canvas = event.canvas
         x0 = self.canvas_layout.child_get_property(canvas, "x")
         y0 = self.canvas_layout.child_get_property(canvas, "y")
         widget_x, widget_y = self.canvas_layout.get_pointer()
         self.press = x0, y0, widget_x, widget_y
-        
+
     def mouse_on_motion(self, event):
         if self.press is None: return
-        
+
         x0, y0, xpress, ypress = self.press
         owidth, oheight = event.canvas.get_width_height()
-        
+
         canvas_layout_x, canvas_layout_y = self.canvas_layout.get_pointer()
-        
+
         if (self.resize):
             if (self.resize_info == None):
                 self.resize_info = xpress, ypress
             old_x, old_y = self.resize_info
             old_y = oheight - old_y
             o_mag = self.magnitude(old_x, old_y)
-            
+
             new_mag = self.magnitude(canvas_layout_x, canvas_layout_y)
             self.resize_info = canvas_layout_x, canvas_layout_y
             scale = new_mag / o_mag
@@ -238,16 +227,16 @@ class MainFrame:
             new_y = int(round(y0 + dy))
             self.canvas_layout.move(event.canvas, new_x, new_y)
             self.press = new_x, new_y, canvas_layout_x, canvas_layout_y
-            
+
     def magnitude(self, x, y):
         sq1 = x * x
         sq2 = y * y
         return math.sqrt(sq1 + sq2)
-        
+
     def mouse_on_release(self, event):
         self.press = None
         event.canvas.draw()
-        
+
     def leave_figure(self, event):
         if (event and event.canvas):
             event.canvas.figure.patch.set_facecolor('white')
@@ -263,10 +252,10 @@ class MainFrame:
 
     def tick(self):
         self.sim.tick()
-        
+
         self.controller_panel.update_slider(self.sim.min_tick, self.sim.max_tick,
                                             self.sim.current_tick, self.sim.dt)
-        
+
         if (self.next_gcomponent_redraw == 0):
             self.update_canvas()
             self.next_gcomponent_redraw = self.sim_rate/self.framerate
@@ -303,8 +292,6 @@ class MainFrame:
             
             self.spectrogram.tick()
             self.spec_canvas.draw()
-            #self.draw_ui(self.spectrogram)
-            
     #Controller code for controller_panel
     def format_slider_value(self, scale, value):
         return str(value * self.sim.dt)
@@ -326,17 +313,17 @@ class MainFrame:
         self.sim.reset()
         self.jump_to(widget, self.sim.min_tick)
         self.clear_all_graphs()
-        
+
     def jump_to_front(self, widget):
         self.jump_to(widget, self.sim.min_tick)
-        
+
     def jump_to(self, widget, value):
         self.playing = True
         self.play_pause_button(widget)
         self.sim.current_tick = value
         self.controller_panel.set_slider(self.sim.current_tick)
         self.update_canvas()
-        
+
     def jump_to_end(self, widget):
         self.jump_to(widget, self.sim.max_tick)
 
@@ -362,7 +349,7 @@ class MainFrame:
         else:
             canvas.set_visible(False)
             self.canvas_layout.remove(canvas)
-            
+
     def toggle_panel(self, widget, panel):
         if (widget.get_active()):
             panel.set_visible(True)
@@ -370,10 +357,10 @@ class MainFrame:
         else:
             panel.set_visible(False)
             self.control_panel.remove(panel)
-            
+
     def clear_all_graphs(self):
         map(lambda x:x.clear(), self.all_plots)
-        
+
     def repaint_all_canvas(self):
         map(lambda x:x.draw(), self.all_canvas)
         
