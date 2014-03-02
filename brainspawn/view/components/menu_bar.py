@@ -49,11 +49,18 @@ class Menu_Bar(gtk.MenuBar):
 
 
         # TODO - this will go away
-        self.spectrogram_menu_item = gtk.CheckMenuItem("Spectrogram")
+        #self.spectrogram_menu_item = gtk.CheckMenuItem("Spectrogram")
 #        self.spectrogram_menu_item.connect("activate", main_frame.toggle_plot, main_frame.spec_canvas)
-        self.spectrogram_menu_item.show()
-        view_submenu.append(self.spectrogram_menu_item)
+        #self.spectrogram_menu_item.show()
+        #view_submenu.append(self.spectrogram_menu_item)
 
+        for plot in main_frame.all_plots:
+            menu_item = gtk.CheckMenuItem(plot.name())
+            menu_item.connect("activate", main_frame.toggle_plot, plot.canvas)
+            menu_item.show()
+            view_submenu.append(menu_item)
+            
+        '''
         self.xy_plot_menu_item = gtk.CheckMenuItem("XY plot")
         self.xy_plot_menu_item.connect("activate", main_frame.toggle_plot, main_frame.xy_plot.canvas)
         self.xy_plot_menu_item.show()
@@ -69,6 +76,8 @@ class Menu_Bar(gtk.MenuBar):
         network_view_menu_item.show()
         view_submenu.append(network_view_menu_item)
 
+        '''
+            
         view_menu.show()
 
         help_menu = gtk.MenuItem("Help")

@@ -1,13 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from pylab import *
-from brainspawn.view.visualizations.visualization import Visualization
+from brainspawn.view.visualizations.__visualization import Visualization
+
+def class_name():
+    return "DogePlot"
 
 class DogePlot(Visualization):
     """DogePlot
     """
+    
+    def name(self):
+        return "Doge Plot"
 
-    def __init__(self, sim_manager, name, dimensions, xlabel='x', title='XY Plot',
+    def __init__(self, sim_manager, name="Doge Plot", dimensions=2, xlabel='x', title='XY Plot',
             *args, **kwargs):
         #self.i = 0
         self.sim_manager  = sim_manager

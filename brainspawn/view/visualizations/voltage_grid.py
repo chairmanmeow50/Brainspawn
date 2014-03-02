@@ -1,7 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from brainspawn.view.visualizations.visualization import Visualization
+from brainspawn.view.visualizations.__visualization import Visualization
 import __future__
+
+def class_name():
+    return "Voltage_Grid_Plot"
 
 class Voltage_Grid_Plot(Visualization):
     def tick(self):

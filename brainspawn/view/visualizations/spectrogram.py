@@ -2,10 +2,13 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import numpy as np
-from brainspawn.view.visualizations.visualization import Visualization
+from brainspawn.view.visualizations.__visualization import Visualization
 
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
+
+def class_name():
+    return "Spectrogram"
 
 class Spectrogram(Visualization):
 

@@ -1,7 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from pylab import *
-from brainspawn.view.visualizations.visualization import Visualization
+from brainspawn.view.visualizations.__visualization import Visualization
+
+def class_name():
+    return "XY_Plot"
 
 class XY_Plot(Visualization):
     """XY Plot

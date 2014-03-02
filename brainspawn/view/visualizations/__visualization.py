@@ -10,6 +10,7 @@ class Visualization(object):
     """
 
     __metaclass__ = ABCMeta
+    _visible = False
 
     @property
     def figure(self):
@@ -18,6 +19,9 @@ class Visualization(object):
     @property
     def canvas(self):
         return self._canvas
+    
+    def name(self):
+        pass
 
     @abstractmethod
     def update(self, data, start_time):
@@ -30,6 +34,12 @@ class Visualization(object):
         """ Clear the graph
         """
         pass
+    
+    def is_visible(self):
+        return self._visible
+    
+    def set_visible(self, v):
+        self._visible = v
 
     def init_canvas(self, figure):
         self._canvas = FigureCanvas(figure)
