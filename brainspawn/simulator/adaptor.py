@@ -19,7 +19,7 @@ output signal of zero dimensions
 import collections
 import nengo
 import numpy as np
-from brainspawn.simulator.capabilities.cap_factory import CapFactory
+from capabilities.cap_factory import CapFactory
 
 max_buffer_elements = 100000 # TODO - make configurable
 
@@ -51,16 +51,25 @@ class OutputFn(collections.Callable):
             self.buffer.append_data(input_signal)
             if (self.buffer_start_time == None):
                 self.buffer_start_time = time.item()
+            self.update_all()
+
+    def update_all(self):
             for fn in self.subscribed_fns:
-                    fn(self.buffer.get_data(), start_time=self.buffer_start_time)
+                self.update(fn)
+
+    def update(self, fn):
+        if (self.buffer and self.buffer_start_time is not None):
+            fn(self.buffer.get_data(), start_time=self.buffer_start_time)
 
     def subscribe(self, fn):
         """Subscribes fn
         Creates data buffer if necessary
+        Updates with current data
         """
         if (not self.buffer):
             self.buffer = Buffer(self.dimensions)
         self.subscribed_fns.append(fn)
+        self.update(fn)
 
     def unsubscribe(self, fn):
         """Unsubscribes fn
@@ -160,4 +169,9 @@ class Adaptor(object):
         or does nothing if fn was not subscribed
         """
         self.out_fns[cap].unsubscribe(fn)
+
+    def update_all(self):
+        for cap, out_fn in self.out_fns.items():
+            out_fn.update_all()
+
 

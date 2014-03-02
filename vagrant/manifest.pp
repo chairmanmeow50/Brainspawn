@@ -10,7 +10,10 @@ class system {
                'tmux',
                'htop',
                'tree',
-               'make']:
+               'make',
+               'pkg-config',
+               'graphviz',
+               'libgraphviz-dev']:
         ensure => installed,
         require => Exec['apt-get update'],
     }
@@ -50,6 +53,7 @@ class python {
                'pytest',
                'sphinx',
                'networkx',
+               'pygraphviz',
                'distribute',
                'matplotlib',
                'git+git://github.com/mcchong/nengo.git',
