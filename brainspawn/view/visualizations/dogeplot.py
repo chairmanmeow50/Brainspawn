@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 from pylab import *
 from brainspawn.view.visualizations.visualization import Visualization
 
-class XY_Plot(Visualization):
-    """XY Plot
+class DogePlot(Visualization):
+    """DogePlot
     """
 
-    def __init__(self, sim_manager, name, dimensions, xlabel='x', title='XY Plot', *args, **kwargs):
+    def __init__(self, sim_manager, name, dimensions, xlabel='x', title='XY Plot',
+            *args, **kwargs):
+        #self.i = 0
         self.sim_manager  = sim_manager
         self._figure = plt.figure()
         self.init_canvas(self._figure)
@@ -17,6 +19,7 @@ class XY_Plot(Visualization):
         count = self.sim_manager.current_step - self.sim_manager.min_step
 
         self.lines = plt.plot([], np.empty((0, dimensions)))
+        self.text = []
         plt.ylabel('time')
         plt.xlabel(xlabel)
         plt.title(title)
@@ -29,6 +32,15 @@ class XY_Plot(Visualization):
         t = np.linspace(buffer_start,
                 buffer_start + data[buffer_start:count].shape[0]*self.sim_manager.dt,
                 data[buffer_start:count].shape[0])
+
+        if(not self.text and len(t) > 10):
+            self.text.append(plt.text(0.27, 0.77, "such line", fontsize=12, color='orange'))
+            self.text.append(plt.text(0.7, 0.57, "very neuron", fontsize=12, color='green'))
+            self.text.append(plt.text(0.77, 0.2, "wow", fontsize=12, color='purple'))
+            self.text.append(plt.text(0.07, 0.32, "so science", fontsize=12, color='cyan'))
+        elif (self.text and len(t) < 275):
+            for txt in self.text:
+                txt.set_x((txt.get_position()[0]*100000 + len(t))/100000 % 1 )
 
         for idx, line in enumerate(self.lines):
             line.set_xdata(t)

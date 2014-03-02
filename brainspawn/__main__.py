@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from visualizer import launch_visualizer
+from brainspawn import main
 
-launch_visualizer()
+main()
 

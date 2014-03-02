@@ -8,14 +8,21 @@ class SimManager(object):
     Class for managing interaction with the simulator
     """
 
-    def __init__(self, model, dt):
+    def __init__(self):
         self.min_step = 0
         self.last_sim_step = 0
-        self.current_step = 0
+        self._current_step = 0
         self.adaptors = {}
         self.max_buffer_elements = max_buffer_elements
-        self.dt = dt
-        self.load_new_model(model)
+
+    @property
+    def current_step(self):
+        return self._current_step
+
+    @current_step.setter
+    def current_step(self, value):
+        self._current_step = value
+        self.update_all()
 
     def _has_caps(self, obj):
         """ Returns true if we have caps that support the given obj
@@ -26,7 +33,7 @@ class SimManager(object):
         else:
             return False
 
-    def load_new_model(self, model):
+    def load_new_model(self, model, dt):
         """ Processes a model for visualization and simulation
         Adds adaptor to each object in the model,
         initializes simulator with model
@@ -35,6 +42,7 @@ class SimManager(object):
         a copy of it first.
         """
         self.model = model
+        self.dt = dt
         for obj in list(self.model.objs): # copy list! connect() adds objs to model
             if (self._has_caps(obj)):
                 self.adaptors[obj] = Adaptor(obj)
@@ -74,12 +82,18 @@ class SimManager(object):
         Advances SimManager by 1 step,
         runs simulator if necessary
         """
-        if (self.current_step > self.last_sim_step):
+        if (self._current_step > self.last_sim_step):
             self.sim.step()
             self.min_step = max(0, self.last_sim_step -
                     self.max_buffer_elements + 1)
             self.last_sim_step += 1
-        self.current_step += 1
+        else:
+            self.update_all()
+        self._current_step += 1
+
+    def update_all(self):
+        for obj, adaptor in self.adaptors.items():
+            adaptor.update_all()
 
     def reset(self):
         """
@@ -87,7 +101,7 @@ class SimManager(object):
         """
         self.min_step = 0
         self.last_sim_step = 0
-        self.current_step = 0
+        self._current_step = 0
         self.sim = nengo.Simulator(model, self.dt)
         #TODO - reset adaptors(empty their buffers)
 

@@ -19,7 +19,8 @@ class SimManagerTests(unittest.TestCase):
         """
 
         # Init the sim_manager with a basic model
-        sim_manager = SimManager(model, 0.001)
+        sim_manager = SimManager()
+        sim_manager.load_new_model(model, 0.001)
 
         #Assert model contains expected nodes, connections?
 
