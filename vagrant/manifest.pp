@@ -42,8 +42,16 @@ class system {
     }
 }
 
-# Python packages
-class python {
+# Python packages round 1
+class python1 {
+    package { ['distribute']:
+        ensure => installed,
+        provider => 'pip',
+    }
+}
+
+# Python packages round 2
+class python2 {
     package { ['Theano',
                'quantities',
                'numexpr',
@@ -54,7 +62,6 @@ class python {
                'sphinx',
                'networkx',
                'pygraphviz',
-               'distribute',
                'matplotlib',
                'git+git://github.com/mcchong/nengo.git',
                'git+git://github.com/amtinits/nengo_theano.git']:
@@ -65,6 +72,9 @@ class python {
 
 # Run the classes
 class { 'system': }
-class { 'python':
+class { 'python1':
     require => Class['system'],
+}
+class { 'python2':
+    require => Class['python1'],
 }
