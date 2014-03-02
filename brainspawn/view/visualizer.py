@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-import os
 
 import pygtk
 pygtk.require('2.0')
 import gtk
-import cairo
 import math
 import glob
 import imp
@@ -21,8 +19,9 @@ import sample_networks.two_dimensional_rep as example
 from matplotlib.backends.backend_gtkcairo import FigureCanvasGTKCairo as FigureCanvas
 
 class MainFrame:
-    def __init__(self, sim_manager):
+    def __init__(self, sim_manager, controller):
         self.sim_manager = sim_manager
+        self.controller = controller
 
         self.vbox = gtk.VBox(False, 0)
         self.playing = False
@@ -34,7 +33,7 @@ class MainFrame:
         self.all_canvas = []
 
         # TODO - Replace with "add_plot functionality in controller"
-        plot_obj = DogePlot(self.sim_manager, "Dogeplot", 2)
+        plot_obj = DogePlot(self.sim_manager, controller, "Dogeplot", 2)
         self.add_plot(plot_obj)
         self.all_plots.append(plot_obj)
         self.all_canvas.append(plot_obj.canvas)
@@ -55,7 +54,7 @@ class MainFrame:
 
         self.input_panel = Input_Panel(self)
         self.controller_panel = Controller_Panel(self)
-        self.menu_bar = Menu_Bar(self)
+        self.menu_bar = Menu_Bar(self, controller)
 
         self.canvas_layout = gtk.Layout(None, None)
         self.canvas_layout.set_size(600, 600)
@@ -83,7 +82,7 @@ class MainFrame:
         self.window.set_size_request(800, 600)
         self.window.show_all()
 
-        self.toggle_plot(self.all_plots[0])
+        self.show_plot(self.all_plots[0])
 
     def add_plot(self, plot):
         """ COMPLETELY PLACEHOLDER AT THE MOMENT
@@ -237,27 +236,14 @@ class MainFrame:
     def menuitem_response(self, widget, string):
         print "%s" % string
 
-    '''
-    def toggle_plot(self, widget, canvas):
-        if (widget.get_active()):
-            canvas.set_visible(True)
-            canvas.set_size_request(300, 300)
-            self.canvas_layout.put(canvas, 0, 0)
-        else:
-            canvas.set_visible(False)
-            self.canvas_layout.remove(canvas)
-    '''
+    def show_plot(self, plot):
+        plot.canvas.set_visible(True)
+        plot.canvas.set_size_request(300, 300)
+        self.canvas_layout.put(plot.canvas, 0, 0)
 
-    def toggle_plot(self, plot):
-        if (plot.is_visible()):
-            plot.canvas.set_visible(False)
-            self.canvas_layout.remove(plot.canvas)
-            plot.set_visible(False)
-        else:
-            plot.canvas.set_visible(True)
-            plot.canvas.set_size_request(300, 300)
-            self.canvas_layout.put(plot.canvas, 0, 0)
-            plot.set_visible(True)
+    def remove_plot(self, plot):
+        plot.canvas.set_visible(False)
+        self.canvas_layout.remove(plot.canvas)
 
     def toggle_panel(self, widget, panel):
         if (widget.get_active()):

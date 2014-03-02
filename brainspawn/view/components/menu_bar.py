@@ -11,7 +11,8 @@ class Menu_Bar(gtk.MenuBar):
     '''
 
 
-    def __init__(self, main_frame):
+    def __init__(self, main_frame, controller):
+        self.controller = controller
         '''
         Constructor
         '''
@@ -22,7 +23,7 @@ class Menu_Bar(gtk.MenuBar):
 
         # TODO, shoot, we need a base class for all exportable views
         export_pdf_menu_item = gtk.MenuItem("Export to PDF")
-#        export_pdf_menu_item.connect('activate', main_frame.on_export_pdf)
+        export_pdf_menu_item.connect('activate', controller.on_export_pdf)
         export_pdf_menu_item.show()
         file_submenu.append(export_pdf_menu_item)
 
@@ -55,11 +56,11 @@ class Menu_Bar(gtk.MenuBar):
         #view_submenu.append(self.spectrogram_menu_item)
 
         for plot in main_frame.all_plots:
-            menu_item = gtk.CheckMenuItem(plot.name())
-            menu_item.connect("activate", main_frame.toggle_plot, plot.canvas)
+            menu_item = gtk.CheckMenuItem(plot.display_name())
+            menu_item.connect("activate", main_frame.show_plot, plot.canvas)
             menu_item.show()
             view_submenu.append(menu_item)
-            
+
         '''
         self.xy_plot_menu_item = gtk.CheckMenuItem("XY plot")
         self.xy_plot_menu_item.connect("activate", main_frame.toggle_plot, main_frame.xy_plot.canvas)
@@ -77,7 +78,7 @@ class Menu_Bar(gtk.MenuBar):
         view_submenu.append(network_view_menu_item)
 
         '''
-            
+
         view_menu.show()
 
         help_menu = gtk.MenuItem("Help")
