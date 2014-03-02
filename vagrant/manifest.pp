@@ -33,7 +33,7 @@ class system {
                'cython',
                # gtk3 stuff
                'gir1.2-gtk-3.0',
-               'python-gi',
+               'python-gi-cairo',
                # matplotlib dependencies
                'libpng12-dev',
                'libfreetype6-dev']:
