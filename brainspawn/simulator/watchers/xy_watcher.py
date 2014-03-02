@@ -1,6 +1,6 @@
 from nengo_theano import probe
 from watcher import Watcher
-from old_plots import XY_Plot
+from view.visualizations.xy_plot import XY_Plot
 import numpy
 
 class XYWatcher(Watcher):

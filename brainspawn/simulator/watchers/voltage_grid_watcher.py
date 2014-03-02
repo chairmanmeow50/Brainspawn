@@ -1,6 +1,6 @@
 from nengo_theano import probe
 from watcher import Watcher
-from old_plots import Voltage_Grid_Plot
+from view.visualizations.voltage_grid import Voltage_Grid_Plot
 import numpy
 
 class Voltage_Grid_Watcher(Watcher):
