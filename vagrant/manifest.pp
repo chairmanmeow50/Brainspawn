@@ -30,7 +30,6 @@ class system {
                'git',
                # neo dependencies
                'libhdf5-serial-dev',
-               'python-numexpr',
                'cython',
                # gtk3 stuff
                'gir1.2-gtk-3.0',
@@ -47,6 +46,7 @@ class system {
 class python {
     package { ['Theano',
                'quantities',
+               'numexpr',
                'tables',
                'neo',
                'ipython',
