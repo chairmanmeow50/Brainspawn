@@ -45,7 +45,7 @@ class system {
 # Python packages round 1
 class python1 {
     package { ['distribute']:
-        ensure => installed,
+        ensure => latest,
         provider => 'pip',
     }
 }
