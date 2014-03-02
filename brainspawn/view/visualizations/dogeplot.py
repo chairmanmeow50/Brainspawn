@@ -13,11 +13,9 @@ class DogePlot(Visualization):
     def name(self):
         return "Doge Plot"
 
-    def __init__(self, sim_manager, main_controller, name="Doge Plot", dimensions=2, xlabel='x', title='XY Plot',
+    def __init__(self, sim_manager, main_controller, name="Doge Plot", dimensions=1, xlabel='x', title='XY Plot',
             *args, **kwargs):
-        #self.i = 0
-        self.sim_manager  = sim_manager
-        self.main_controller = main_controller
+        super(DogePlot, self).__init__(sim_manager, main_controller)
         self._figure = plt.figure()
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')

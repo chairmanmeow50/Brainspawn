@@ -11,6 +11,10 @@ class Visualization(object):
 
     __metaclass__ = ABCMeta
 
+    def __init__(self, sim_manager, main_controller):
+        self.sim_manager = sim_manager
+        self.main_controller = main_controller
+
     @property
     def figure(self):
         return self._figure
