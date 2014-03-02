@@ -3,7 +3,29 @@ import nengo
 import networkx as nx
 import matplotlib.pyplot as plt
 
+from sys import maxint
+from math import sqrt
+
 class Network_View():
+    def __init__(self, sim_manager, model, name="Network View", *args, **kwargs):
+        self.sim_manager = sim_manager
+        self._figure = plt.figure()
+        self.model = model
+        self.node_radius_sq = 100
+
+        # Event connections
+        self._figure.canvas.mpl_connect('button_press_event', self.onclick)
+
+        # Graph construction
+        self._build_graph(model)
+
+
+        node_diam_sqr = (sqrt(self.node_radius_sq) * 2) ** 2
+
+        self._graph_pos = nx.graphviz_layout(self.G, prog="neato")
+        colors = [self.decide_obj_color(self.get_obj(obj)) for obj in self.G.nodes()]
+        nx.draw(self.G, self._graph_pos, node_color=colors, node_size=node_diam_sqr)
+
     def update(self):
         pass
 
@@ -12,6 +34,16 @@ class Network_View():
 
     def get_figure(self):
         return self._figure
+
+    def nearest_obj(self, x, y):
+        for obj, data_pos in self._graph_pos.items():
+            screen_pos = self._figure.axes[0].transData.transform(data_pos)
+            dist_sq = (screen_pos[0] - x) ** 2 + (screen_pos[1] - y) ** 2
+
+            if dist_sq <= self.node_radius_sq:
+                return obj
+
+        return None
 
     def get_obj(self, node_name):
         return self._graph_name_to_obj.get(node_name)
@@ -94,19 +126,9 @@ class Network_View():
         else:
             return (1,1,1) # white
 
-    def __init__(self, sim_manager, model, name="Network View", *args, **kwargs):
-        self.sim_manager = sim_manager
-        self._figure = plt.figure()
-        self.model = model
-        self.G = None
-        self._graph_name_to_obj = {}
+    def onclick(self, event):
+        self.nearest_obj(event.x, event.y)
 
-        # Graph construction
-        self._build_graph(model)
-
-        colors = [self.decide_obj_color(self.get_obj(obj)) for obj in self.G.nodes()]
-
-        nx.draw_graphviz(self.G, node_color=colors, node_size=400)
 
 #---------- Helper functions --------
 
