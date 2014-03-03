@@ -78,17 +78,25 @@ class VisualizerController(object):
 
         return mod_class
 
-    def on_export_pdf(self, widget):
+    def on_layout_button_release(self, widget, event):
+        if event.button == 3:
+            export_pdf_item = gtk.MenuItem("Export to PDF")
+            export_pdf_item.connect("activate", self.on_export_pdf, widget)
+            export_pdf_item.show()
+            self.layout_context_menu = gtk.Menu()
+            self.layout_context_menu.append(export_pdf_item)
+            self.layout_context_menu.popup(None, None, None, None, event.button, event.time)
+            return True
+        return False
+
+    def on_export_pdf(self, event_widget, widget):
         filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
         if not filename:
             return
         with open(filename, "wb") as f:
-            cr = cairo.Context(cairo.PDFSurface(f, *self.main_frame.window.get_size()))
-            rect = gtk.gdk.Rectangle()
-            rect.x = rect.y = 0
-            rect.width, rect.height = self.main_frame.window.get_size()
-            self.main_frame.window.size_allocate(rect)
-            self.main_frame.window.draw(cr)
+            allocation = widget.get_allocation()
+            cr = cairo.Context(cairo.PDFSurface(f, allocation.width, allocation.height))
+            widget.draw(cr)
             cr.show_page()
             cr.get_target().finish()
 

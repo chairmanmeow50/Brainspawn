@@ -23,7 +23,7 @@ class Menu_Bar(gtk.MenuBar):
 
         # TODO, shoot, we need a base class for all exportable views
         export_pdf_menu_item = gtk.MenuItem("Export to PDF")
-        export_pdf_menu_item.connect('activate', controller.on_export_pdf)
+        export_pdf_menu_item.connect('activate', controller.on_export_pdf, main_frame.window)
         export_pdf_menu_item.show()
         file_submenu.append(export_pdf_menu_item)
 
