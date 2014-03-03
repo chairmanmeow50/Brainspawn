@@ -57,7 +57,7 @@ class Visualization(object):
 
     def button_press(self, widget, event, canvas):
         if event.button == 3:
-            export_pdf_item = gtk.MenuItem("Export to PDF")
+            export_pdf_item = gtk.MenuItem("Export to PDF...")
             export_pdf_item.connect("activate", self.on_export_pdf, canvas)
             remove_item = gtk.MenuItem("Remove")
             remove_item.connect("activate", self.remove_plot, canvas)

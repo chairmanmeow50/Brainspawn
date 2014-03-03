@@ -74,9 +74,9 @@ class NetworkView(Visualization):
         self.G = nx.MultiDiGraph()
         self._graph_name_to_obj = {}
         self._graph_obj_to_name = {}
+        self._figure.clear()    
 
         if model is None:
-            # TODO(gmdavis): clear figure
             return
 
         # Add ensembles and nodes

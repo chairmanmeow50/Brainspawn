@@ -61,6 +61,13 @@ class OutputFn(collections.Callable):
         if (self.buffer and self.buffer_start_time is not None):
             fn(self.buffer.get_data(), start_time=self.buffer_start_time)
 
+    def reset(self):
+        if self.buffer:
+            self.buffer.reset()
+            self.buffer_start_time = None
+            for fn in self.subscribed_fns:
+                    fn(self.buffer.get_data(), start_time=0)
+
     def subscribe(self, fn):
         """Subscribes fn
         Creates data buffer if necessary
@@ -108,6 +115,10 @@ class Buffer(object):
         """Returns a view of the contents of the buffer
         """
         return self.data[self.window_start:self.size]
+
+    def reset(self):
+        self.window_start = 0
+        self.size = 0
 
 class Adaptor(object):
     """Class for observing an object in a network.
@@ -174,4 +185,7 @@ class Adaptor(object):
         for cap, out_fn in self.out_fns.items():
             out_fn.update_all()
 
+    def reset(self):
+        for cap, out_fn in self.out_fns.items():
+            out_fn.reset()
 
