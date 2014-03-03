@@ -70,5 +70,5 @@ class Visualization(object):
         if not filename:
             return
         with open(filename, "wb") as f:
+            canvas.figure.patch.set_facecolor('white')
             canvas.print_pdf(f)
-
