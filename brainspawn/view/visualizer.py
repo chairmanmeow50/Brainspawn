@@ -18,6 +18,8 @@ from view.visualizations.dogeplot import DogePlot
 from view.visualizations.xy_plot import XYPlot
 from view.visualizations.firing_rate import Firing_Rate_Plot
 from view.visualizations.voltage_grid import Voltage_Grid_Plot
+from view.visualizations.spectrogram import Spectrogram
+from view.visualizations.raster_spike import Raster_Spike_Plot
 import sample_networks.two_dimensional_rep as example
 
 from matplotlib.backends.backend_gtk3 import TimerGTK3
@@ -48,7 +50,7 @@ class MainFrame:
         self.all_canvas = []
 
         # TODO - Replace with "add_plot functionality in controller"
-        plot_obj = Firing_Rate_Plot(self.sim_manager, self.controller, rows=10, columns=10)
+        plot_obj = Raster_Spike_Plot(self.sim_manager, self.controller, rows=10, columns=10)
         self.add_plot(plot_obj)
         self.all_plots.append(plot_obj)
         self.all_canvas.append(plot_obj.canvas)
