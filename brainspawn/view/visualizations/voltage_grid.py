@@ -22,8 +22,6 @@ class Voltage_Grid_Plot(Visualization):
         the columns show the values over time
         """
 
-        print data
-
         if (len(data) > 0):
             if (len(data[0]) == self.dimension):
                 for i in xrange(0, self.dimension, 1):

@@ -4,19 +4,15 @@ from pylab import *
 from view.visualizations.__visualization import Visualization
 
 def class_name():
-    return "XY_Plot"
+    return "XYPlot"
 
-class XY_Plot(Visualization):
+class XYPlot(Visualization):
     """XY Plot
     """
-    def display_name(self):
-        return "XY Plot"
 
-    def supports_cap(self, cap, dimensions):
-        return cap.name() in ['voltages', 'output']
-
-    def __init__(self, sim_manager, **kwargs):
-        self.sim_manager  = sim_manager
+    def __init__(self, sim_manager, controller, dimensions, **kwargs):
+        super(XYPlot, self).__init__(sim_manager, controller)
+        self.dimensions = dimensions
         self._figure = plt.figure()
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')
@@ -29,8 +25,14 @@ class XY_Plot(Visualization):
             dimensions = kwargs.get('dimensions')
         self.lines = plt.plot([], np.empty((0, dimensions)))
         plt.ylabel('time')
-        plt.xlabel(xlabel)
-        plt.title(title)
+        plt.xlabel('xlabel')
+        plt.title(self.display_name())
+
+    def display_name(self):
+        return "XY Plot"
+
+    def supports_cap(self, cap, dimensions):
+        return cap.name() in ['voltages', 'output']
 
     def update(self, data, start_time):
         """ Update x data for each line in graph
