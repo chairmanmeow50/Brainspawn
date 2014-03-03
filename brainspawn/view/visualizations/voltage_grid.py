@@ -9,10 +9,13 @@ def class_name():
 class Voltage_Grid_Plot(Visualization):
     def out_cap(self):
         return "spikes"
-    
-    def name(self):
+
+    def display_name(self):
         return "Voltage Grid Plot"
-    
+
+    def supports_cap(self, cap, dimensions):
+        return cap.name() in ['spikes']
+
     def update(self, data, start_time):
         """ after a tick, gets the values of the neurons and
         each row represents the value of the neurons
@@ -96,7 +99,7 @@ class Voltage_Grid_Plot(Visualization):
                 plt.gca().add_patch(rect)
 
     def __init__(self, sim_manager, **kwargs):
-        
+
         self.sim_manager  = sim_manager
         self._figure = plt.figure()
         self.init_canvas(self._figure)
@@ -109,5 +112,5 @@ class Voltage_Grid_Plot(Visualization):
         plt.ylim(0, 1)
 
         self.draw_rects()
-        name = kwargs.get('name') if 'name' in kwargs else self.name()
+        name = kwargs.get('name') if 'name' in kwargs else self.display_name()
         plt.title(name)

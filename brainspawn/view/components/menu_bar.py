@@ -57,7 +57,7 @@ class Menu_Bar(gtk.MenuBar):
 
         for plot in main_frame.all_plots:
             menu_item = gtk.CheckMenuItem(plot.display_name())
-            menu_item.connect("activate", main_frame.show_plot, plot.canvas)
+            #menu_item.connect("activate", main_frame.show_plot, plot.canvas)
             menu_item.show()
             view_submenu.append(menu_item)
 

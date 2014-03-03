@@ -9,8 +9,11 @@ def class_name():
 class XY_Plot(Visualization):
     """XY Plot
     """
-    def name(self):
+    def display_name(self):
         return "XY Plot"
+
+    def supports_cap(self, cap, dimensions):
+        return cap.name() in ['voltages', 'output']
 
     def __init__(self, sim_manager, **kwargs):
         self.sim_manager  = sim_manager
@@ -20,7 +23,7 @@ class XY_Plot(Visualization):
 
         start = self.sim_manager.min_step
         count = self.sim_manager.current_step - self.sim_manager.min_step
-        
+
         dimensions = 1
         if 'dimensions' in kwargs:
             dimensions = kwargs.get('dimensions')

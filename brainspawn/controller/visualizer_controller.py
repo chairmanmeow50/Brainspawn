@@ -19,15 +19,15 @@ class VisualizerController(object):
     A controller
     """
 
-    def __init__(self):
-        self.sim_manager = SimManager()
+    def __init__(self, sim_manager):
+        self.sim_manager = sim_manager
         self.dt = 0.001
 
         # TODO - Hardcoding model for now
         # At some point, we'll add a file -> open menu
         self.load_model(example.model)
 
-        self.main_frame = MainFrame(self.sim_manager)
+        self.main_frame = MainFrame(self.sim_manager, self)
         self.load_visualization_files()
 
     def init_view(self):
@@ -52,7 +52,7 @@ class VisualizerController(object):
 
     def register_visualization(self, visualization_object):
         if visualization_object != None:
-            print visualization_object.name()
+            print visualization_object.display_name()
 
     def load_from_file(self, filepath, manager):
         class_inst = None
