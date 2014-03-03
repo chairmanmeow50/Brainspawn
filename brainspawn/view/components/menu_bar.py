@@ -23,7 +23,7 @@ class Menu_Bar(gtk.MenuBar):
 
         # TODO, shoot, we need a base class for all exportable views
         export_pdf_menu_item = gtk.MenuItem("Export to PDF")
-        export_pdf_menu_item.connect('activate', controller.on_export_pdf)
+        export_pdf_menu_item.connect('activate', controller.on_export_pdf, main_frame.window)
         export_pdf_menu_item.show()
         file_submenu.append(export_pdf_menu_item)
 
@@ -48,36 +48,12 @@ class Menu_Bar(gtk.MenuBar):
         view_submenu = gtk.Menu()
         view_menu.set_submenu(view_submenu)
 
-
         # TODO - this will go away
-        #self.spectrogram_menu_item = gtk.CheckMenuItem("Spectrogram")
-#        self.spectrogram_menu_item.connect("activate", main_frame.toggle_plot, main_frame.spec_canvas)
-        #self.spectrogram_menu_item.show()
-        #view_submenu.append(self.spectrogram_menu_item)
-
-        for plot in main_frame.all_plots:
-            menu_item = gtk.CheckMenuItem(plot.display_name())
+        for string in ['this', 'will', 'go', 'away', 'soon']:
+            menu_item = gtk.CheckMenuItem(string)
             #menu_item.connect("activate", main_frame.show_plot, plot.canvas)
             menu_item.show()
             view_submenu.append(menu_item)
-
-        '''
-        self.xy_plot_menu_item = gtk.CheckMenuItem("XY plot")
-        self.xy_plot_menu_item.connect("activate", main_frame.toggle_plot, main_frame.xy_plot.canvas)
-        self.xy_plot_menu_item.show()
-        view_submenu.append(self.xy_plot_menu_item)
-
-        voltage_grid_menu_item = gtk.CheckMenuItem("Voltage Grid")
-#        voltage_grid_menu_item.connect("activate", main_frame.toggle_plot, main_frame.vg_canvas)
-        voltage_grid_menu_item.show()
-        view_submenu.append(voltage_grid_menu_item)
-
-        network_view_menu_item = gtk.CheckMenuItem("Network View")
-#        network_view_menu_item.connect("activate", main_frame.toggle_plot, main_frame.network_canvas)
-        network_view_menu_item.show()
-        view_submenu.append(network_view_menu_item)
-
-        '''
 
         view_menu.show()
 
