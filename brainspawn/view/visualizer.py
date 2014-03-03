@@ -60,7 +60,7 @@ class MainFrame:
         self.next_gcomponent_redraw = 0
 
         # pretend new_timer is a static method
-        self.timer = TimerGTK3(interval=1000)
+        self.timer = TimerGTK3(interval=1)
         self.timer.add_callback(self.step)
         self.timer.single_shot = True
 
@@ -156,7 +156,7 @@ class MainFrame:
             else:
                 self.next_gcomponent_redraw -= 1
                 
-            self.timer.start(200)
+            self.timer.start(1)
 
     def update_canvas(self):
         for canvas in self.all_canvas:
@@ -172,7 +172,7 @@ class MainFrame:
             self.playing = False
             self.controller_panel.toggle_play(self.playing)
         else:
-            self.timer.start(200)
+            self.timer.start(1)
             self.playing = True
             self.controller_panel.toggle_play(self.playing)
 
