@@ -42,7 +42,7 @@ class MainFrame:
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_default_size(800, 600)
-        self.window.set_title("Nengo Python Visualizer")
+        self.window.set_title("Nengo Visualizer")
         self.window.connect("delete_event", lambda w,e: gtk.main_quit())
 
         self.input_panel = Input_Panel(self)
