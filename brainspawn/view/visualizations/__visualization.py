@@ -16,6 +16,7 @@ class Visualization(object):
         self.main_controller = main_controller
         self.customize_windows = []
         self._cap = cap
+        self.context_menu = gtk.Menu()
 
     @property
     def figure(self):
@@ -55,16 +56,14 @@ class Visualization(object):
         self._canvas = FigureCanvas(figure)
         self._canvas.connect("button_release_event", self.button_press, self._canvas)
 
+        # Context menu setup
+        export_pdf_item = gtk.MenuItem("Export to PDF")
+        export_pdf_item.connect("activate", self.on_export_pdf, self._canvas)
+        self.context_menu.append(export_pdf_item)
+        self.context_menu.show_all()
+
     def button_press(self, widget, event, canvas):
         if event.button == 3:
-            export_pdf_item = gtk.MenuItem("Export to PDF...")
-            export_pdf_item.connect("activate", self.on_export_pdf, canvas)
-            remove_item = gtk.MenuItem("Remove")
-            remove_item.connect("activate", self.remove_plot, canvas)
-            self.context_menu = gtk.Menu()
-            self.context_menu.append(export_pdf_item)
-            self.context_menu.append(remove_item)
-            self.context_menu.show_all()
             self.context_menu.popup(None, None, None, None, event.button, event.time)
             return True
         return False
