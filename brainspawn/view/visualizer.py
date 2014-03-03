@@ -43,22 +43,7 @@ class MainFrame:
         self.resize = False
         self.resize_info = None
 
-        self.all_plots = [] # TODO - Move plots to controller
         self.all_canvas = []
-
-        # TODO - Replace with "add_plot functionality in controller"
-        plot_obj = DogePlot(self.sim_manager, self.controller, dimensions=2)
-        self.add_plot(plot_obj)
-        self.all_plots.append(plot_obj)
-        self.all_canvas.append(plot_obj.canvas)
-        self.xy_plot = plot_obj
-
-        # Also add to add_plot in controller
-        map(lambda x:x.mpl_connect('figure_enter_event', self.enter_figure), self.all_canvas)
-        map(lambda x:x.mpl_connect('figure_leave_event', self.leave_figure), self.all_canvas)
-        map(lambda x:x.mpl_connect('button_press_event', self.mouse_on_press), self.all_canvas)
-        map(lambda x:x.mpl_connect('button_release_event', self.mouse_on_release), self.all_canvas)
-        map(lambda x:x.mpl_connect('motion_notify_event', self.mouse_on_motion), self.all_canvas)
 
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -91,7 +76,10 @@ class MainFrame:
 
         self.window.show_all()
 
-        self.show_plot(self.all_plots[0])
+        # TODO - Replace with "add_plot functionality in controller"
+        plot_obj = DogePlot(self.sim_manager, self.controller, dimensions=2)
+        self.add_plot(plot_obj)
+        self.show_plot(plot_obj)
 
     def add_plot(self, plot):
         """ COMPLETELY PLACEHOLDER AT THE MOMENT
@@ -193,8 +181,8 @@ class MainFrame:
 
 
     def update_canvas(self):
-        if (self.xy_plot.canvas.get_visible()):
-            self.xy_plot.canvas.draw()
+        for canvas in self.all_canvas:
+            canvas.draw()
 
     #Controller code for controller_panel
     def format_slider_value(self, scale, value):
@@ -216,7 +204,6 @@ class MainFrame:
         self.controller_panel.toggle_play(self.playing)
         self.sim_manager.reset()
         self.jump_to(widget, self.sim_manager.min_step)
-        self.clear_all_graphs()
 
     def jump_to_front(self, widget):
         self.jump_to(widget, self.sim_manager.min_step)
@@ -245,6 +232,13 @@ class MainFrame:
         print "%s" % string
 
     def show_plot(self, plot):
+        plot.canvas.mpl_connect('figure_enter_event', self.enter_figure)
+        plot.canvas.mpl_connect('figure_leave_event', self.leave_figure)
+        plot.canvas.mpl_connect('button_press_event', self.mouse_on_press)
+        plot.canvas.mpl_connect('button_release_event', self.mouse_on_release)
+        plot.canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
+
+        self.all_canvas.append(plot.canvas)
         plot.canvas.set_visible(True)
         plot.canvas.set_size_request(300, 300)
         self.canvas_layout.put(plot.canvas, 0, 0)
@@ -260,9 +254,6 @@ class MainFrame:
         else:
             panel.set_visible(False)
             self.control_panel.remove(panel)
-
-    def clear_all_graphs(self):
-        map(lambda x:x.clear(), self.all_plots)
 
     def repaint_all_canvas(self):
         map(lambda x:x.draw(), self.all_canvas)

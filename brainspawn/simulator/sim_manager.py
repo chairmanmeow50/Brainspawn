@@ -104,4 +104,5 @@ class SimManager(object):
         self._current_step = 0
         self.sim = nengo.Simulator(model, self.dt)
         #TODO - reset adaptors(empty their buffers)
+        self.update_all()
 
