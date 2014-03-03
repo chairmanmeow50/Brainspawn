@@ -56,5 +56,5 @@ class Spectrogram(Visualization):
         self.spec_data.append(average_value)
         
         self.clear()
-        self.ax.specgram(self.spec_data, Fs=self.Fs, cmap=cm.gist_heat)
+        self.axes.specgram(self.spec_data, Fs=self.Fs, cmap=cm.gist_heat)
 
