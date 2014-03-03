@@ -28,7 +28,7 @@ class Firing_Rate_Plot(Visualization):
         it will be white, if it fired in the previous
         tick, it will be slightly grayer
         """
-        if not data:
+        if (len(data) == 0):
             return
 
         latest_data_i = len(data) - 1
