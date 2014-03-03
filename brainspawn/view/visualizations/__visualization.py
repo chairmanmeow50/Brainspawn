@@ -14,6 +14,7 @@ class Visualization(object):
     def __init__(self, sim_manager, main_controller):
         self.sim_manager = sim_manager
         self.main_controller = main_controller
+        self.customize_windows = []
 
     @property
     def figure(self):
@@ -58,12 +59,17 @@ class Visualization(object):
         if event.button == 3:
             export_pdf_item = gtk.MenuItem("Export to PDF")
             export_pdf_item.connect("activate", self.on_export_pdf, canvas)
-            export_pdf_item.show()
             self.context_menu = gtk.Menu()
             self.context_menu.append(export_pdf_item)
+            self.context_menu.show_all()
             self.context_menu.popup(None, None, None, None, event.button, event.time)
             return True
         return False
+    
+    def on_customize(self, widget, canvas):
+        customize_window = CustomizeWindow(self.sim_manager, self.main_controller, name=self.name())
+        self.customize_windows.append(customize_window)
+        print "customize"
 
     def on_export_pdf(self, widget, canvas):
         filename = self.main_controller.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
