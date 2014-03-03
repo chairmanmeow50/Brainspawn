@@ -1,6 +1,7 @@
 import nengo
 import networkx as nx
 import matplotlib.pyplot as plt
+import gtk
 from math import sqrt
 from view.visualizations.__visualization import Visualization
 
@@ -9,7 +10,6 @@ class NetworkView(Visualization):
     """
     def __init__(self, sim_manager, controller, model=None, name="Network View", **kwargs):
         super(NetworkView, self).__init__(sim_manager, controller)
-        self.sim_manager = sim_manager
         self._model = model
         self.name = name
 
@@ -17,8 +17,7 @@ class NetworkView(Visualization):
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')
 
-        # Event connections
-        self._figure.canvas.mpl_connect('button_press_event', self.onclick)
+        self.menu_items = []
 
         # Build graph
         self._node_radius_sq = 100
@@ -27,7 +26,8 @@ class NetworkView(Visualization):
     def display_name(self):
         return None
 
-    def supports_cap(self, cap, dimension):
+    @staticmethod
+    def supports_cap(cap):
         return False
 
     def update(self, data, start_time):
@@ -36,16 +36,17 @@ class NetworkView(Visualization):
     def clear(self):
         pass
 
-    def nearest_obj(self, x, y):
+    def node_at(self, x, y):
         if self.model is None:
             return None
 
-        for obj, data_pos in self._graph_pos.items():
+        for name, data_pos in self._graph_pos.items():
             screen_pos = self._figure.axes[0].transData.transform(data_pos)
-            dist_sq = (screen_pos[0] - x) ** 2 + (screen_pos[1] - y) ** 2
+            w, h = self._canvas.get_width_height()
+            dist_sq = (screen_pos[0] - x) ** 2 + (screen_pos[1] - (h - y)) ** 2
 
             if dist_sq <= self._node_radius_sq:
-                return obj
+                return name
 
         return None
 
@@ -92,7 +93,7 @@ class NetworkView(Visualization):
                 print "Adding ensemble:", name
             elif isinstance(obj, nengo.Node):
                 # print "obj.label      = ", obj.label
-                # print "obj.dimensions = ", obj.dimensions
+                # print "obj.dimensions = ", obj.size_out
                 # print "obj.output     = ", obj.output
                 # print "obj.probes     = ", obj.probes
                 name = _find_uniq_name(obj.label, self.G.nodes())
@@ -104,7 +105,6 @@ class NetworkView(Visualization):
             if name is not None:
                 self.G.add_node(name, obj=obj)
                 self._associate_obj_name(name, obj)
-
 
         # Add connections
         for conn in model.connections:
@@ -159,9 +159,33 @@ class NetworkView(Visualization):
         else:
             return (1,1,1) # white
 
-    def onclick(self, event):
-        self.nearest_obj(event.x, event.y)
+    def button_press(self, widget, event, canvas):
+        """ Overrides parent's method so it can decide which context menu items
+        to add, in order to offer adding graphs based on clicked nengo object.
+        """
+        if event.button == 3:
+            node_name = self.node_at(event.x, event.y)
 
+            for item in self.menu_items:
+                self.context_menu.remove(item)
+            self.menu_items = []
+
+            if node_name is not None:
+                obj = self.get_obj_from_name(node_name)
+                supported = self.main_controller.plots_for_object(obj)
+
+                for (vz, obj, cap) in supported:
+                    item = gtk.MenuItem("View: " + vz.display_name(cap))
+                    item.connect("activate", self.main_controller.add_plot_for_obj, vz, obj, cap)
+                    self.context_menu.append(item)
+
+                    self.menu_items.append(item)
+                self.context_menu.show_all()
+
+            rtn = super(NetworkView, self).button_press(widget, event, canvas)
+
+            return rtn
+        return False
 
 #---------- Helper functions --------
 

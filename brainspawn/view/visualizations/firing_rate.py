@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 from view.visualizations.__visualization import Visualization
 
@@ -16,7 +17,7 @@ class Firing_Rate_Plot(Visualization):
         return "Firing Rate Plot"
 
     @staticmethod
-    def supports_cap(cap, dimensions):
+    def supports_cap(cap):
         return cap.name in ['spikes']
 
     def update(self, data, start_time):
@@ -30,9 +31,12 @@ class Firing_Rate_Plot(Visualization):
             return
 
         latest_data_i = len(data) - 1
+        length = len(data[latest_data_i])
+        row = int(math.floor(math.sqrt(length)))
+        col = row
         for i in xrange(0, self.rows, 1):
-            for j in xrange(0, self.columns, 1):
-                if (data[latest_data_i][j*self.rows + i]):
+            for j in xrange(0, self.rows, 1):
+                if (data[latest_data_i][i*self.rows + j]):
                     self.rect_array_color[i][j] = 4
                 else:
                     if (self.rect_array_color[i][j] >= 1):
@@ -56,19 +60,19 @@ class Firing_Rate_Plot(Visualization):
     def clear(self):
         """ sets all the grids to black """
         for i in xrange(0, self.rows, 1):
-            for j in xrange(0, self.columns, 1):
+            for j in xrange(0, self.rows, 1):
                 self.rect_array[i][j].set_facecolor("#000000")
 
     def draw_rects(self):
         """ draws and initializes the initial rectangles """
         width = 1.0 / self.rows
-        height = 1.0 / self.columns
+        height = 1.0 / self.rows
 
         for x in xrange(0, self.rows, 1):
-            for y in xrange(0, self.columns, 1):
-                rect = plt.Rectangle((x/float(self.rows), y/float(self.columns)), width, height, facecolor="#000000")
+            for y in xrange(0, self.rows, 1):
+                rect = plt.Rectangle((x/float(self.rows), y/float(self.rows)), width, height, facecolor="#000000")
                 self.rect_array[x].append(rect)
-                self.rect_array_color[x] = np.zeros(self.columns)
+                self.rect_array_color[x] = np.zeros(self.rows)
                 plt.gca().add_patch(rect)
 
     def __init__(self, sim_manager, main_controller, **kwargs):
@@ -78,8 +82,11 @@ class Firing_Rate_Plot(Visualization):
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')
 
-        self.rows = kwargs.get('rows') if 'rows' in kwargs else 10
-        self.columns = kwargs.get('columns') if 'columns' in kwargs else 10
+        self.obj = kwargs.get('obj') if 'obj' in kwargs else None
+        self.dimensions = 10
+        if (self.obj):
+            self.dimensions = self.obj.n_neurons
+        self.rows = int(math.floor(math.sqrt(self.dimensions)))
 
         self.rect_array = [[] for i in range(self.rows)]
         self.rect_array_color = [[] for i in range(self.rows)]

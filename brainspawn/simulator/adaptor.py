@@ -36,6 +36,7 @@ class OutputFn(collections.Callable):
         self.buffer = None
         self.buffer_start_time = None
         self.subscribed_fns = []
+        self._still_updating = False
 
     def __call__(self, time, input_signal):
         """ Called by Node with data of interest
@@ -54,8 +55,13 @@ class OutputFn(collections.Callable):
             self.update_all()
 
     def update_all(self):
-            for fn in self.subscribed_fns:
-                self.update(fn)
+        '''if (self._still_updating):
+            return
+        else:
+            self._still_updating = True'''
+        for fn in self.subscribed_fns:
+            self.update(fn)
+            #self._still_updating = False
 
     def update(self, fn):
         if (self.buffer and self.buffer_start_time is not None):

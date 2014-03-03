@@ -17,7 +17,7 @@ class Voltage_Grid_Plot(Firing_Rate_Plot):
         return "Voltage Grid Plot"
 
     @staticmethod
-    def supports_cap(cap, dimensions):
+    def supports_cap(cap):
         return cap.name in ['spikes']
 
     def update(self, data, start_time):
@@ -28,7 +28,7 @@ class Voltage_Grid_Plot(Firing_Rate_Plot):
 
         latest_data_i = len(data) - 1
         for i in xrange(0, self.rows, 1):
-            for j in xrange(0, self.columns, 1):
+            for j in xrange(0, self.rows, 1):
                 #srandom_val = 0
                 #if (data[latest_data_i][j*self.rows + i]):
                 random_val = random.random()
@@ -79,11 +79,11 @@ class Voltage_Grid_Plot(Firing_Rate_Plot):
     def draw_rects(self):
         """ draws the initial rectangles"""
         width = 1.0 / self.rows
-        height = 1.0 / self.columns
+        height = 1.0 / self.rows
 
         for x in xrange(0, self.rows, 1):
-            for y in xrange(0, self.columns, 1):
-                rect = plt.Rectangle((x/float(self.rows), y/float(self.columns)), width, height, facecolor="#000000")
+            for y in xrange(0, self.rows, 1):
+                rect = plt.Rectangle((x/float(self.rows), y/float(self.rows)), width, height, facecolor="#000000")
                 self.rect_array[x].append(rect)
                 plt.gca().add_patch(rect)
 

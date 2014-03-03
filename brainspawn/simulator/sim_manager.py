@@ -53,11 +53,11 @@ class SimManager(object):
     def get_caps_for_obj(self, obj):
         """
         Returns capabilites of adaptor for given object,
-        or None if object is not an object in our currrently
-        loaded model for which we have an adaptor
+        or an empty list if object is not an object in our
+        currrently loaded model for which we have an adaptor
         """
         if (obj not in self.adaptors):
-            return None
+            return []
         else:
             return self.adaptors[obj].caps
 

@@ -42,7 +42,7 @@ class MainFrame:
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_default_size(800, 600)
-        self.window.set_title("Nengo Python Visualizer")
+        self.window.set_title("Nengo Visualizer")
         self.window.connect("delete_event", lambda w,e: gtk.main_quit())
 
         self.input_panel = Input_Panel(self)
@@ -60,8 +60,9 @@ class MainFrame:
         self.next_gcomponent_redraw = 0
 
         # pretend new_timer is a static method
-        self.timer = TimerGTK3(interval=1000/self.sim_rate)
+        self.timer = TimerGTK3(interval=1000)
         self.timer.add_callback(self.step)
+        self.timer.single_shot = True
 
         self.vbox.pack_start(self.menu_bar, False, False, 0)
         self.vbox.pack_start(self.controller_panel, False, False, 0)
@@ -143,16 +144,19 @@ class MainFrame:
 
     # Move some of this functionality to the controller
     def step(self):
-        self.sim_manager.step()
-
-        self.controller_panel.update_slider(self.sim_manager.min_step, self.sim_manager.last_sim_step,
-                                            self.sim_manager.current_step, self.sim_manager.dt)
-
-        if (self.next_gcomponent_redraw == 0):
-            self.update_canvas()
-            self.next_gcomponent_redraw = self.sim_rate/self.framerate
-        else:
-            self.next_gcomponent_redraw -= 1
+        if (self.playing == True):
+            self.sim_manager.step()
+    
+            self.controller_panel.update_slider(self.sim_manager.min_step, self.sim_manager.last_sim_step,
+                                                self.sim_manager.current_step, self.sim_manager.dt)
+    
+            if (self.next_gcomponent_redraw == 0):
+                self.update_canvas()
+                self.next_gcomponent_redraw = self.sim_rate/self.framerate
+            else:
+                self.next_gcomponent_redraw -= 1
+                
+            self.timer.start(200)
 
     def draw_ui(self, obj):
         my_figure = obj.get_figure()
@@ -176,7 +180,7 @@ class MainFrame:
             self.playing = False
             self.controller_panel.toggle_play(self.playing)
         else:
-            self.timer.start()
+            self.timer.start(200)
             self.playing = True
             self.controller_panel.toggle_play(self.playing)
 
