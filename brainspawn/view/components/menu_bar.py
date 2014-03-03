@@ -32,19 +32,5 @@ class Menu_Bar(gtk.MenuBar):
 
         tools_menu.show()
 
-        view_menu = gtk.MenuItem("View")
-        view_submenu = gtk.Menu()
-        view_menu.set_submenu(view_submenu)
-
-        # TODO - this will go away
-        for plt, obj, cap in controller.plots_for_object(None):
-            menu_item = gtk.CheckMenuItem(plt.display_name(cap))
-            menu_item.connect("activate", controller.add_plot_for_obj, plt, obj, cap)
-            menu_item.show()
-            view_submenu.append(menu_item)
-
-        view_menu.show()
-
         self.append (file_menu)
         self.append (tools_menu)
-        self.append (view_menu)
