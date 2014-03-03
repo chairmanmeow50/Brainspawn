@@ -71,6 +71,8 @@ class VisualizerController(object):
         self.load_model(module.model)
 
     def load_model(self, model):
+        if self.sim_manager.current_step > 0:
+            self.main_frame.reset_button(None) # a little hacky, but hey
         self.model = model
         self.network_view.load_model(model)
         self.sim_manager.load_new_model(model, self.dt) # do we want to copy the model?

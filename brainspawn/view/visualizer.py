@@ -183,7 +183,7 @@ class MainFrame:
     def reset_button(self, widget):
         self.timer.stop()
         self.playing = False
-        self.controller_panel.toggle_play(self.playing)
+        self.controller_panel.toggle_play(False)
         self.sim_manager.reset()
         self.jump_to(widget, self.sim_manager.min_step)
 
