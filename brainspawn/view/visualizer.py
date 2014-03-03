@@ -15,7 +15,7 @@ import simulator.sim_manager
 
 # FIXME For now
 from view.visualizations.dogeplot import DogePlot
-from view.visualizations.xy_plot import XY_Plot
+from view.visualizations.xy_plot import XYPlot
 from view.visualizations.firing_rate import Firing_Rate_Plot
 from view.visualizations.voltage_grid import Voltage_Grid_Plot
 import sample_networks.two_dimensional_rep as example
@@ -48,7 +48,7 @@ class MainFrame:
         self.all_canvas = []
 
         # TODO - Replace with "add_plot functionality in controller"
-        plot_obj = Voltage_Grid_Plot(self.sim_manager, rows=10, columns=10)
+        plot_obj = XYPlot(self.sim_manager, self.controller, rows=10, columns=10)
         self.add_plot(plot_obj)
         self.all_plots.append(plot_obj)
         self.all_canvas.append(plot_obj.canvas)

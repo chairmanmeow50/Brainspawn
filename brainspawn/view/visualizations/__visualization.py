@@ -51,13 +51,13 @@ class Visualization(object):
         self._canvas.connect("button_release_event", self.button_press, self._canvas)
 
     def button_press(self, widget, event, canvas):
-        if event.type == gtk.gdk.BUTTON_RELEASE and event.button == 3:
+        if event.button == 3:
             export_pdf_item = gtk.MenuItem("Export to PDF")
             export_pdf_item.connect("activate", self.on_export_pdf, canvas)
             export_pdf_item.show()
-            context_menu = gtk.Menu()
-            context_menu.append(export_pdf_item)
-            context_menu.popup(None, None, None, None, event.button, event.time)
+            self.context_menu = gtk.Menu()
+            self.context_menu.append(export_pdf_item)
+            self.context_menu.popup(None, None, None, None, event.button, event.time)
             return True
         return False
 

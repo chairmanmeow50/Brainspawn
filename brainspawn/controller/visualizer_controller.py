@@ -7,6 +7,8 @@ import glob
 import os
 import imp
 import traceback
+import gtk
+import cairo
 
 from simulator.sim_manager import SimManager
 from view.visualizer import MainFrame
@@ -28,7 +30,7 @@ class VisualizerController(object):
         self.load_model(example.model)
 
         self.main_frame = MainFrame(self.sim_manager, self)
-        self.load_visualization_files()
+        #self.load_visualization_files()
 
     def init_view(self):
         pass

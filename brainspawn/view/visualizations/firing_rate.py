@@ -67,8 +67,9 @@ class Firing_Rate_Plot(Visualization):
                 self.rect_array_color[x] = np.zeros(self.columns)
                 plt.gca().add_patch(rect)
 
-    def __init__(self, sim_manager, **kwargs):
-        self.sim_manager  = sim_manager
+    def __init__(self, sim_manager, main_controller, **kwargs):
+        super(Firing_Rate_Plot, self).__init__(sim_manager, main_controller)
+        
         self._figure = plt.figure()
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')

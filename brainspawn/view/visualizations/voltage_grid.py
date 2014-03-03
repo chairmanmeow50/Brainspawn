@@ -85,20 +85,5 @@ class Voltage_Grid_Plot(Firing_Rate_Plot):
                 self.rect_array[x].append(rect)
                 plt.gca().add_patch(rect)
 
-    def __init__(self, sim_manager, **kwargs):
-
-        self.sim_manager  = sim_manager
-        self._figure = plt.figure()
-        self.init_canvas(self._figure)
-        self._figure.patch.set_facecolor('white')
-
-        self.rows = kwargs.get('rows') if 'rows' in kwargs else 10
-        self.columns = kwargs.get('columns') if 'columns' in kwargs else 10
-
-        self.rect_array = [[] for i in range(self.rows)]
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
-
-        self.draw_rects()
-        name = kwargs.get('name') if 'name' in kwargs else self.display_name()
-        plt.title(name)
+    def __init__(self, sim_manager, main_controller, **kwargs):
+        super(Voltage_Grid_Plot, self).__init__(sim_manager, main_controller, **kwargs)
