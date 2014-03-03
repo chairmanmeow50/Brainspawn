@@ -23,14 +23,18 @@ class Visualization(object):
     def canvas(self):
         return self._canvas
 
-    @abstractmethod
-    def display_name(self):
-        pass
+    @staticmethod
+    def display_name(self, cap):
+        """ Name of graph for given cap
+        """
+        raise NotImplementedError("Not implemented")
 
-    @abstractmethod
+    @staticmethod
     def supports_cap(self, cap, dimension):
-        pass
-    
+        """ Return true if supports cap
+        """
+        raise NotImplementedError("Not implemented")
+
     def out_cap(self):
         return "output"
 

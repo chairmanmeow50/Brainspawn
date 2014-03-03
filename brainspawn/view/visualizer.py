@@ -102,10 +102,8 @@ class MainFrame:
         """
         node_caps = self.sim_manager.get_caps_for_obj(example.neurons)
         for cap in node_caps:
-            #print (cap.name, cap.get_out_dimensions(example.neurons))
             if (cap.name is plot.out_cap()):
                 out_cap = cap
-        #print "connected " + plot.name() + " with cap " + plot.out_cap()
         self.sim_manager.connect_to_obj(example.neurons, out_cap, plot.update)
 
     def toggle_resize(self, widget):

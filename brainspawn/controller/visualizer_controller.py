@@ -25,12 +25,15 @@ class VisualizerController(object):
         self.sim_manager = sim_manager
         self.dt = 0.001
 
+        self.registered = []
+        self.plots = []
+
         # TODO - Hardcoding model for now
         # At some point, we'll add a file -> open menu
         self.load_model(example.model)
 
         self.main_frame = MainFrame(self.sim_manager, self)
-        #self.load_visualization_files()
+        self.load_visualization_files()
 
     def init_view(self):
         pass
@@ -45,18 +48,16 @@ class VisualizerController(object):
         for full_file_name in visualization_files:
             file_name = full_file_name[full_file_name.rfind('/')+1:]
             if (file_name.startswith("__") == False):
-                plot_obj = self.load_from_file(full_file_name, self.sim_manager)
-                self.register_visualization(plot_obj)
-                if (plot_obj != None):
-                    self.main_frame.add_plot(plot_obj)
-                    self.main_frame.all_plots.append(plot_obj)
-                    self.main_frame.all_canvas.append(plot_obj.canvas)
+                plot_cls = self.load_class_from_file(full_file_name)
+                if plot_cls:
+                    self.register_visualization(plot_cls)
 
-    def register_visualization(self, visualization_object):
-        if visualization_object != None:
-            print visualization_object.display_name()
+    def register_visualization(self, visualization):
+        self.registered.append(visualization)
 
-    def load_from_file(self, filepath, manager):
+    def load_class_from_file(self, filepath):
+        """ Loads class from file as specified by module.class_name()
+        """
         class_inst = None
         expected_class = 'MyClass'
 
@@ -70,12 +71,12 @@ class VisualizerController(object):
 
         mod_class = getattr(py_mod, py_mod.class_name())
         try:
-            class_inst = mod_class(manager)
+            class_inst = mod_class(self.sim_manager, self)
         except TypeError as e:
             print "Error instantiating class " + py_mod.class_name()
             print traceback.print_exc()
 
-        return class_inst
+        return mod_class
 
     def on_export_pdf(self, widget):
         filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
