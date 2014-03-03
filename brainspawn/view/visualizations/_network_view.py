@@ -1,64 +1,83 @@
 import nengo
-
 import networkx as nx
 import matplotlib.pyplot as plt
-
-from sys import maxint
 from math import sqrt
+from view.visualizations.__visualization import Visualization
 
-class Network_View():
-    def __init__(self, sim_manager, model, name="Network View", *args, **kwargs):
+class NetworkView(Visualization):
+    """Visualization of a model's network
+    """
+    def __init__(self, sim_manager, controller, model=None, name="Network View", **kwargs):
+        super(NetworkView, self).__init__(sim_manager, controller)
         self.sim_manager = sim_manager
+        self._model = model
+        self.name = name
+
         self._figure = plt.figure()
-        self.model = model
-        self.node_radius_sq = 100
+        self.init_canvas(self._figure)
+        self._figure.patch.set_facecolor('white')
 
         # Event connections
         self._figure.canvas.mpl_connect('button_press_event', self.onclick)
 
-        # Graph construction
-        self._build_graph(model)
+        # Build graph
+        self._node_radius_sq = 100
+        self.load_model(model)
 
+    def display_name(self):
+        return None
 
-        node_diam_sqr = (sqrt(self.node_radius_sq) * 2) ** 2
+    def supports_cap(self, cap, dimension):
+        return False
 
-        self._graph_pos = nx.graphviz_layout(self.G, prog="neato")
-        colors = [self.decide_obj_color(self.get_obj(obj)) for obj in self.G.nodes()]
-        nx.draw(self.G, self._graph_pos, node_color=colors, node_size=node_diam_sqr)
-
-    def update(self):
+    def update(self, data, start_time):
         pass
 
     def clear(self):
         pass
 
-    def get_figure(self):
-        return self._figure
-
     def nearest_obj(self, x, y):
+        if self.model is None:
+            return None
+
         for obj, data_pos in self._graph_pos.items():
             screen_pos = self._figure.axes[0].transData.transform(data_pos)
             dist_sq = (screen_pos[0] - x) ** 2 + (screen_pos[1] - y) ** 2
 
-            if dist_sq <= self.node_radius_sq:
+            if dist_sq <= self._node_radius_sq:
                 return obj
 
         return None
 
-    def get_obj(self, node_name):
+    def get_obj_from_name(self, node_name):
+        """ Maps the given graph node name to the object it represents
+        """
         return self._graph_name_to_obj.get(node_name)
 
-    def get_name(self, nengo_obj):
+    def get_name_from_obj(self, nengo_obj):
+        """ Maps the given object to the name of the graph node representing it
+        """
         return self._graph_obj_to_name.get(nengo_obj)
 
     def _associate_obj_name(self, node_name, nengo_obj):
+        """ Updates the maps that associate graph node names and the objects
+        that they represent. Since network objects aren't guaranteed to have
+        unique names, they are modified to a similar but unique name. In order
+        to keep the association, these maps are used.
+        """
         self._graph_name_to_obj[node_name] = nengo_obj
         self._graph_obj_to_name[nengo_obj] = node_name
 
-    def _build_graph(self, model):
+    def load_model(self, model):
+        # Clear and initialize graph data
+        self.model = model
         self.G = nx.MultiDiGraph()
         self._graph_name_to_obj = {}
         self._graph_obj_to_name = {}
+
+        if model is None:
+            # TODO(gmdavis): clear figure
+            return
 
         # Add ensembles and nodes
         for obj in model.objs:
@@ -102,8 +121,8 @@ class Network_View():
             ### print "conn.decoders    = ", conn.decoders
             ### print "conn.eval_points = ", conn.eval_points
 
-            pre_name = self.get_name(conn.pre)
-            post_name = self.get_name(conn.post)
+            pre_name = self.get_name_from_obj(conn.pre)
+            post_name = self.get_name_from_obj(conn.post)
 
             if pre_name is None:
                 print "Error: unable to determine connection's pre. Dropping edge \"%s\"." % (conn.pre)
@@ -112,13 +131,27 @@ class Network_View():
                 print "Error: unable to determine connection's post. Dropping edge \"%s\"." % (conn.pre)
                 continue
 
-            # TODO(gmdavis): lookup names (may be modified in duplicate prevention)
             print "Adding edge: \"%s\" to \"%s\"" % (pre_name, post_name)
             self.G.add_edge(pre_name, post_name)
 
         # TODO(gmdavis): add probes?
 
+        # Draw graph
+        node_diam_sqr = (sqrt(self._node_radius_sq) * 2) ** 2
+
+        axis = None
+        if len(self._figure.axes) == 0:
+            axis = self._figure.add_subplot(1,1,1)
+        else:
+            axis = self._figure.axes[0]
+
+        self._graph_pos = nx.graphviz_layout(self.G, prog="neato")
+        colors = [self.decide_obj_color(self.get_obj_from_name(obj)) for obj in self.G.nodes()]
+        nx.draw(self.G, self._graph_pos, ax=axis, node_color=colors, node_size=node_diam_sqr)
+
     def decide_obj_color(self, nengo_obj):
+        """ Provides a mapping between graph nodes and their desired colour.
+        """
         if isinstance(nengo_obj, nengo.Node):
             return (1,1,0)
         if isinstance(nengo_obj, nengo.Ensemble):
@@ -133,6 +166,8 @@ class Network_View():
 #---------- Helper functions --------
 
 def _find_uniq_name(name, collection, threashold=1000):
+    """ Used to find a unique name in collection, based on the given name.
+    """
     if name not in collection:
         return name
 
@@ -197,8 +232,8 @@ class MockNengoNetwork:
 import sample_networks.two_dimensional_rep as example
 
 def main():
-    nv = Network_View(sim_manager=None, model=example.model)
-    fig = nv.get_figure()
+    nv = NetworkView(sim_manager=None, controller=None, model=example.model)
+    fig = nv.figure()
     fig.show()
     plt.show()
 

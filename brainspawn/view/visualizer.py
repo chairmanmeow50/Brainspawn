@@ -82,11 +82,6 @@ class MainFrame:
 
         self.window.show_all()
 
-        # TODO - Replace with "add_plot functionality in controller"
-        plot_obj = DogePlot(self.sim_manager, self.controller, dimensions=2)
-        self.add_plot(plot_obj)
-        self.show_plot(plot_obj)
-
     def add_plot(self, plot):
         """ COMPLETELY PLACEHOLDER AT THE MOMENT
         Will move func to controller
