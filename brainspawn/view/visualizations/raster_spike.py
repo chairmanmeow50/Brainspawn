@@ -15,7 +15,7 @@ class Raster_Spike_Plot(Visualization):
         return "Raster Spike Plot"
 
     @staticmethod
-    def supports_cap(cap, dimensions):
+    def supports_cap(cap):
         return cap.name in ['spikes']
 
     def clear(self):

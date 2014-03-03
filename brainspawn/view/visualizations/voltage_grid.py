@@ -17,7 +17,7 @@ class Voltage_Grid_Plot(Firing_Rate_Plot):
         return "Voltage Grid Plot"
 
     @staticmethod
-    def supports_cap(cap, dimensions):
+    def supports_cap(cap):
         return cap.name in ['spikes']
 
     def update(self, data, start_time):

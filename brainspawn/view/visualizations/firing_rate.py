@@ -17,7 +17,7 @@ class Firing_Rate_Plot(Visualization):
         return "Firing Rate Plot"
 
     @staticmethod
-    def supports_cap(cap, dimensions):
+    def supports_cap(cap):
         return cap.name in ['spikes']
 
     def update(self, data, start_time):
