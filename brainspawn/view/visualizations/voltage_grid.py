@@ -1,5 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.figure as Figure
+from matplotlib.patches import Rectangle
 from view.visualizations.__visualization import Visualization
 from view.visualizations.firing_rate import Firing_Rate_Plot
 import __future__
@@ -83,9 +84,9 @@ class Voltage_Grid_Plot(Firing_Rate_Plot):
 
         for x in xrange(0, self.rows, 1):
             for y in xrange(0, self.rows, 1):
-                rect = plt.Rectangle((x/float(self.rows), y/float(self.rows)), width, height, facecolor="#000000")
+                rect = Rectangle((x/float(self.rows), y/float(self.rows)), width, height, facecolor="#000000")
                 self.rect_array[x].append(rect)
-                plt.gca().add_patch(rect)
+                self.axes.add_patch(rect)
 
     def __init__(self, sim_manager, main_controller, **kwargs):
         super(Voltage_Grid_Plot, self).__init__(sim_manager, main_controller, **kwargs)

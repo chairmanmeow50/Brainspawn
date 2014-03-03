@@ -1,6 +1,7 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.patches import Rectangle
 from view.visualizations.__visualization import Visualization
 
 import __future__
@@ -67,17 +68,19 @@ class Firing_Rate_Plot(Visualization):
 
         for x in xrange(0, self.rows, 1):
             for y in xrange(0, self.rows, 1):
-                rect = plt.Rectangle((x/float(self.rows), y/float(self.rows)), width, height, facecolor="#000000")
+                rect = Rectangle((x/float(self.rows), y/float(self.rows)), width, height, facecolor="#000000")
                 self.rect_array[x].append(rect)
                 self.rect_array_color[x] = np.zeros(self.rows)
-                plt.gca().add_patch(rect)
+                self.axes.add_patch(rect)
 
     def __init__(self, sim_manager, main_controller, **kwargs):
         super(Firing_Rate_Plot, self).__init__(sim_manager, main_controller)
 
-        self._figure = plt.figure()
+        self._figure = Figure()
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')
+        
+        self.axes = self._figure.add_subplot(111)
 
         self.obj = kwargs.get('obj') if 'obj' in kwargs else None
         self.dimensions = 10
@@ -87,9 +90,9 @@ class Firing_Rate_Plot(Visualization):
 
         self.rect_array = [[] for i in range(self.rows)]
         self.rect_array_color = [[] for i in range(self.rows)]
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
+        self.axes.set_xlim(0, 1)
+        self.axes.set_ylim(0, 1)
 
         self.draw_rects()
         name = self.display_name(kwargs.get('cap')) if 'cap' in kwargs else 'Firing Rate'
-        plt.title(name)
+        self.axes.set_title(name)
