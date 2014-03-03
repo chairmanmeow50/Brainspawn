@@ -1,12 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from view.visualizations.__visualization import Visualization
+from view.visualizations.firing_rate import Firing_Rate_Plot
 import __future__
+import random
 
 def class_name():
     return "Voltage_Grid_Plot"
 
-class Voltage_Grid_Plot(Visualization):
+class Voltage_Grid_Plot(Firing_Rate_Plot):
     def out_cap(self):
         return "spikes"
 
@@ -21,28 +23,14 @@ class Voltage_Grid_Plot(Visualization):
         each row represents the value of the neurons
         the columns show the values over time
         """
-
-        print data
-
-        if (len(data) > 0):
-            if (len(data[0]) == self.dimension):
-                for i in xrange(0, self.dimension, 1):
-                    for j in xrange(0, self.dimension, 1):
-                        if (i < len(data) - 1):
-                            x = len(data) - i - 1
-                            # row should be == data len - 1
-                            # column should be ==
-#                             print "shape: " + str(data.shape)
-                            voltage = data[x][j]
-                            self.rect_array[i][j].set_facecolor(self.voltage_color(voltage))
-        else:
-            self.clear()
-
-    def clear(self):
-        """ sets all the grids to black"""
-        for i in xrange(0, self.dimension, 1):
-            for j in xrange(0, self.dimension, 1):
-                self.rect_array[i][j].set_facecolor("#000000")
+        
+        latest_data_i = len(data) - 1
+        for i in xrange(0, self.rows, 1):
+            for j in xrange(0, self.columns, 1):
+                #srandom_val = 0
+                #if (data[latest_data_i][j*self.rows + i]):
+                random_val = random.random()
+                self.rect_array[i][j].set_facecolor(self.voltage_color(random_val))
 
     def voltage_color(self, voltage):
         """ converts the voltage value to a
@@ -60,17 +48,16 @@ class Voltage_Grid_Plot(Visualization):
         # yellow
         set_of_colors.append('#FFFF66')
 
-        if (voltage > 0.8):
+        if (voltage > 0.95):
             return set_of_colors[4]
-        elif (voltage > 0.6):
+        elif (voltage > 0.9):
             return set_of_colors[3]
-        elif (voltage > 0.4):
+        elif (voltage > 0.7):
             return set_of_colors[2]
-        elif (voltage > 0.2):
+        elif (voltage > 0.6):
             return set_of_colors[1]
         else:
             return set_of_colors[0]
-
 
     def random_color(self):
         set_of_colors = []
@@ -89,12 +76,12 @@ class Voltage_Grid_Plot(Visualization):
 
     def draw_rects(self):
         """ draws the initial rectangles"""
-        width = 1.0 / self.dimension
-        height = 1.0 / self.dimension
+        width = 1.0 / self.rows
+        height = 1.0 / self.columns
 
-        for x in xrange(0, self.dimension, 1):
-            for y in xrange(0, self.dimension, 1):
-                rect = plt.Rectangle((x/float(self.dimension), y/float(self.dimension)), width, height, facecolor="#000000")
+        for x in xrange(0, self.rows, 1):
+            for y in xrange(0, self.columns, 1):
+                rect = plt.Rectangle((x/float(self.rows), y/float(self.columns)), width, height, facecolor="#000000")
                 self.rect_array[x].append(rect)
                 plt.gca().add_patch(rect)
 
@@ -105,9 +92,10 @@ class Voltage_Grid_Plot(Visualization):
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')
 
-        self.dimension = kwargs.get('dimension') if 'dimension' in kwargs else 5
+        self.rows = kwargs.get('rows') if 'rows' in kwargs else 10
+        self.columns = kwargs.get('columns') if 'columns' in kwargs else 10
 
-        self.rect_array = [[] for i in range(self.dimension)]
+        self.rect_array = [[] for i in range(self.rows)]
         plt.xlim(0, 1)
         plt.ylim(0, 1)
 
