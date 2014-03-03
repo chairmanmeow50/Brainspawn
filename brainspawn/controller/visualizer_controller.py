@@ -32,8 +32,6 @@ class VisualizerController(object):
         self.plots = []
         self.load_visualization_files()
 
-        self.obj = None
-
         # TODO - Hardcoding model for now
         self.load_model(example.model)
 
@@ -46,12 +44,8 @@ class VisualizerController(object):
     def plots_for_object(self, obj):
         """ Returns a list of plots available for this object
         """
-        # Hardcoding - FIXME
-        obj = example.neurons
-        self.obj = obj
-
         supported_plots = []
-        node_caps = self.sim_manager.get_caps_for_obj(example.neurons)
+        node_caps = self.sim_manager.get_caps_for_obj(obj)
         for cap in node_caps:
             for vz in self.registered:
                 if vz.supports_cap(cap, obj.dimensions):
