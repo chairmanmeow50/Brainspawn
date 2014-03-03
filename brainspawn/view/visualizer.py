@@ -134,7 +134,7 @@ class MainFrame:
             event.canvas.draw()
 
     def enter_figure(self, event):
-        event.canvas.figure.patch.set_facecolor('grey')
+        event.canvas.figure.patch.set_facecolor('#dddddd')
         event.canvas.draw()
 
     def hscale_change(self, range, scroll, value):
