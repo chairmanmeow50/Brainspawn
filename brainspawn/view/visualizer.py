@@ -60,8 +60,9 @@ class MainFrame:
         self.next_gcomponent_redraw = 0
 
         # pretend new_timer is a static method
-        self.timer = TimerGTK3(interval=1000/self.sim_rate)
+        self.timer = TimerGTK3(interval=1000)
         self.timer.add_callback(self.step)
+        self.timer.single_shot = True
 
         self.vbox.pack_start(self.menu_bar, False, False, 0)
         self.vbox.pack_start(self.controller_panel, False, False, 0)
@@ -153,6 +154,8 @@ class MainFrame:
             self.next_gcomponent_redraw = self.sim_rate/self.framerate
         else:
             self.next_gcomponent_redraw -= 1
+            
+        self.timer.start(200)
 
     def draw_ui(self, obj):
         my_figure = obj.get_figure()
