@@ -35,7 +35,7 @@ class XYPlot(Visualization):
         return "XY Plot" + " " + cap.name
 
     @staticmethod
-    def supports_cap(cap, dimensions):
+    def supports_cap(cap):
         return cap.name in ['voltages', 'output']
 
     def update(self, data, start_time):

@@ -34,7 +34,7 @@ class Visualization(object):
         raise NotImplementedError("Not implemented")
 
     @staticmethod
-    def supports_cap(cap, dimension):
+    def supports_cap(cap):
         """ Return true if supports cap
         """
         raise NotImplementedError("Not implemented")

@@ -37,7 +37,7 @@ class Spectrogram(Visualization):
         return "Spectrogram"
 
     @staticmethod
-    def supports_cap(cap, dimensions):
+    def supports_cap(cap):
         return cap.name in ['spikes']
 
 

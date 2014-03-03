@@ -26,7 +26,8 @@ class NetworkView(Visualization):
     def display_name(self):
         return None
 
-    def supports_cap(self, cap, dimension):
+    @staticmethod
+    def supports_cap(cap):
         return False
 
     def update(self, data, start_time):
@@ -92,7 +93,7 @@ class NetworkView(Visualization):
                 print "Adding ensemble:", name
             elif isinstance(obj, nengo.Node):
                 # print "obj.label      = ", obj.label
-                # print "obj.dimensions = ", obj.dimensions
+                # print "obj.dimensions = ", obj.size_out
                 # print "obj.output     = ", obj.output
                 # print "obj.probes     = ", obj.probes
                 name = _find_uniq_name(obj.label, self.G.nodes())
@@ -104,7 +105,6 @@ class NetworkView(Visualization):
             if name is not None:
                 self.G.add_node(name, obj=obj)
                 self._associate_obj_name(name, obj)
-
 
         # Add connections
         for conn in model.connections:
