@@ -12,6 +12,7 @@ import cairo
 
 from simulator.sim_manager import SimManager
 from view.visualizer import MainFrame
+from view.visualizations._network_view import NetworkView
 
 # FIXME use this for now
 import sample_networks.two_dimensional_rep as example
@@ -24,6 +25,7 @@ class VisualizerController(object):
 
     def __init__(self, sim_manager):
         self.sim_manager = sim_manager
+        self.network_view = NetworkView(sim_manager, self)
         self.dt = 0.001
 
         self.registered = []
@@ -35,6 +37,8 @@ class VisualizerController(object):
         self.load_model(example.model)
 
         self.main_frame = MainFrame(self.sim_manager, self)
+        self.load_visualization_files()
+        self.main_frame.show_plot(self.network_view)
 
     def init_view(self):
         pass
@@ -62,6 +66,7 @@ class VisualizerController(object):
 
     def load_model(self, model):
         self.model = model
+        self.network_view.load_model(model)
         self.sim_manager.load_new_model(model, self.dt) # do we want to copy the model?
 
     def load_visualization_files(self):
@@ -69,7 +74,7 @@ class VisualizerController(object):
         visualization_files = glob.glob('brainspawn/view/visualizations/*.py')
         for full_file_name in visualization_files:
             file_name = full_file_name[full_file_name.rfind('/')+1:]
-            if (file_name.startswith("__") == False):
+            if (file_name.startswith("_") == False):
                 plot_cls = self.load_class_from_file(full_file_name)
                 if plot_cls:
                     self.register_visualization(plot_cls)
