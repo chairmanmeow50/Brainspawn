@@ -56,10 +56,8 @@ class OutputFn(collections.Callable):
 
     def update_all(self):
         if (self._still_updating):
-            print "Nope"
             return
         else:
-            print "Yep"
             self._still_updating = True
             for fn in self.subscribed_fns:
                 self.update(fn)
