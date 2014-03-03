@@ -75,3 +75,45 @@ class VisualizerController(object):
 
         return class_inst
 
+    def on_export_pdf(self, widget):
+        filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
+        if not filename:
+            return
+        with open(filename, "wb") as f:
+            cr = cairo.Context(cairo.PDFSurface(f, *self.main_frame.window.get_size()))
+            rect = gtk.gdk.Rectangle()
+            rect.x = rect.y = 0
+            rect.width, rect.height = self.main_frame.window.get_size()
+            self.main_frame.window.size_allocate(rect)
+            self.main_frame.window.draw(cr)
+            cr.show_page()
+            cr.get_target().finish()
+
+    def file_browse(self, action, name="", ext="", ext_name=""):
+        if (action == gtk.FILE_CHOOSER_ACTION_OPEN):
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+        else:
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK)
+        dialog = gtk.FileChooserDialog(title="Select File", action=action, buttons=buttons)
+        dialog.set_do_overwrite_confirmation(True)
+        dialog.set_current_folder(os.getcwd())
+        dialog.set_current_name(name)
+
+        if ext:
+            filt = gtk.FileFilter()
+            filt.set_name(ext_name if ext_name else ext)
+            filt.add_pattern("*." + ext)
+            dialog.add_filter(filt)
+
+        filt = gtk.FileFilter()
+        filt.set_name("All files")
+        filt.add_pattern("*")
+        dialog.add_filter(filt)
+
+        result = ""
+        if dialog.run() == gtk.RESPONSE_OK:
+            result = dialog.get_filename()
+        dialog.destroy()
+        return result
+
+

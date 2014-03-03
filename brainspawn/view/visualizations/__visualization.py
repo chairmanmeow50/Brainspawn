@@ -3,14 +3,17 @@
 
 import gtk
 from abc import ABCMeta, abstractmethod
-from matplotlib.backends.backend_gtkcairo import FigureCanvasGTKCairo as FigureCanvas
+from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
 
 class Visualization(object):
     """Visualization class
     """
 
     __metaclass__ = ABCMeta
-    _visible = False
+
+    def __init__(self, sim_manager, main_controller):
+        self.sim_manager = sim_manager
+        self.main_controller = main_controller
 
     @property
     def figure(self):
@@ -19,8 +22,13 @@ class Visualization(object):
     @property
     def canvas(self):
         return self._canvas
-    
-    def name(self):
+
+    @abstractmethod
+    def display_name(self):
+        pass
+
+    @abstractmethod
+    def supports_cap(self, cap, dimension):
         pass
     
     def out_cap(self):
@@ -37,12 +45,6 @@ class Visualization(object):
         """ Clear the graph
         """
         pass
-    
-    def is_visible(self):
-        return self._visible
-    
-    def set_visible(self, v):
-        self._visible = v
 
     def init_canvas(self, figure):
         self._canvas = FigureCanvas(figure)
@@ -59,46 +61,11 @@ class Visualization(object):
             return True
         return False
 
-    def on_export_pdf(self, widget, canvas=None):
-        filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
+    def on_export_pdf(self, widget, canvas):
+        filename = self.main_controller.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
         if not filename:
             return
         with open(filename, "wb") as f:
             if canvas:
                 canvas.print_pdf(f)
-            else:
-                cr = cairo.Context(cairo.PDFSurface(f, *self.window.get_size()))
-                cr.set_source_surface(self.window.window.cairo_create().get_target())
-                cr.set_operator(cairo.OPERATOR_SOURCE)
-                cr.paint()
-                cr.show_page()
-                cr.get_target().finish()
-
-    def file_browse(self, action, name="", ext="", ext_name=""):
-        if (action == gtk.FILE_CHOOSER_ACTION_OPEN):
-            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)
-        else:
-            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK)
-        dialog = gtk.FileChooserDialog(title="Select File", action=action, buttons=buttons)
-        dialog.set_do_overwrite_confirmation(True)
-        dialog.set_current_folder(os.getcwd())
-        dialog.set_current_name(name)
-
-        if ext:
-            filt = gtk.FileFilter()
-            filt.set_name(ext_name if ext_name else ext)
-            filt.add_pattern("*." + ext)
-            dialog.add_filter(filt)
-
-        filt = gtk.FileFilter()
-        filt.set_name("All files")
-        filt.add_pattern("*")
-        dialog.add_filter(filt)
-
-        result = ""
-        if dialog.run() == gtk.RESPONSE_OK:
-            result = dialog.get_filename()
-        dialog.destroy()
-        return result
-
 

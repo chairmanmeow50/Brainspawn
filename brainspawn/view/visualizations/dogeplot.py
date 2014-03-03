@@ -32,6 +32,12 @@ class DogePlot(Visualization):
         plt.xlabel(xlabel)
         plt.title(title)
 
+    def display_name(self):
+        return "so science"
+
+    def supports_cap(self, cap, dimensions):
+        return cap.name() is "voltages" or cap.name() is "output"
+
     def update(self, data, start_time):
         """ Update x data for each line in graph
         """

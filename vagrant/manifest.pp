@@ -30,19 +30,31 @@ class system {
                'git',
                # neo dependencies
                'libhdf5-serial-dev',
-               'python-numexpr',
                'cython',
-               # other packages
-               'python-matplotlib']:
+               # gtk3 stuff
+               'gir1.2-gtk-3.0',
+               'python-gi-cairo',
+               # matplotlib dependencies
+               'libpng12-dev',
+               'libfreetype6-dev']:
         ensure => installed,
         require => Exec['apt-get update'],
     }
 }
 
-# Python packages
-class python {
+# Python packages round 1
+class python1 {
+    package { ['distribute']:
+        ensure => latest,
+        provider => 'pip',
+    }
+}
+
+# Python packages round 2
+class python2 {
     package { ['Theano',
                'quantities',
+               'numexpr',
                'tables',
                'neo',
                'ipython',
@@ -50,6 +62,7 @@ class python {
                'sphinx',
                'networkx',
                'pygraphviz',
+               'matplotlib',
                'git+git://github.com/mcchong/nengo.git',
                'git+git://github.com/amtinits/nengo_theano.git']:
         ensure => installed,
@@ -59,6 +72,9 @@ class python {
 
 # Run the classes
 class { 'system': }
-class { 'python':
+class { 'python1':
     require => Class['system'],
+}
+class { 'python2':
+    require => Class['python1'],
 }
