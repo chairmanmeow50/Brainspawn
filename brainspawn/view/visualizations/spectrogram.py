@@ -1,5 +1,5 @@
 import matplotlib.cm as cm
-import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 import matplotlib.mlab as mlab
 import numpy as np
 from view.visualizations.__visualization import Visualization
@@ -17,18 +17,20 @@ class Spectrogram(Visualization):
 
     def __init__(self, sim_manager, main_controller, **kwargs):
         super(Spectrogram, self).__init__(sim_manager, main_controller)
-        self._figure = plt.figure()
+        self._figure = Figure()
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')
 
-        self.ax = plt.subplot(111)
+        self.axes = self._figure.add_subplot(111)
         self.Fs = kwargs.get('Fs') if 'Fs' in kwargs else 1.0 # the sampling frequency
 
         self.spec_data = []
 
-        plt.xlabel('Time (s)')
-        plt.ylabel('Frequency (Hz)')
-        plt.title('LFP Spectrogram')
+        self.axes.set_xlabel('Time (s)')
+        self.axes.xaxis.set_label_coords(0.5, -0.07)
+        self.axes.set_ylabel('Frequency (Hz)')
+        self.axes.yaxis.set_label_coords(-0.10, 0.5)
+        self.axes.set_title('LFP Spectrogram')
 
     @staticmethod
     def display_name(cap):
@@ -40,7 +42,8 @@ class Spectrogram(Visualization):
 
 
     def clear(self):
-        plt.cla()
+        #plt.cla()
+        pass
 
     def update(self, data, start_time):
         latest_i = len(data) - 1

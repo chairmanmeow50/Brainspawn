@@ -22,7 +22,9 @@ class XYPlot(Visualization):
         self.axes = self._figure.add_subplot(111) # take first from list
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
         self.axes.set_ylabel('time')
+        self.axes.yaxis.set_label_coords(-0.05, 0.5)
         self.axes.set_xlabel('xlabel')
+        self.axes.xaxis.set_label_coords(0.5, -0.05)
         self.axes.set_title("XY Plot")
         self.axes.set_ylim([0, 1])
         self.axes.set_xlim([0, 1])
