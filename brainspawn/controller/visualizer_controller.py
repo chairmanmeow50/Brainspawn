@@ -15,6 +15,7 @@ from view.visualizer import MainFrame
 
 # FIXME use this for now
 import sample_networks.two_dimensional_rep as example
+from view.visualizations.dogeplot import DogePlot
 
 class VisualizerController(object):
     """
@@ -27,16 +28,37 @@ class VisualizerController(object):
 
         self.registered = []
         self.plots = []
+        self.load_visualization_files()
 
         # TODO - Hardcoding model for now
         # At some point, we'll add a file -> open menu
         self.load_model(example.model)
 
         self.main_frame = MainFrame(self.sim_manager, self)
-        self.load_visualization_files()
 
     def init_view(self):
         pass
+
+    def plots_for_object(self, obj):
+        """ Returns a list of plots available for this object
+        """
+        # Hardcoding - FIXME
+        obj = example.neurons
+
+        supported_plots = []
+        node_caps = self.sim_manager.get_caps_for_obj(example.neurons)
+        for cap in node_caps:
+            for vz in self.registered:
+                if vz.supports_cap(cap, obj.dimensions):
+                    supported_plots.append((vz, obj, cap))
+        return supported_plots
+
+    def add_plot_for_obj(self, menu_item, plt, obj, cap):
+        """ Callback for menu item
+        """
+        plot = plt(self.sim_manager, self, dimensions=obj.dimensions, cap=cap)
+        self.sim_manager.connect_to_obj(obj, cap, plot.update)
+        self.main_frame.show_plot(plot)
 
     def load_model(self, model):
         self.model = model

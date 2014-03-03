@@ -27,15 +27,17 @@ class XYPlot(Visualization):
         self.axes = plt.gca()
         plt.ylabel('time')
         plt.xlabel('xlabel')
-        plt.title(self.display_name())
+        plt.title("XY Plot")
         self.axes.set_ylim([0, 1])
         self.axes.set_xlim([0, 1])
 
-    def display_name(self):
-        return "XY Plot"
+    @staticmethod
+    def display_name(cap):
+        return "XY Plot" + " " + cap.name
 
-    def supports_cap(self, cap, dimensions):
-        return cap.name() in ['voltages', 'output']
+    @staticmethod
+    def supports_cap(cap, dimensions):
+        return cap.name in ['voltages', 'output']
 
     def update(self, data, start_time):
         """ Update x data for each line in graph

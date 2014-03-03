@@ -49,9 +49,9 @@ class Menu_Bar(gtk.MenuBar):
         view_menu.set_submenu(view_submenu)
 
         # TODO - this will go away
-        for string in ['this', 'will', 'go', 'away', 'soon']:
-            menu_item = gtk.CheckMenuItem(string)
-            #menu_item.connect("activate", main_frame.show_plot, plot.canvas)
+        for plt, obj, cap in controller.plots_for_object(None):
+            menu_item = gtk.CheckMenuItem(plt.display_name(cap))
+            menu_item.connect("activate", controller.add_plot_for_obj, plt, obj, cap)
             menu_item.show()
             view_submenu.append(menu_item)
 

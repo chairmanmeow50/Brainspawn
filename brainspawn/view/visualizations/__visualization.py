@@ -24,21 +24,17 @@ class Visualization(object):
         return self._canvas
 
     @staticmethod
-    def display_name(self, cap):
+    def display_name(cap):
         """ Name of graph for given cap
         """
         raise NotImplementedError("Not implemented")
 
     @staticmethod
-    def supports_cap(self, cap, dimension):
+    def supports_cap(cap, dimension):
         """ Return true if supports cap
         """
         raise NotImplementedError("Not implemented")
 
-    def out_cap(self):
-        return "output"
-
-    @abstractmethod
     def update(self, data, start_time):
         """ Callback function passed to observer nodes
         """

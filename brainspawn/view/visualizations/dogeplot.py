@@ -20,8 +20,9 @@ class DogePlot(XYPlot):
         self.text.append(plt.text(0.77, 0.2, "wow", fontsize=12, color='purple'))
         self.text.append(plt.text(0.07, 0.32, "so science", fontsize=12, color='cyan'))
 
-    def display_name(self):
-        return "so science"
+    @staticmethod
+    def display_name(cap):
+        return "so science" + " " + cap.name
 
 
     def update(self, data, start_time):

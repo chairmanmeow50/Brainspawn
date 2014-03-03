@@ -13,13 +13,6 @@ from view.components.controller_panel import Controller_Panel
 from view.components.menu_bar import Menu_Bar
 import simulator.sim_manager
 
-# FIXME For now
-from view.visualizations.dogeplot import DogePlot
-from view.visualizations.xy_plot import XYPlot
-from view.visualizations.firing_rate import Firing_Rate_Plot
-from view.visualizations.voltage_grid import Voltage_Grid_Plot
-import sample_networks.two_dimensional_rep as example
-
 from matplotlib.backends.backend_gtk3 import TimerGTK3
 
 
@@ -79,21 +72,6 @@ class MainFrame:
         self.window.add(self.vbox)
 
         self.window.show_all()
-
-        # TODO - Replace with "add_plot functionality in controller"
-        plot_obj = DogePlot(self.sim_manager, self.controller, dimensions=2)
-        self.add_plot(plot_obj)
-        self.show_plot(plot_obj)
-
-    def add_plot(self, plot):
-        """ COMPLETELY PLACEHOLDER AT THE MOMENT
-        Will move func to controller
-        """
-        node_caps = self.sim_manager.get_caps_for_obj(example.neurons)
-        for cap in node_caps:
-            if (cap.name is plot.out_cap()):
-                out_cap = cap
-        self.sim_manager.connect_to_obj(example.neurons, out_cap, plot.update)
 
     def toggle_resize(self, widget):
         if (widget.get_active()):

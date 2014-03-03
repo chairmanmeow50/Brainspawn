@@ -36,6 +36,15 @@ class Spectrogram(Visualization):
 
         #self.draw_ui()
 
+    @staticmethod
+    def display_name(cap):
+        return "Spectrogram"
+
+    @staticmethod
+    def supports_cap(cap, dimensions):
+        return cap.name in ['spikes']
+
+
     def clear(self):
         # set current figure
         #self.fig = plt.figure(self.plot_name)

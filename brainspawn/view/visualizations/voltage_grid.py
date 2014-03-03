@@ -12,18 +12,20 @@ class Voltage_Grid_Plot(Firing_Rate_Plot):
     def out_cap(self):
         return "spikes"
 
-    def display_name(self):
+    @staticmethod
+    def display_name(cap):
         return "Voltage Grid Plot"
 
-    def supports_cap(self, cap, dimensions):
-        return cap.name() in ['spikes']
+    @staticmethod
+    def supports_cap(cap, dimensions):
+        return cap.name in ['spikes']
 
     def update(self, data, start_time):
         """ after a tick, gets the values of the neurons and
         each row represents the value of the neurons
         the columns show the values over time
         """
-        
+
         latest_data_i = len(data) - 1
         for i in xrange(0, self.rows, 1):
             for j in xrange(0, self.columns, 1):
