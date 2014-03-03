@@ -30,8 +30,6 @@ class Spectrogram(Visualization):
         plt.ylabel('Frequency (Hz)')
         plt.title('LFP Spectrogram')
 
-        #self.draw_ui()
-
     @staticmethod
     def display_name(cap):
         return "Spectrogram"

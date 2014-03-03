@@ -43,6 +43,7 @@ class SimManager(object):
         """
         self.model = model
         self.dt = dt
+        self.adaptors = {}
         for obj in list(self.model.objs): # copy list! connect() adds objs to model
             if (self._has_caps(obj)):
                 self.adaptors[obj] = Adaptor(obj)
