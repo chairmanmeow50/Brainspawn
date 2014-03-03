@@ -158,14 +158,6 @@ class MainFrame:
                 
             self.timer.start(200)
 
-    def draw_ui(self, obj):
-        my_figure = obj.get_figure()
-        my_ax = obj.get_ax()
-
-        my_ax.add_patch(mpatches.Rectangle((1, 1), 100, 100))
-        print (dir(my_ax))
-
-
     def update_canvas(self):
         for canvas in self.all_canvas:
             canvas.draw()

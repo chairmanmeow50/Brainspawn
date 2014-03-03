@@ -48,7 +48,6 @@ class VisualizerController(object):
         node_caps = self.sim_manager.get_caps_for_obj(obj)
         for cap in node_caps:
             for vz in self.registered:
-                print "VZ = ", vz
                 if vz.supports_cap(cap):
                     supported_plots.append((vz, obj, cap))
         return supported_plots
