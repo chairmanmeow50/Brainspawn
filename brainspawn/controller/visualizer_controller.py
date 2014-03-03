@@ -7,6 +7,8 @@ import glob
 import os
 import imp
 import traceback
+import gtk
+import cairo
 
 from simulator.sim_manager import SimManager
 from view.visualizer import MainFrame
