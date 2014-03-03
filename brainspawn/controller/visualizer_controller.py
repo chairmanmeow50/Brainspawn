@@ -37,7 +37,6 @@ class VisualizerController(object):
         self.load_model(example.model)
 
         self.main_frame = MainFrame(self.sim_manager, self)
-        self.load_visualization_files()
         self.main_frame.show_plot(self.network_view)
 
     def init_view(self):

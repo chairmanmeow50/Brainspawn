@@ -1,6 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from pylab import *
+import matplotlib.Figure as Figure
 from view.visualizations.__visualization import Visualization
 
 def class_name():
@@ -12,7 +11,7 @@ class XYPlot(Visualization):
 
     def __init__(self, sim_manager, controller, **kwargs):
         super(XYPlot, self).__init__(sim_manager, controller)
-        self._figure = plt.figure()
+        self._figure = Figure()
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')
 
@@ -23,11 +22,11 @@ class XYPlot(Visualization):
             self.dimensions = kwargs.get('dimensions')
         else:
             self.dimensions = 1
-        self.lines = plt.plot([], np.empty((0, self.dimensions)))
-        self.axes = plt.gca()
-        plt.ylabel('time')
-        plt.xlabel('xlabel')
-        plt.title("XY Plot")
+        self.lines = self._figure.plot([], np.empty((0, self.dimensions)))
+        self.axes = self._figure.add_subplot(111)
+        self._figure.ylabel('time')
+        self._figure.xlabel('xlabel')
+        self._figure.title("XY Plot")
         self.axes.set_ylim([0, 1])
         self.axes.set_xlim([0, 1])
 
