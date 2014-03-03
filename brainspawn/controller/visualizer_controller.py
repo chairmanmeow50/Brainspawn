@@ -31,6 +31,8 @@ class VisualizerController(object):
         self.registered = []
         self.plots = []
         self.load_visualization_files()
+        
+        self.obj = None
 
         # TODO - Hardcoding model for now
         # At some point, we'll add a file -> open menu
@@ -47,6 +49,7 @@ class VisualizerController(object):
         """
         # Hardcoding - FIXME
         obj = example.neurons
+        self.obj = obj
 
         supported_plots = []
         node_caps = self.sim_manager.get_caps_for_obj(example.neurons)
@@ -60,6 +63,7 @@ class VisualizerController(object):
         """ Callback for menu item
         """
         plot = plt(self.sim_manager, self, dimensions=obj.dimensions, cap=cap)
+        plot._cap = cap
         self.sim_manager.connect_to_obj(obj, cap, plot.update)
         self.main_frame.show_plot(plot)
 
