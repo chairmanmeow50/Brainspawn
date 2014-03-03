@@ -41,7 +41,8 @@ class NetworkView(Visualization):
 
         for name, data_pos in self._graph_pos.items():
             screen_pos = self._figure.axes[0].transData.transform(data_pos)
-            dist_sq = (screen_pos[0] - x) ** 2 + (screen_pos[1] - y) ** 2
+            w, h = self._canvas.get_width_height()
+            dist_sq = (screen_pos[0] - x) ** 2 + (screen_pos[1] - (h - y)) ** 2
 
             if dist_sq <= self._node_radius_sq:
                 return name
