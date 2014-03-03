@@ -11,16 +11,16 @@ def class_name():
     return "Spectrogram"
 
 class Spectrogram(Visualization):
-    
+
     def name(self):
         return "Spectrogram"
 
-    def __init__(self, sim_manager, **kwargs):
-        self.sim_manager = sim_manager
+    def __init__(self, sim_manager, main_controller, **kwargs):
+        super(Spectrogram, self).__init__(sim_manager, main_controller)
         self._figure = plt.figure()
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')
-        
+
         #self.simulator = simulator
         #self.func = func
         #self.data = self.simulator.watcher_manager.activate_watcher(name,
@@ -33,7 +33,7 @@ class Spectrogram(Visualization):
         plt.xlabel('Time (s)')
         plt.ylabel('Frequency (Hz)')
         plt.title('LFP Spectrogram')
-        
+
         #self.draw_ui()
 
     def clear(self):
@@ -44,10 +44,10 @@ class Spectrogram(Visualization):
 
     def get_figure(self):
         return self.fig
-    
+
     def get_ax(self):
         return self.ax
-    
+
     def draw_ui(self):
         #self.ax.add_patch(mpatches.Rectangle((0,0), 5, 5))
         x,y = np.array([[-0.06, 0.0, 0.1], [0.05, -0.05, 0.05]])
@@ -65,4 +65,4 @@ class Spectrogram(Visualization):
         '''
         self.clear()
         self.ax.specgram(data, Fs=self.Fs, cmap=cm.gist_heat)
-        
+
