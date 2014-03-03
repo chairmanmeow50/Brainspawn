@@ -15,9 +15,6 @@ class XYPlot(Visualization):
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')
 
-        start = self.sim_manager.min_step
-        count = self.sim_manager.current_step - self.sim_manager.min_step
-
         if 'dimensions' in kwargs:
             self.dimensions = kwargs.get('dimensions')
         else:
@@ -43,13 +40,14 @@ class XYPlot(Visualization):
         """
         buffer_start = start_time/self.sim_manager.dt
         count = self.sim_manager.current_step - buffer_start
-        t = np.linspace(buffer_start,
-                buffer_start + data[buffer_start:count].shape[0]*self.sim_manager.dt,
-                data[buffer_start:count].shape[0])
+
+        t = np.linspace(start_time,
+                start_time + data[0:count].shape[0]*self.sim_manager.dt,
+                data[0:count].shape[0])
 
         for idx, line in enumerate(self.lines):
             line.set_xdata(t)
-            line.set_ydata(data[buffer_start:count,idx:idx+1])
+            line.set_ydata(data[0:count,idx:idx+1])
 
         if count*self.sim_manager.dt > 1:
             self.axes.set_xlim([start_time, start_time + count*self.sim_manager.dt])
