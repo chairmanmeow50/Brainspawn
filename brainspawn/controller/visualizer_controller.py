@@ -17,6 +17,7 @@ from view.visualizations._network_view import NetworkView
 # FIXME use this for now
 import sample_networks.two_dimensional_rep as example
 from view.visualizations.dogeplot import DogePlot
+import nengo
 
 class VisualizerController(object):
     """
@@ -55,7 +56,10 @@ class VisualizerController(object):
     def add_plot_for_obj(self, menu_item, plt, obj, cap):
         """ Callback for menu item
         """
-        plot = plt(self.sim_manager, self, dimensions=obj.dimensions, cap=cap, obj=obj)
+        if issubclass(obj.__class__, nengo.Node):
+            plot = plt(self.sim_manager, self, dimensions=obj.size_out, cap=cap, obj=obj)
+        else:
+            plot = plt(self.sim_manager, self, dimensions=obj.dimensions, cap=cap, obj=obj)
         plot._obj = obj
         plot._cap = cap
         self.plots.append(plot)
