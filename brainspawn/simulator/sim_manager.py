@@ -102,7 +102,7 @@ class SimManager(object):
         self.min_step = 0
         self.last_sim_step = 0
         self._current_step = 0
-        self.sim = nengo.Simulator(model, self.dt)
-        #TODO - reset adaptors(empty their buffers)
-        self.update_all()
+        self.sim = nengo.Simulator(self.model, self.dt)
+        for obj, adaptor in self.adaptors.items():
+            adaptor.reset()
 
