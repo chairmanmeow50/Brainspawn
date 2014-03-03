@@ -13,8 +13,8 @@ class DogePlot(XYPlot):
     def name(self):
         return "Doge Plot"
 
-    def __init__(self, sim_manager, main_controller, dimensions, **kwargs):
-        super(DogePlot, self).__init__(sim_manager, main_controller, dimensions, **kwargs)
+    def __init__(self, sim_manager, main_controller, **kwargs):
+        super(DogePlot, self).__init__(sim_manager, main_controller, **kwargs)
         self.text = []
 
     def display_name(self):

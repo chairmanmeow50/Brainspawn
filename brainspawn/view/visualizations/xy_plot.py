@@ -10,9 +10,8 @@ class XYPlot(Visualization):
     """XY Plot
     """
 
-    def __init__(self, sim_manager, controller, dimensions, **kwargs):
+    def __init__(self, sim_manager, controller, **kwargs):
         super(XYPlot, self).__init__(sim_manager, controller)
-        self.dimensions = dimensions
         self._figure = plt.figure()
         self.init_canvas(self._figure)
         self._figure.patch.set_facecolor('white')
@@ -20,13 +19,17 @@ class XYPlot(Visualization):
         start = self.sim_manager.min_step
         count = self.sim_manager.current_step - self.sim_manager.min_step
 
-        dimensions = 1
         if 'dimensions' in kwargs:
-            dimensions = kwargs.get('dimensions')
-        self.lines = plt.plot([], np.empty((0, dimensions)))
+            self.dimensions = kwargs.get('dimensions')
+        else:
+            self.dimensions = 1
+        self.lines = plt.plot([], np.empty((0, self.dimensions)))
+        self.axes = plt.gca()
         plt.ylabel('time')
         plt.xlabel('xlabel')
         plt.title(self.display_name())
+        self.axes.set_ylim([0, 1])
+        self.axes.set_xlim([0, 1])
 
     def display_name(self):
         return "XY Plot"
@@ -46,6 +49,9 @@ class XYPlot(Visualization):
         for idx, line in enumerate(self.lines):
             line.set_xdata(t)
             line.set_ydata(data[buffer_start:count,idx:idx+1])
+
+        if count*self.sim_manager.dt > 1:
+            self.axes.set_xlim([start_time, start_time + count*self.sim_manager.dt])
 
     def clear(self):
         for line in self.lines:

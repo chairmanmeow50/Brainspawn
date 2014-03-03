@@ -47,7 +47,7 @@ class MainFrame:
         self.all_canvas = []
 
         # TODO - Replace with "add_plot functionality in controller"
-        plot_obj = DogePlot(self.sim_manager, self.controller, 2)
+        plot_obj = DogePlot(self.sim_manager, self.controller, dimensions=2)
         self.add_plot(plot_obj)
         self.all_plots.append(plot_obj)
         self.all_canvas.append(plot_obj.canvas)
