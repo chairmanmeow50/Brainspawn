@@ -13,8 +13,7 @@ class DogePlot(Visualization):
     def name(self):
         return "Doge Plot"
 
-    def __init__(self, sim_manager, name="Doge Plot", dimensions=2, xlabel='x', title='XY Plot',
-            *args, **kwargs):
+    def __init__(self, sim_manager, **kwargs):
         #self.i = 0
         self.sim_manager  = sim_manager
         self._figure = plt.figure()
@@ -24,6 +23,9 @@ class DogePlot(Visualization):
         start = self.sim_manager.min_step
         count = self.sim_manager.current_step - self.sim_manager.min_step
 
+        dimensions = 1
+        if 'dimensions' in kwargs:
+            dimensions = kwargs.get('dimensions')
         self.lines = plt.plot([], np.empty((0, dimensions)))
         self.text = []
         plt.ylabel('time')

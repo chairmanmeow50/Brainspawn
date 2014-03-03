@@ -36,8 +36,10 @@ class OutputCap(Capability):
 
         TODO - specify filters
         """
-        if (issubclass(obj.__class__, (nengo.Node, nengo.Ensemble, nengo.nonlinearities.Neurons))):
-            nengo.Connection(obj, node)
+        if (issubclass(obj.__class__, nengo.Node)):
+            nengo.Connection(obj, node, filter=None)
+        elif (issubclass(obj.__class__, (nengo.Ensemble, nengo.nonlinearities.Neurons))):
+            nengo.Connection(obj, node, filter=0.005)
         else:
             raise ValueError("output_cap does not support given object")
 

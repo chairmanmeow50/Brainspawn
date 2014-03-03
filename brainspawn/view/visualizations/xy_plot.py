@@ -9,8 +9,10 @@ def class_name():
 class XY_Plot(Visualization):
     """XY Plot
     """
+    def name(self):
+        return "XY Plot"
 
-    def __init__(self, sim_manager, name, dimensions, xlabel='x', title='XY Plot', *args, **kwargs):
+    def __init__(self, sim_manager, **kwargs):
         self.sim_manager  = sim_manager
         self._figure = plt.figure()
         self.init_canvas(self._figure)
@@ -18,7 +20,10 @@ class XY_Plot(Visualization):
 
         start = self.sim_manager.min_step
         count = self.sim_manager.current_step - self.sim_manager.min_step
-
+        
+        dimensions = 1
+        if 'dimensions' in kwargs:
+            dimensions = kwargs.get('dimensions')
         self.lines = plt.plot([], np.empty((0, dimensions)))
         plt.ylabel('time')
         plt.xlabel(xlabel)

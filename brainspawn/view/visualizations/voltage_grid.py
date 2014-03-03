@@ -1,20 +1,25 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from brainspawn.view.visualizations.__visualization import Visualization
+from view.visualizations.__visualization import Visualization
 import __future__
 
 def class_name():
     return "Voltage_Grid_Plot"
 
 class Voltage_Grid_Plot(Visualization):
-    def tick(self):
+    def out_cap(self):
+        return "spikes"
+    
+    def name(self):
+        return "Voltage Grid Plot"
+    
+    def update(self, data, start_time):
         """ after a tick, gets the values of the neurons and
         each row represents the value of the neurons
         the columns show the values over time
         """
-        start = self.simulator.min_tick
-        count = self.simulator.current_tick - self.simulator.min_tick
-        data = self.data.get(start, count) # the signal
+
+        print data
 
         if (len(data) > 0):
             if (len(data[0]) == self.dimension):
@@ -29,9 +34,6 @@ class Voltage_Grid_Plot(Visualization):
                             self.rect_array[i][j].set_facecolor(self.voltage_color(voltage))
         else:
             self.clear()
-
-    def get_figure(self):
-        return self.figure
 
     def clear(self):
         """ sets all the grids to black"""
@@ -87,35 +89,25 @@ class Voltage_Grid_Plot(Visualization):
         width = 1.0 / self.dimension
         height = 1.0 / self.dimension
 
-        print "width: " + str(width)
         for x in xrange(0, self.dimension, 1):
             for y in xrange(0, self.dimension, 1):
                 rect = plt.Rectangle((x/float(self.dimension), y/float(self.dimension)), width, height, facecolor="#000000")
                 self.rect_array[x].append(rect)
                 plt.gca().add_patch(rect)
 
-    def __init__(self, simulator, name, func, args=(), label=None, Fs=1.0):
-        self.simulator = simulator
+    def __init__(self, sim_manager, **kwargs):
+        
+        self.sim_manager  = sim_manager
+        self._figure = plt.figure()
+        self.init_canvas(self._figure)
+        self._figure.patch.set_facecolor('white')
 
-        self.data = self.simulator.watcher_manager.activate_watcher(name,
-                func, args=args)
-
-        start = self.simulator.min_tick
-        count = self.simulator.current_tick - self.simulator.min_tick
-        data = self.data.get(start, count) # the signal
-
-        self.dimension = len(data[0])
-#         print "dimension:" + str(self.dimension)
-
-        self.figure = plt.figure()
-        self.figure.patch.set_facecolor('white')
+        self.dimension = kwargs.get('dimension') if 'dimension' in kwargs else 5
 
         self.rect_array = [[] for i in range(self.dimension)]
         plt.xlim(0, 1)
         plt.ylim(0, 1)
 
         self.draw_rects()
-        plt.title('Voltage Grid Plot')
-
-
-
+        name = kwargs.get('name') if 'name' in kwargs else self.name()
+        plt.title(name)

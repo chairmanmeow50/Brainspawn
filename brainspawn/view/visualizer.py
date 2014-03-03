@@ -14,8 +14,11 @@ from view.components.input_panel import Input_Panel
 from view.components.controller_panel import Controller_Panel
 from view.components.menu_bar import Menu_Bar
 import simulator.sim_manager
+
 # FIXME For now
 from view.visualizations.dogeplot import DogePlot
+from view.visualizations.xy_plot import XY_Plot
+from view.visualizations.voltage_grid import Voltage_Grid_Plot
 import sample_networks.two_dimensional_rep as example
 
 from matplotlib.backends.backend_gtkcairo import FigureCanvasGTKCairo as FigureCanvas
@@ -34,7 +37,7 @@ class MainFrame:
         self.all_canvas = []
 
         # TODO - Replace with "add_plot functionality in controller"
-        plot_obj = DogePlot(self.sim_manager, "Dogeplot", 2)
+        plot_obj = Voltage_Grid_Plot(self.sim_manager, dimension=2)
         self.add_plot(plot_obj)
         self.all_plots.append(plot_obj)
         self.all_canvas.append(plot_obj.canvas)
@@ -91,9 +94,10 @@ class MainFrame:
         """
         node_caps = self.sim_manager.get_caps_for_obj(example.neurons)
         for cap in node_caps:
-            print (cap.name, cap.get_out_dimensions(example.neurons))
-            if (cap.name is 'output'):
+            #print (cap.name, cap.get_out_dimensions(example.neurons))
+            if (cap.name is plot.out_cap()):
                 out_cap = cap
+        #print "connected " + plot.name() + " with cap " + plot.out_cap()
         self.sim_manager.connect_to_obj(example.neurons, out_cap, plot.update)
 
     def toggle_resize(self, widget):

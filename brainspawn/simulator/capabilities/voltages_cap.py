@@ -35,9 +35,9 @@ class VoltageCap(Capability):
         TODO - specify filters
         """
         if (issubclass(obj.__class__, nengo.Ensemble)):
-            nengo.Connection(obj.neurons.voltage, node)
+            nengo.Connection(obj.neurons.voltage, node, filter=None)
         elif (issubclass(obj.__class__, nengo.nonlinearities.Neurons)):
-            nengo.Connection(obj.voltage, node)
+            nengo.Connection(obj.voltage, node, filter=None)
         else:
             raise ValueError("output_cap does not support given object")
 

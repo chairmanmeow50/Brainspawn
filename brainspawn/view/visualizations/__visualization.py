@@ -22,6 +22,9 @@ class Visualization(object):
     
     def name(self):
         pass
+    
+    def out_cap(self):
+        return "output"
 
     @abstractmethod
     def update(self, data, start_time):

@@ -33,10 +33,11 @@ class SpikesCap(Capability):
 
         TODO - specify filters
         """
+        #probe = nengo.Probe(obj, "spikes")
         if (issubclass(obj.__class__, nengo.Ensemble)):
-            nengo.Connection(obj.neurons, node, transform=np.eye(obj.n_neurons))
+            nengo.Connection(obj.neurons, node, filter=None, transform=np.eye(obj.n_neurons))
         elif (issubclass(obj.__class__, nengo.nonlinearities.Neurons)):
-            nengo.Connection(obj, node, transform=np.eye(obj.n_neurons))
+            nengo.Connection(obj, node, filter=None, transform=np.eye(obj.n_neurons))
         else:
             raise ValueError("output_cap does not support given object")
 

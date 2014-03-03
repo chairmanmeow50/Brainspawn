@@ -3,6 +3,11 @@
 Main Controller for the app
 """
 
+import glob
+import os
+import imp
+import traceback
+
 from simulator.sim_manager import SimManager
 from view.visualizer import MainFrame
 
@@ -23,6 +28,7 @@ class VisualizerController(object):
         self.load_model(example.model)
 
         self.main_frame = MainFrame(self.sim_manager)
+        self.load_visualization_files()
 
     def init_view(self):
         pass
@@ -40,7 +46,7 @@ class VisualizerController(object):
                 plot_obj = self.load_from_file(full_file_name, self.sim_manager)
                 self.register_visualization(plot_obj)
                 if (plot_obj != None):
-                    self.main_frame.controller.add_plot(plot_obj)
+                    self.main_frame.add_plot(plot_obj)
                     self.main_frame.all_plots.append(plot_obj)
                     self.main_frame.all_canvas.append(plot_obj.canvas)
 
