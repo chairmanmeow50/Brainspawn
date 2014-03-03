@@ -31,7 +31,7 @@ class VisualizerController(object):
         self.registered = []
         self.plots = []
         self.load_visualization_files()
-        
+
         self.obj = None
 
         # TODO - Hardcoding model for now
@@ -63,6 +63,7 @@ class VisualizerController(object):
         """
         plot = plt(self.sim_manager, self, dimensions=obj.dimensions, cap=cap)
         plot._cap = cap
+        self.plots.append(plot)
         self.sim_manager.connect_to_obj(obj, cap, plot.update)
         self.main_frame.show_plot(plot)
 
@@ -80,6 +81,9 @@ class VisualizerController(object):
         self.model = model
         self.network_view.load_model(model)
         self.sim_manager.load_new_model(model, self.dt) # do we want to copy the model?
+        for plt in self.plots:
+            plt.remove_plot(None, None)
+        self.plots = []
 
     def load_visualization_files(self):
         # find all files in view/visualizations ending in .py and doesn't start with __
