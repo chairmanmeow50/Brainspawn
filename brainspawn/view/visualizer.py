@@ -48,7 +48,7 @@ class MainFrame:
         self.all_canvas = []
 
         # TODO - Replace with "add_plot functionality in controller"
-        plot_obj = XYPlot(self.sim_manager, self.controller, rows=10, columns=10)
+        plot_obj = Firing_Rate_Plot(self.sim_manager, self.controller, rows=10, columns=10)
         self.add_plot(plot_obj)
         self.all_plots.append(plot_obj)
         self.all_canvas.append(plot_obj.canvas)
