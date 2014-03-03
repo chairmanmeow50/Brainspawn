@@ -22,11 +22,11 @@ class XYPlot(Visualization):
             self.dimensions = kwargs.get('dimensions')
         else:
             self.dimensions = 1
-        self.axes, = self._figure.add_subplot(111) # take first from list
+        self.axes = self._figure.add_subplot(111) # take first from list
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
-        self.axes.ylabel('time')
-        self.axes.xlabel('xlabel')
-        self.axes.title("XY Plot")
+        self.axes.set_ylabel('time')
+        self.axes.set_xlabel('xlabel')
+        self.axes.set_title("XY Plot")
         self.axes.set_ylim([0, 1])
         self.axes.set_xlim([0, 1])
 
