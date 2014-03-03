@@ -19,7 +19,7 @@ from view.visualizations.xy_plot import XYPlot
 from view.visualizations.voltage_grid import Voltage_Grid_Plot
 import sample_networks.two_dimensional_rep as example
 
-from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
+from matplotlib.backends.backend_gtk3 import TimerGTK3
 
 
 # Fix for a method that is not properly introspected
@@ -73,16 +73,13 @@ class MainFrame:
         self.canvas_layout = gtk.Layout()
         self.canvas_layout.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#ffffff"))
 
-        # hmm...
-        figure = self.all_plots[0].figure
-
         # Used to control framerate for redrawing graph components
         self.sim_rate = 6 # rate at which we call sim.step()
         self.framerate = 2
         self.next_gcomponent_redraw = 0
 
-        self.canvas = FigureCanvas(figure)  # a gtk.DrawingArea
-        self.timer = self.canvas.new_timer(interval=1000/self.sim_rate)
+        # pretend new_timer is a static method
+        self.timer = TimerGTK3(interval=1000/self.sim_rate)
         self.timer.add_callback(self.step)
 
         self.vbox.pack_start(self.menu_bar, False, False, 0)
