@@ -56,6 +56,7 @@ class VisualizerController(object):
         """ Callback for menu item
         """
         plot = plt(self.sim_manager, self, dimensions=obj.dimensions, cap=cap, obj=obj)
+        plot._obj = obj
         plot._cap = cap
         self.plots.append(plot)
         self.sim_manager.connect_to_obj(obj, cap, plot.update)

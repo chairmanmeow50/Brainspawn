@@ -144,18 +144,19 @@ class MainFrame:
 
     # Move some of this functionality to the controller
     def step(self):
-        self.sim_manager.step()
-
-        self.controller_panel.update_slider(self.sim_manager.min_step, self.sim_manager.last_sim_step,
-                                            self.sim_manager.current_step, self.sim_manager.dt)
-
-        if (self.next_gcomponent_redraw == 0):
-            self.update_canvas()
-            self.next_gcomponent_redraw = self.sim_rate/self.framerate
-        else:
-            self.next_gcomponent_redraw -= 1
-            
-        self.timer.start(200)
+        if (self.playing == True):
+            self.sim_manager.step()
+    
+            self.controller_panel.update_slider(self.sim_manager.min_step, self.sim_manager.last_sim_step,
+                                                self.sim_manager.current_step, self.sim_manager.dt)
+    
+            if (self.next_gcomponent_redraw == 0):
+                self.update_canvas()
+                self.next_gcomponent_redraw = self.sim_rate/self.framerate
+            else:
+                self.next_gcomponent_redraw -= 1
+                
+            self.timer.start(200)
 
     def draw_ui(self, obj):
         my_figure = obj.get_figure()
@@ -179,7 +180,7 @@ class MainFrame:
             self.playing = False
             self.controller_panel.toggle_play(self.playing)
         else:
-            self.timer.start()
+            self.timer.start(200)
             self.playing = True
             self.controller_panel.toggle_play(self.playing)
 

@@ -11,11 +11,12 @@ class Visualization(object):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, sim_manager, main_controller, cap=None):
+    def __init__(self, sim_manager, main_controller, cap=None, obj=None):
         self.sim_manager = sim_manager
         self.main_controller = main_controller
         self.customize_windows = []
         self._cap = cap
+        self._obj = obj
         self.context_menu = gtk.Menu()
 
     @property
@@ -59,7 +60,10 @@ class Visualization(object):
         # Context menu setup
         export_pdf_item = gtk.MenuItem("Export to PDF")
         export_pdf_item.connect("activate", self.on_export_pdf, self._canvas)
+        remove_item = gtk.MenuItem("Remove")
+        remove_item.connect("activate", self.remove_plot, self._canvas)
         self.context_menu.append(export_pdf_item)
+        self.context_menu.append(remove_item)
         self.context_menu.show_all()
 
     def button_press(self, widget, event, canvas):
@@ -70,7 +74,7 @@ class Visualization(object):
     
     def remove_plot(self, widget, canvas):
         if (self._cap):
-            self.sim_manager.disconnect_from_obj(self.main_controller.obj, self._cap, self.update)
+            self.sim_manager.disconnect_from_obj(self._obj, self._cap, self.update)
             self.main_controller.main_frame.remove_plot(self)
 
     def on_export_pdf(self, widget, canvas):
