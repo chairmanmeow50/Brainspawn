@@ -71,8 +71,10 @@ class MainFrame:
         self.controller_panel = Controller_Panel(self)
         self.menu_bar = Menu_Bar(self, controller)
 
+        self.layout_event_box = gtk.EventBox()
         self.canvas_layout = gtk.Layout()
-        self.canvas_layout.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#ffffff"))
+        self.layout_event_box.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#ffffff"))
+        self.layout_event_box.connect("button_release_event", controller.on_layout_button_release)
 
         # Used to control framerate for redrawing graph components
         self.sim_rate = 6 # rate at which we call sim.step()
@@ -86,7 +88,8 @@ class MainFrame:
         self.vbox.pack_start(self.menu_bar, False, False, 0)
         self.vbox.pack_start(self.controller_panel, False, False, 0)
 
-        self.vbox.pack_start(self.canvas_layout, True, True, 0)
+        self.layout_event_box.add(self.canvas_layout)
+        self.vbox.pack_start(self.layout_event_box, True, True, 0)
 
         self.window.add(self.vbox)
 

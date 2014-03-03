@@ -70,6 +70,5 @@ class Visualization(object):
         if not filename:
             return
         with open(filename, "wb") as f:
-            if canvas:
-                canvas.print_pdf(f)
+            canvas.print_pdf(f)
 
