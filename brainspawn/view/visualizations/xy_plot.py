@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.Figure as Figure
+from matplotlib.figure import Figure
 from view.visualizations.__visualization import Visualization
 
 def class_name():
@@ -22,11 +22,11 @@ class XYPlot(Visualization):
             self.dimensions = kwargs.get('dimensions')
         else:
             self.dimensions = 1
-        self.lines = self._figure.plot([], np.empty((0, self.dimensions)))
-        self.axes = self._figure.add_subplot(111)
-        self._figure.ylabel('time')
-        self._figure.xlabel('xlabel')
-        self._figure.title("XY Plot")
+        self.axes, = self._figure.add_subplot(111) # take first from list
+        self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
+        self.axes.ylabel('time')
+        self.axes.xlabel('xlabel')
+        self.axes.title("XY Plot")
         self.axes.set_ylim([0, 1])
         self.axes.set_xlim([0, 1])
 
