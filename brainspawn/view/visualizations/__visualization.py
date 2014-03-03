@@ -53,7 +53,7 @@ class Visualization(object):
 
     def button_press(self, widget, event, canvas):
         if event.button == 3:
-            export_pdf_item = gtk.MenuItem("Export to PDF")
+            export_pdf_item = gtk.MenuItem("Export to PDF...")
             export_pdf_item.connect("activate", self.on_export_pdf, canvas)
             self.context_menu = gtk.Menu()
             self.context_menu.append(export_pdf_item)

@@ -33,7 +33,6 @@ class VisualizerController(object):
         self.load_visualization_files()
 
         # TODO - Hardcoding model for now
-        # At some point, we'll add a file -> open menu
         self.load_model(example.model)
 
         self.main_frame = MainFrame(self.sim_manager, self)
@@ -63,6 +62,14 @@ class VisualizerController(object):
         self.sim_manager.connect_to_obj(obj, cap, plot.update)
         self.main_frame.show_plot(plot)
 
+    def on_open_model(self, widget):
+        filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_OPEN, ext="py", ext_name="Python files")
+        if not filename:
+            return
+        mod_name, file_ext = os.path.splitext(os.path.basename(filename))
+        module = imp.load_source(mod_name, filename)
+        self.load_model(module.model)
+
     def load_model(self, model):
         self.model = model
         self.network_view.load_model(model)
@@ -87,7 +94,7 @@ class VisualizerController(object):
         class_inst = None
         expected_class = 'MyClass'
 
-        mod_name,file_ext = os.path.splitext(os.path.split(filepath)[-1])
+        mod_name,file_ext = os.path.splitext(os.path.basename(filepath))
 
         if file_ext.lower() == '.py':
             py_mod = imp.load_source(mod_name, filepath)
@@ -106,7 +113,7 @@ class VisualizerController(object):
 
     def on_layout_button_release(self, widget, event):
         if event.button == 3:
-            export_pdf_item = gtk.MenuItem("Export to PDF")
+            export_pdf_item = gtk.MenuItem("Export to PDF...")
             export_pdf_item.connect("activate", self.on_export_pdf, widget)
             export_pdf_item.show()
             self.layout_context_menu = gtk.Menu()
@@ -134,7 +141,8 @@ class VisualizerController(object):
         dialog = gtk.FileChooserDialog(title="Select File", action=action, buttons=buttons)
         dialog.set_do_overwrite_confirmation(True)
         dialog.set_current_folder(os.getcwd())
-        dialog.set_current_name(name)
+        if action == gtk.FILE_CHOOSER_ACTION_SAVE:
+            dialog.set_current_name(name)
 
         if ext:
             filt = gtk.FileFilter()
@@ -152,5 +160,3 @@ class VisualizerController(object):
             result = dialog.get_filename()
         dialog.destroy()
         return result
-
-
