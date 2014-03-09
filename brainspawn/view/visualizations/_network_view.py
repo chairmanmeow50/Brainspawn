@@ -6,7 +6,7 @@ from math import sqrt
 from view.visualizations._visualization import Visualization
 
 class NetworkView(Visualization):
-    """Visualization of a model's network
+    """ Visualization of a model's network
     """
     def __init__(self, sim_manager, controller, model=None, name="Network View", **kwargs):
         super(NetworkView, self).__init__(sim_manager, controller)
@@ -90,14 +90,12 @@ class NetworkView(Visualization):
                 # print "obj.probes      = ", obj.probes
                 # print "obj.radius      = ", obj.radius
                 name = _find_uniq_name(obj.label, self.G.nodes())
-                print "Adding ensemble:", name
             elif isinstance(obj, nengo.Node):
                 # print "obj.label      = ", obj.label
                 # print "obj.dimensions = ", obj.size_out
                 # print "obj.output     = ", obj.output
                 # print "obj.probes     = ", obj.probes
                 name = _find_uniq_name(obj.label, self.G.nodes())
-                print "Adding node:", name
             else:
                 print "Error: Uknown model object \"", str(obj), "\", unable to add to network view."
                 name = str(obj)
@@ -131,10 +129,7 @@ class NetworkView(Visualization):
                 print "Error: unable to determine connection's post. Dropping edge \"%s\"." % (conn.pre)
                 continue
 
-            print "Adding edge: \"%s\" to \"%s\"" % (pre_name, post_name)
             self.G.add_edge(pre_name, post_name)
-
-        # TODO(gmdavis): add probes?
 
         # Draw graph
         node_diam_sqr = (sqrt(self._node_radius_sq) * 2) ** 2
@@ -182,9 +177,7 @@ class NetworkView(Visualization):
                     self.menu_items.append(item)
                 self.context_menu.show_all()
 
-            rtn = super(NetworkView, self).button_press(widget, event, canvas)
-
-            return rtn
+            return super(NetworkView, self).button_press(widget, event, canvas)
         return False
 
 #---------- Helper functions --------
@@ -204,56 +197,12 @@ def _find_uniq_name(name, collection, threashold=1000):
         name = orig_name + " (%d)" % count
         count += 1
 
-    print "Warning: modifying original name to \"%s\" to make it unique." % (name)
+    # print "Warning: modifying original name to \"%s\" to make it unique." % (name)
     return name
-
-#---------- Mock objects --------
-
-import random
-
-class MockNengoNetwork:
-    """ A simple mock object to represent a network model, containing
-    ensembles, nodes, and connections.
-    """
-    def __init__(self, n_ensembles = None, n_nodes = None, conn_prob = 50):
-        self.ensembles = []
-        self.nodes = []
-        self.conns = []
-
-        if n_ensembles is None:
-            n_ensembles = random.randint(3, 10)
-        if n_nodes is None:
-            n_nodes = random.randint(1, 7)
-
-        # Create ensembles
-        for i in range(n_ensembles):
-            self.ensembles.append( "ens-" + str(i) )
-
-        # Create nodes
-        for i in range(n_nodes):
-            self.nodes.append( "node-" + str(i) )
-
-        # Create ensemble connections
-        for ens1 in self.ensembles:
-            for ens2 in self.ensembles:
-                if ens1 == ens2:
-                    continue
-                if random.randint(1, 100) <= conn_prob:
-                    self.conns.append( (ens1, ens2) )
-
-        # Create node connections
-        for node in self.nodes:
-            target = random.choice( self.ensembles )
-            self.conns.append( (node, target) )
-
-    def add_to_graph(self, G):
-        G.add_nodes_from(self.ensembles)
-        G.add_nodes_from(self.nodes)
-        G.add_edges_from(self.conns)
 
 #---------- Main method (testing) --------
 
-import sample_networks.two_dimensional_rep as example
+import sample_networks.large_network as example
 
 def main():
     nv = NetworkView(sim_manager=None, controller=None, model=example.model)
