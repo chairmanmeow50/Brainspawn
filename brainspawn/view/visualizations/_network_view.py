@@ -3,7 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import gtk
 from math import sqrt
-from view.visualizations.__visualization import Visualization
+from view.visualizations._visualization import Visualization
 
 class NetworkView(Visualization):
     """Visualization of a model's network
