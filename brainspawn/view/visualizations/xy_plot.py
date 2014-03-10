@@ -1,5 +1,4 @@
 import numpy as np
-from matplotlib.figure import Figure
 from view.visualizations.__visualization import Visualization
 
 def class_name():
@@ -9,53 +8,42 @@ class XYPlot(Visualization):
     """XY Plot
     """
 
-    def __init__(self, sim_manager, controller, **kwargs):
-        super(XYPlot, self).__init__(sim_manager, controller)
-        self._figure = Figure()
-        self.init_canvas(self._figure)
-        self._figure.patch.set_facecolor('white')
+    def __init__(self, main_controller, obj, cap):
+        super(XYPlot, self).__init__(main_controller, obj, cap)
 
-        if 'dimensions' in kwargs:
-            self.dimensions = kwargs.get('dimensions')
-        else:
-            self.dimensions = 1
-        self.axes = self._figure.add_subplot(111) # take first from list
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
         self.axes.set_ylabel('time')
         self.axes.yaxis.set_label_coords(-0.05, 0.5)
         self.axes.set_xlabel('xlabel')
         self.axes.xaxis.set_label_coords(0.5, -0.05)
-        self.axes.set_title("XY Plot")
         self.axes.set_ylim([0, 1])
         self.axes.set_xlim([0, 1])
 
     @staticmethod
-    def display_name(cap):
-        return "XY Plot" + " " + cap.name
+    def plot_name():
+        return "XY Plot"
 
     @staticmethod
     def supports_cap(cap):
         return cap.name in ['voltages', 'output']
 
-    def update(self, data, start_time):
+    def update(self, start_step, step_size, data):
         """ Update x data for each line in graph
         """
-        buffer_start = start_time/self.sim_manager.dt
-        count = self.sim_manager.current_step - buffer_start
+        start_time = start_step*step_size
+        end_time = (start_step + data.shape[0])*step_size
 
-        t = np.linspace(start_time,
-                start_time + data[0:count].shape[0]*self.sim_manager.dt,
-                data[0:count].shape[0])
+        t = np.linspace(start_time, end_time, data.shape[0])
 
         for idx, line in enumerate(self.lines):
             line.set_xdata(t)
-            line.set_ydata(data[0:count,idx:idx+1])
+            line.set_ydata(data[:,idx:idx+1])
 
-        if count*self.sim_manager.dt > 1:
-            self.axes.set_xlim([start_time, start_time + count*self.sim_manager.dt])
+        if end_time > 1:
+            self.axes.set_xlim([t[0], t[-1]])
+        else:
+            self.axes.set_xlim([0, 1])
 
-    def clear(self):
-        for line in self.lines:
-            line.set_xdata([])
-            line.set_ydata([])
+        if len(data) > 0:
+            self.axes.set_ylim([min(np.amin(data), 0), max(np.amax(data), 1)])
 

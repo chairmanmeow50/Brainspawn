@@ -146,21 +146,20 @@ class MainFrame:
     def step(self):
         if (self.playing == True):
             self.sim_manager.step()
-    
+
             self.controller_panel.update_slider(self.sim_manager.min_step, self.sim_manager.last_sim_step,
                                                 self.sim_manager.current_step, self.sim_manager.dt)
-    
+
             if (self.next_gcomponent_redraw == 0):
                 self.update_canvas()
                 self.next_gcomponent_redraw = self.sim_rate/self.framerate
             else:
                 self.next_gcomponent_redraw -= 1
-                
+
             self.timer.start(1)
 
     def update_canvas(self):
-        for canvas in self.all_canvas:
-            canvas.draw()
+        map(lambda canvas:canvas.draw(), self.all_canvas)
 
     #Controller code for controller_panel
     def format_slider_value(self, scale, value):
@@ -209,21 +208,22 @@ class MainFrame:
     def menuitem_response(self, widget, string):
         print "%s" % string
 
-    def show_plot(self, plot):
-        plot.canvas.mpl_connect('figure_enter_event', self.enter_figure)
-        plot.canvas.mpl_connect('figure_leave_event', self.leave_figure)
-        plot.canvas.mpl_connect('button_press_event', self.mouse_on_press)
-        plot.canvas.mpl_connect('button_release_event', self.mouse_on_release)
-        plot.canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
+    def show_plot(self, canvas):
+        canvas.mpl_connect('figure_enter_event', self.enter_figure)
+        canvas.mpl_connect('figure_leave_event', self.leave_figure)
+        canvas.mpl_connect('button_press_event', self.mouse_on_press)
+        canvas.mpl_connect('button_release_event', self.mouse_on_release)
+        canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
 
-        self.all_canvas.append(plot.canvas)
-        plot.canvas.set_visible(True)
-        plot.canvas.set_size_request(300, 300)
-        self.canvas_layout.put(plot.canvas, 0, 0)
+        self.all_canvas.append(canvas)
+        canvas.set_visible(True)
+        canvas.set_size_request(300, 300)
+        self.canvas_layout.put(canvas, 0, 0)
 
-    def remove_plot(self, plot):
-        plot.canvas.set_visible(False)
-        self.canvas_layout.remove(plot.canvas)
+    def remove_plot(self, canvas):
+        canvas.set_visible(False)
+        self.all_canvas.remove(canvas)
+        self.canvas_layout.remove(canvas)
 
     def toggle_panel(self, widget, panel):
         if (widget.get_active()):
@@ -233,5 +233,3 @@ class MainFrame:
             panel.set_visible(False)
             self.control_panel.remove(panel)
 
-    def repaint_all_canvas(self):
-        map(lambda x:x.draw(), self.all_canvas)

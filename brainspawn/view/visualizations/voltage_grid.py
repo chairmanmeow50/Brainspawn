@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.figure as Figure
 from matplotlib.patches import Rectangle
 from view.visualizations.__visualization import Visualization
 from view.visualizations.firing_rate import Firing_Rate_Plot
@@ -10,28 +9,24 @@ def class_name():
     return "Voltage_Grid_Plot"
 
 class Voltage_Grid_Plot(Firing_Rate_Plot):
-    def out_cap(self):
-        return "spikes"
 
     @staticmethod
-    def display_name(cap):
+    def plot_name():
         return "Voltage Grid Plot"
 
     @staticmethod
     def supports_cap(cap):
-        return cap.name in ['spikes']
+        return cap.name in ['voltage']
 
-    def update(self, data, start_time):
+    def update(self, start_step, step_size, data):
         """ after a tick, gets the values of the neurons and
         each row represents the value of the neurons
         the columns show the values over time
         """
 
-        latest_data_i = len(data) - 1
+        # TODO - when voltages is fixed, implement
         for i in xrange(0, self.rows, 1):
             for j in xrange(0, self.rows, 1):
-                #srandom_val = 0
-                #if (data[latest_data_i][j*self.rows + i]):
                 random_val = random.random()
                 self.rect_array[i][j].set_facecolor(self.voltage_color(random_val))
 
@@ -88,5 +83,6 @@ class Voltage_Grid_Plot(Firing_Rate_Plot):
                 self.rect_array[x].append(rect)
                 self.axes.add_patch(rect)
 
-    def __init__(self, sim_manager, main_controller, **kwargs):
-        super(Voltage_Grid_Plot, self).__init__(sim_manager, main_controller, **kwargs)
+    def __init__(self, main_controller, obj, cap):
+        super(Voltage_Grid_Plot, self).__init__(main_controller, obj, cap)
+

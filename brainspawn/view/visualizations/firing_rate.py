@@ -1,6 +1,5 @@
 import numpy as np
 import math
-from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 from view.visualizations.__visualization import Visualization
 
@@ -10,18 +9,16 @@ def class_name():
     return "Firing_Rate_Plot"
 
 class Firing_Rate_Plot(Visualization):
-    def out_cap(self):
-        return "spikes"
 
     @staticmethod
-    def display_name(cap):
+    def plot_name():
         return "Firing Rate Plot"
 
     @staticmethod
     def supports_cap(cap):
         return cap.name in ['spikes']
 
-    def update(self, data, start_time):
+    def update(self, start_step, step_size, data):
         """
         paints a rectangle with a shade depending on
         its previous values. if it fired on this tick
@@ -29,15 +26,14 @@ class Firing_Rate_Plot(Visualization):
         tick, it will be slightly grayer
         """
         if (len(data) == 0):
-            return
+            self.clear()
 
-        latest_data_i = len(data) - 1
-        length = len(data[latest_data_i])
+        length = len(data[-1])
         row = int(math.floor(math.sqrt(length)))
         col = row
         for i in xrange(0, self.rows, 1):
             for j in xrange(0, self.rows, 1):
-                if (data[latest_data_i][i*self.rows + j]):
+                if (data[-1][i*self.rows + j]):
                     self.rect_array_color[i][j] = 4
                 else:
                     if (self.rect_array_color[i][j] >= 1):
@@ -76,19 +72,9 @@ class Firing_Rate_Plot(Visualization):
                 self.rect_array_color[x] = np.zeros(self.rows)
                 self.axes.add_patch(rect)
 
-    def __init__(self, sim_manager, main_controller, **kwargs):
-        super(Firing_Rate_Plot, self).__init__(sim_manager, main_controller)
+    def __init__(self, main_controller, obj, cap):
+        super(Firing_Rate_Plot, self).__init__(main_controller, obj, cap)
 
-        self._figure = Figure()
-        self.init_canvas(self._figure)
-        self._figure.patch.set_facecolor('white')
-        
-        self.axes = self._figure.add_subplot(111)
-
-        self.obj = kwargs.get('obj') if 'obj' in kwargs else None
-        self.dimensions = 10
-        if (self.obj):
-            self.dimensions = self.obj.n_neurons
         self.rows = int(math.floor(math.sqrt(self.dimensions)))
 
         self.rect_array = [[] for i in range(self.rows)]
@@ -97,5 +83,3 @@ class Firing_Rate_Plot(Visualization):
         self.axes.set_ylim(0, 1)
 
         self.draw_rects()
-        name = self.display_name(kwargs.get('cap')) if 'cap' in kwargs else 'Firing Rate'
-        self.axes.set_title(name)

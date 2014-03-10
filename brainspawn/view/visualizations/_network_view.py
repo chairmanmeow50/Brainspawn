@@ -8,32 +8,32 @@ from view.visualizations.__visualization import Visualization
 class NetworkView(Visualization):
     """Visualization of a model's network
     """
-    def __init__(self, sim_manager, controller, model=None, name="Network View", **kwargs):
-        super(NetworkView, self).__init__(sim_manager, controller)
+    def __init__(self, controller, model=None, name="Network View", **kwargs):
+        super(NetworkView, self).__init__(controller, None, None)
         self._model = model
         self.name = name
 
-        self._figure = plt.figure()
-        self.init_canvas(self._figure)
-        self._figure.patch.set_facecolor('white')
-
         self.menu_items = []
+
+        # Hmmm.. we need to spit controller/view functionality here?
+        self.view.button_press = self.button_press
 
         # Build graph
         self._node_radius_sq = 100
         self.load_model(model)
 
-    def display_name(self):
-        return None
+    @staticmethod
+    def plot_name():
+        return 'Network View'
 
     @staticmethod
     def supports_cap(cap):
         return False
 
-    def update(self, data, start_time):
+    def update(self, start_step, step_size, data):
         pass
 
-    def clear(self):
+    def remove_plot(self, widget, canvas):
         pass
 
     def node_at(self, x, y):
@@ -41,8 +41,8 @@ class NetworkView(Visualization):
             return None
 
         for name, data_pos in self._graph_pos.items():
-            screen_pos = self._figure.axes[0].transData.transform(data_pos)
-            w, h = self._canvas.get_width_height()
+            screen_pos = self.view._figure.axes[0].transData.transform(data_pos)
+            w, h = self.view._canvas.get_width_height()
             dist_sq = (screen_pos[0] - x) ** 2 + (screen_pos[1] - (h - y)) ** 2
 
             if dist_sq <= self._node_radius_sq:
@@ -75,7 +75,7 @@ class NetworkView(Visualization):
         self.G = nx.MultiDiGraph()
         self._graph_name_to_obj = {}
         self._graph_obj_to_name = {}
-        self._figure.clear()    
+        self.view._figure.clear()
 
         if model is None:
             return
@@ -140,10 +140,10 @@ class NetworkView(Visualization):
         node_diam_sqr = (sqrt(self._node_radius_sq) * 2) ** 2
 
         axis = None
-        if len(self._figure.axes) == 0:
-            axis = self._figure.add_subplot(1,1,1)
+        if len(self.view._figure.axes) == 0:
+            axis = self.view._figure.add_subplot(1,1,1)
         else:
-            axis = self._figure.axes[0]
+            axis = self.view._figure.axes[0]
 
         self._graph_pos = nx.graphviz_layout(self.G, prog="neato")
         colors = [self.decide_obj_color(self.get_obj_from_name(obj)) for obj in self.G.nodes()]
@@ -167,7 +167,7 @@ class NetworkView(Visualization):
             node_name = self.node_at(event.x, event.y)
 
             for item in self.menu_items:
-                self.context_menu.remove(item)
+                self.view.context_menu.remove(item)
             self.menu_items = []
 
             if node_name is not None:
@@ -175,12 +175,12 @@ class NetworkView(Visualization):
                 supported = self.main_controller.plots_for_object(obj)
 
                 for (vz, obj, cap) in supported:
-                    item = gtk.MenuItem("View: " + vz.display_name(cap))
+                    item = gtk.MenuItem("View: " + vz.plot_name() + '-' + cap.name)
                     item.connect("activate", self.main_controller.add_plot_for_obj, vz, obj, cap)
-                    self.context_menu.append(item)
+                    self.view.context_menu.append(item)
 
                     self.menu_items.append(item)
-                self.context_menu.show_all()
+                self.view.context_menu.show_all()
 
             rtn = super(NetworkView, self).button_press(widget, event, canvas)
 
@@ -256,7 +256,7 @@ class MockNengoNetwork:
 import sample_networks.two_dimensional_rep as example
 
 def main():
-    nv = NetworkView(sim_manager=None, controller=None, model=example.model)
+    nv = NetworkView(controller=None, model=example.model)
     fig = nv.figure()
     fig.show()
     plt.show()
