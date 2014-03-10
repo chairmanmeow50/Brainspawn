@@ -114,14 +114,15 @@ class ResizeBox(Gtk.EventBox):
         return self._is_resize
 
     def button_press_handler(self, widget, event):
-        self.hide()
-        self.show()
         if (event.button == 1):
             x0 = self._canvas_layout.child_get_property(self, "x")
             y0 = self._canvas_layout.child_get_property(self, "y")
             widget_x, widget_y = self._canvas_layout.get_pointer()
             if (self.is_within_resize_bounds(widget_x - self._pos_x, widget_y - self._pos_y)):
                 self._is_resize = True
+            else:
+                self.hide()
+                self.show()
             self._press = x0, y0, widget_x, widget_y
             self._original_size = self._width, self._height
 
