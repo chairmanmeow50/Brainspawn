@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib.figure import Figure
-from view.visualizations.__visualization import Visualization
+from view.visualizations._visualization import Visualization
 
 def class_name():
     return "XYPlot"
