@@ -27,6 +27,7 @@ class Firing_Rate_Plot(Visualization):
         """
         if (len(data) == 0):
             self.clear()
+            return
 
         length = len(data[-1])
         row = int(math.floor(math.sqrt(length)))

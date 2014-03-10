@@ -17,6 +17,8 @@ class Raster_Spike_Plot(Visualization):
         return cap.name in ['spikes']
 
     def update(self, start_step, step_size, spikes):
+        start_time = start_step*step_size
+        end_time = (start_step + spikes.shape[0])*step_size
         trange = np.linspace(start_time, end_time, spikes.shape[0])
 
         color_cycle = rcParams['axes.color_cycle']
