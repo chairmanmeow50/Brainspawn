@@ -5,6 +5,15 @@ import gtk
 from abc import ABCMeta, abstractmethod
 from view.visualizations.plot_view import PlotView
 
+registered_plots = []
+
+def registered_plot(cls):
+    """Decorator for visualization implementations
+    In order to be accessible by import *, must also add to __all__ in __init__.py
+    """
+    registered_plots.append(cls)
+    return cls
+
 class Visualization(object):
     """Visualization class
     """
@@ -49,13 +58,6 @@ class Visualization(object):
         """Return the dimensions of the object this graph is representing
         """
         return self._cap.get_out_dimensions(self._obj)
-
-    @staticmethod
-    def register_plot():
-        """ Registers plot with plot registry
-        Registered plots can be used in the visualizer
-        """
-        pass #TODO
 
     @staticmethod
     def plot_name():

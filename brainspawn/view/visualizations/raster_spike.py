@@ -1,11 +1,9 @@
 import numpy as np
 from matplotlib import rcParams
-from view.visualizations._visualization import Visualization
+from view.visualizations._visualization import Visualization, registered_plot
 import __future__
 
-def class_name():
-    return "Raster_Spike_Plot"
-
+@registered_plot
 class Raster_Spike_Plot(Visualization):
 
     @staticmethod

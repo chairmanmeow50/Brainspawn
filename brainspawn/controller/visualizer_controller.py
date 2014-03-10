@@ -13,11 +13,11 @@ import cairo
 from simulator.sim_manager import SimManager
 from view.visualizer import MainFrame
 from view.visualizations._network_view import NetworkView
+from view.visualizations._visualization import registered_plots
+from view.visualizations import *
 
 # FIXME use this for now
 import sample_networks.two_dimensional_rep as example
-from view.visualizations.dogeplot import DogePlot
-import nengo
 
 class VisualizerController(object):
     """
@@ -85,18 +85,7 @@ class VisualizerController(object):
         self.sim_manager.load_new_model(model, self.dt) # do we want to copy the model?
 
     def load_visualization_files(self):
-        # find all files in view/visualizations ending in .py and doesn't start with __
-        # TODO - this will all go away and be replaced by registry stuff
-        visualization_files = glob.glob('brainspawn/view/visualizations/*.py')
-        for full_file_name in visualization_files:
-            file_name = full_file_name[full_file_name.rfind('/')+1:]
-            if (not file_name.startswith("_") and not file_name == 'plot_view.py'):
-                plot_cls = self.load_class_from_file(full_file_name)
-                if plot_cls:
-                    self.register_visualization(plot_cls)
-
-    def register_visualization(self, visualization):
-        self.registered.append(visualization)
+        self.registered = registered_plots
 
     def load_class_from_file(self, filepath):
         """ Loads class from file as specified by module.class_name()

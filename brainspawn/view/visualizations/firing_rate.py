@@ -1,13 +1,11 @@
 import numpy as np
 import math
 from matplotlib.patches import Rectangle
-from view.visualizations._visualization import Visualization
+from view.visualizations._visualization import Visualization, registered_plot
 
 import __future__
 
-def class_name():
-    return "Firing_Rate_Plot"
-
+@registered_plot
 class Firing_Rate_Plot(Visualization):
 
     @staticmethod
