@@ -12,8 +12,8 @@ import cairo
 
 from simulator.sim_manager import SimManager
 from view.visualizer import MainFrame
-from view.visualizations._network_view import NetworkView
-from view.visualizations._visualization import registered_plots
+from view.visualizations.network_view import NetworkView
+from view.visualizations.visualization import registered_plots
 from view.visualizations import *
 
 # FIXME use this for now
