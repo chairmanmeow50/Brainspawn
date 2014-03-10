@@ -28,6 +28,7 @@ class Spectrogram(Visualization):
 
     def update(self, start_step, step_size, data):
         # TODO - start_step
-        if len(data) > 0:
+        self.axes.clear()
+        if len(data) > 2:
             self.axes.specgram(np.average(data, 1), Fs=1/step_size, cmap=cm.gist_heat)
 
