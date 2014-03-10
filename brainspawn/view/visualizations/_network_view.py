@@ -1,6 +1,10 @@
 import nengo
 import networkx as nx
 import matplotlib.pyplot as plt
+
+from gi import pygtkcompat
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version="3.0")
 import gtk
 from math import sqrt
 from view.visualizations._visualization import Visualization
@@ -206,8 +210,6 @@ import sample_networks.large_network as example
 
 def main():
     nv = NetworkView(controller=None, model=example.model)
-    fig = nv.figure()
-    fig.show()
     plt.show()
 
 if __name__ == '__main__':
