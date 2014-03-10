@@ -1,13 +1,11 @@
 import numpy as np
 from matplotlib.patches import Rectangle
-from view.visualizations._visualization import Visualization
+from view.visualizations._visualization import Visualization, registered_plot
 from view.visualizations.firing_rate import Firing_Rate_Plot
 import __future__
 import random
 
-def class_name():
-    return "Voltage_Grid_Plot"
-
+@registered_plot
 class Voltage_Grid_Plot(Firing_Rate_Plot):
 
     @staticmethod

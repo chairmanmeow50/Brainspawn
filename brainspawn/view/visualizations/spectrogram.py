@@ -1,13 +1,11 @@
 import matplotlib.cm as cm
 import numpy as np
-from view.visualizations._visualization import Visualization
+from view.visualizations._visualization import Visualization, registered_plot
 
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 
-def class_name():
-    return "Spectrogram"
-
+@registered_plot
 class Spectrogram(Visualization):
 
     def __init__(self, main_controller, obj, cap):

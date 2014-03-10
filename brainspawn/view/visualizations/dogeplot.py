@@ -1,9 +1,8 @@
 import numpy as np
 from view.visualizations.xy_plot import XYPlot
+from view.visualizations._visualization import registered_plot
 
-def class_name():
-    return "DogePlot"
-
+@registered_plot
 class DogePlot(XYPlot):
     """DogePlot
     """
