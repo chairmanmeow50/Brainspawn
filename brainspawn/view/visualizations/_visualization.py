@@ -3,7 +3,7 @@
 
 import gtk
 from abc import ABCMeta, abstractmethod
-from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
+from view.visualizations.plot_view import PlotView
 
 class Visualization(object):
     """Visualization class
@@ -11,25 +11,56 @@ class Visualization(object):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, sim_manager, main_controller, cap=None, obj=None):
-        self.sim_manager = sim_manager
+    def __init__(self, main_controller, obj, cap):
         self.main_controller = main_controller
-        self.customize_windows = []
-        self._cap = cap
         self._obj = obj
-        self.context_menu = gtk.Menu()
+        self._cap = cap
+        self.config = {}
+        self.init_default_config(obj, cap)
+
+        self.view = PlotView(self)
+        self.axes = self.view.figure.add_subplot(111) # take first from list
+        self.axes.set_title(self.title)
+
+    def init_default_config(self, obj, cap):
+        """For convenience in title string formatting,
+        we set 'TARGET' and 'DATA' to default values of the
+        target object, and represented data, respectively
+        """
+        if not obj or not cap:
+            return
+        self.config['title'] = '{TARGET} - {DATA}'
+        self.config['TARGET'] = obj.label
+        self.config['DATA'] = cap.name
 
     @property
-    def figure(self):
-        return self._figure
+    def title(self):
+        """ Return a title for the current graph
+        Format the string, config is passed in as kwargs
+        """
+        try:
+            title = self.config['title'].format(**self.config)
+        except KeyError as e:
+            title = self.plot_name()
+        return title
 
     @property
-    def canvas(self):
-        return self._canvas
+    def dimensions(self):
+        """Return the dimensions of the object this graph is representing
+        """
+        return self._cap.get_out_dimensions(self._obj)
 
     @staticmethod
-    def display_name(cap):
-        """ Name of graph for given cap
+    def register_plot():
+        """ Registers plot with plot registry
+        Registered plots can be used in the visualizer
+        """
+        pass #TODO
+
+    @staticmethod
+    def plot_name():
+        """ What we call the plot
+        (Used when choosing plot from dropdown menu)
         """
         raise NotImplementedError("Not implemented")
 
@@ -39,48 +70,26 @@ class Visualization(object):
         """
         raise NotImplementedError("Not implemented")
 
-    def set_cap(self, cap):
-        self._cap = cap
-
-    def update(self, data, start_time):
+    @abstractmethod
+    def update(self, start_step, step_size, data):
         """ Callback function passed to observer nodes
         """
         pass
 
-    @abstractmethod
-    def clear(self):
-        """ Clear the graph
-        """
-        pass
-
-    def init_canvas(self, figure):
-        self._canvas = FigureCanvas(figure)
-        self._canvas.connect("button_release_event", self.button_press, self._canvas)
-
-        # Context menu setup
-        export_pdf_item = gtk.MenuItem("Export to PDF")
-        export_pdf_item.connect("activate", self.on_export_pdf, self._canvas)
-        remove_item = gtk.MenuItem("Remove")
-        remove_item.connect("activate", self.remove_plot, self._canvas)
-        self.context_menu.append(export_pdf_item)
-        self.context_menu.append(remove_item)
-        self.context_menu.show_all()
-
-    def button_press(self, widget, event, canvas):
-        if event.button == 3:
-            self.context_menu.popup(None, None, None, None, event.button, event.time)
-            return True
-        return False
-    
     def remove_plot(self, widget, canvas):
-        if (self._cap):
-            self.sim_manager.disconnect_from_obj(self._obj, self._cap, self.update)
-            self.main_controller.main_frame.remove_plot(self)
+        self.main_controller.remove_plot_for_obj(self, self._obj, self._cap)
 
     def on_export_pdf(self, widget, canvas):
-        filename = self.main_controller.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
+        filename = self.main_controller.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, self.title + ".pdf")
         if not filename:
             return
         with open(filename, "wb") as f:
             canvas.figure.patch.set_facecolor('white')
             canvas.print_pdf(f)
+
+    def button_press(self, widget, event, canvas):
+        if event.button == 3:
+            self.view.context_menu.popup(None, None, None, None, event.button, event.time)
+            return True
+        return False
+

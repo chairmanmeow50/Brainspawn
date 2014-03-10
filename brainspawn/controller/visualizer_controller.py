@@ -26,7 +26,7 @@ class VisualizerController(object):
 
     def __init__(self, sim_manager):
         self.sim_manager = sim_manager
-        self.network_view = NetworkView(sim_manager, self)
+        self.network_view = NetworkView(self)
         self.dt = 0.001
 
         self.registered = []
@@ -37,7 +37,7 @@ class VisualizerController(object):
         self.load_model(example.model)
 
         self.main_frame = MainFrame(self.sim_manager, self)
-        self.main_frame.show_plot(self.network_view)
+        self.main_frame.show_plot(self.network_view.view.canvas)
 
     def init_view(self):
         pass
@@ -56,15 +56,15 @@ class VisualizerController(object):
     def add_plot_for_obj(self, menu_item, plt, obj, cap):
         """ Callback for menu item
         """
-        if issubclass(obj.__class__, nengo.Node):
-            plot = plt(self.sim_manager, self, dimensions=obj.size_out, cap=cap, obj=obj)
-        else:
-            plot = plt(self.sim_manager, self, dimensions=obj.dimensions, cap=cap, obj=obj)
-        plot._obj = obj
-        plot._cap = cap
+        plot = plt(self, obj, cap)
         self.plots.append(plot)
         self.sim_manager.connect_to_obj(obj, cap, plot.update)
-        self.main_frame.show_plot(plot)
+        self.main_frame.show_plot(plot.view.canvas)
+
+    def remove_plot_for_obj(self, plot, obj, cap):
+        self.sim_manager.disconnect_from_obj(obj, cap, plot.update)
+        self.plots.remove(plot)
+        self.main_frame.remove_plot(plot.view.canvas)
 
     def on_open_model(self, widget):
         filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_OPEN, ext="py", ext_name="Python files")
@@ -86,10 +86,11 @@ class VisualizerController(object):
 
     def load_visualization_files(self):
         # find all files in view/visualizations ending in .py and doesn't start with __
+        # TODO - this will all go away and be replaced by registry stuff
         visualization_files = glob.glob('brainspawn/view/visualizations/*.py')
         for full_file_name in visualization_files:
             file_name = full_file_name[full_file_name.rfind('/')+1:]
-            if (file_name.startswith("_") == False):
+            if (not file_name.startswith("_") and not file_name == 'plot_view.py'):
                 plot_cls = self.load_class_from_file(full_file_name)
                 if plot_cls:
                     self.register_visualization(plot_cls)
@@ -113,10 +114,11 @@ class VisualizerController(object):
 
         mod_class = getattr(py_mod, py_mod.class_name())
         try:
-            class_inst = mod_class(self.sim_manager, self)
+            class_inst = mod_class(self, None, None)
         except TypeError as e:
-            print "Error instantiating class " + py_mod.class_name()
-            print traceback.print_exc()
+            pass # TODO - haha, this will go away soon anyways, lol
+        except AttributeError as e:
+            pass
 
         return mod_class
 

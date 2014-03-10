@@ -46,8 +46,7 @@ class SimManager(object):
         self.adaptors = {}
         for obj in list(self.model.objs): # copy list! connect() adds objs to model
             if (self._has_caps(obj)):
-                self.adaptors[obj] = Adaptor(obj)
-                self.adaptors[obj].connect()
+                self.adaptors[obj] = Adaptor(self, obj)
         self.sim = nengo.Simulator(self.model, self.dt)
 
     def get_caps_for_obj(self, obj):

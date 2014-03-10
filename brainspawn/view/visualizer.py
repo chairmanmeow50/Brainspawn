@@ -69,7 +69,7 @@ class MainFrame:
         self.vbox.pack_start(self.controller_panel, False, False, 0)
 
         self.layout_event_box.add(self.canvas_layout)
-    
+
         self.vbox.pack_start(self.layout_event_box, True, True, 0)
 
         self.window.add(self.vbox)
@@ -84,21 +84,20 @@ class MainFrame:
     def step(self):
         if (self.playing == True):
             self.sim_manager.step()
-    
+
             self.controller_panel.update_slider(self.sim_manager.min_step, self.sim_manager.last_sim_step,
                                                 self.sim_manager.current_step, self.sim_manager.dt)
-    
+
             if (self.next_gcomponent_redraw == 0):
                 self.update_canvas()
                 self.next_gcomponent_redraw = self.sim_rate/self.framerate
             else:
                 self.next_gcomponent_redraw -= 1
-                
+
             self.timer.start(1)
 
     def update_canvas(self):
-        for canvas in self.all_canvas:
-            canvas.draw()
+        map(lambda canvas:canvas.draw(), self.all_canvas)
 
     #Controller code for controller_panel
     def format_slider_value(self, scale, value):
@@ -147,14 +146,15 @@ class MainFrame:
     def menuitem_response(self, widget, string):
         print "%s" % string
 
-    def show_plot(self, plot):
-        resize_box = ResizeBox(plot.canvas, self.canvas_layout)
+    def show_plot(self, canvas):
+        resize_box = ResizeBox(canvas, self.canvas_layout)
         self.all_canvas.append(resize_box.get_canvas())
         self.canvas_layout.put(resize_box, 0, 0)
 
-    def remove_plot(self, plot):
-        plot.canvas.set_visible(False)
-        self.canvas_layout.remove(plot.canvas)
+    def remove_plot(self, canvas):
+        canvas.set_visible(False)
+        self.all_canvas.remove(canvas)
+        self.canvas_layout.remove(canvas)
 
     def toggle_panel(self, widget, panel):
         if (widget.get_active()):
@@ -164,5 +164,3 @@ class MainFrame:
             panel.set_visible(False)
             self.control_panel.remove(panel)
 
-    def repaint_all_canvas(self):
-        map(lambda x:x.draw(), self.all_canvas)

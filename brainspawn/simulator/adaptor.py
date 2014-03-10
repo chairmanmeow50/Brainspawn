@@ -22,6 +22,7 @@ import numpy as np
 from capabilities.cap_factory import CapFactory
 
 max_buffer_elements = 100000 # TODO - make configurable
+max_window_size = 1000
 
 class OutputFn(collections.Callable):
     """Callable which is passed to a given node
@@ -31,12 +32,12 @@ class OutputFn(collections.Callable):
     connected, and publishes the updated buffer
     """
 
-    def __init__(self, dimensions):
+    def __init__(self, sim_manager, dimensions):
+        self.sim_manager = sim_manager
         self.dimensions = dimensions
         self.buffer = None
-        self.buffer_start_time = None
+        self.buffer_start_step = None
         self.subscribed_fns = []
-        self._still_updating = False
 
     def __call__(self, time, input_signal):
         """ Called by Node with data of interest
@@ -46,33 +47,32 @@ class OutputFn(collections.Callable):
         :param time: The simulated time of the step
         :param input_signal: The numpy ndarray representing the input signal
 
-        Sets buffer_start_time if necessary
+        Sets buffer_start_step if necessary
         """
         if (self.subscribed_fns):
             self.buffer.append_data(input_signal)
-            if (self.buffer_start_time == None):
-                self.buffer_start_time = time.item()
+            if (self.buffer_start_step == None):
+                self.buffer_start_step = self.sim_manager.current_step
             self.update_all()
 
     def update_all(self):
-        '''if (self._still_updating):
-            return
-        else:
-            self._still_updating = True'''
         for fn in self.subscribed_fns:
             self.update(fn)
-            #self._still_updating = False
 
     def update(self, fn):
-        if (self.buffer and self.buffer_start_time is not None):
-            fn(self.buffer.get_data(), start_time=self.buffer_start_time)
+        if (self.buffer and self.buffer_start_step is not None):
+            start_step = max(self.buffer_start_step, self.sim_manager.current_step - max_window_size)
+            start_idx = start_step - self.buffer_start_step
+            end_idx = self.sim_manager.current_step - self.buffer_start_step
+            data = self.buffer.get_data()[start_idx:end_idx]
+            fn(start_step, self.sim_manager.dt, data)
 
     def reset(self):
         if self.buffer:
             self.buffer.reset()
-            self.buffer_start_time = None
+            self.buffer_start_step = None
             for fn in self.subscribed_fns:
-                    fn(self.buffer.get_data(), start_time=0)
+                    fn(0, self.sim_manager.dt, self.buffer.get_data())
 
     def subscribe(self, fn):
         """Subscribes fn
@@ -91,7 +91,7 @@ class OutputFn(collections.Callable):
         self.subscribed_fns.remove(fn)
         if (not self.subscribed_fns):
             self.buffer = None
-            self.buffer_start_time = None
+            self.buffer_start_step= None
 
 class Buffer(object):
     """ Circular Buffer for storing data
@@ -134,7 +134,7 @@ class Adaptor(object):
     Data is buffered only if we have at least one subscription to data.
     """
 
-    def __init__(self, obj):
+    def __init__(self, sim_manager, obj):
         self.caps = []
         self.out_fns = {}
         self.obj = obj
@@ -142,13 +142,14 @@ class Adaptor(object):
         for cap in capabilites:
             if (cap.supports_obj(obj)):
                 self.caps.append(cap)
+        self._connect_obj(sim_manager)
 
     def _load_caps(self):
         """Load capabilites
         """
         return CapFactory.get_caps()
 
-    def connect(self):
+    def _connect_obj(self, sim_manager):
         """Create Nodes to observe data, and connect them to observed object
 
         NOTE:
@@ -165,10 +166,10 @@ class Adaptor(object):
         """
         for cap in self.caps:
             dimensions = cap.get_out_dimensions(self.obj)
-            self.out_fns[cap] = OutputFn(dimensions)
+            self.out_fns[cap] = OutputFn(sim_manager, dimensions)
             obj_name = self.obj.name if hasattr(self.obj, 'name') else self.obj.__class__.__name__
             label = cap.name + '(' + obj_name + ')'
-            # Sorry that this is confusing, see the documentation of this function for an explanation
+            # see the documentation of this function for an explanation
             node = nengo.Node(output=lambda time, data, fn=self.out_fns[cap]: fn(time, data), size_in=dimensions, label=label)
             cap.connect_node(node, self.obj)
 
