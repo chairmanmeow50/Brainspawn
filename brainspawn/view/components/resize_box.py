@@ -137,6 +137,3 @@ class ResizeBox(gtk.EventBox):
             self._press = new_x, new_y, widget_x, widget_y
         
         self.draw_selection()
-            
-        
-        

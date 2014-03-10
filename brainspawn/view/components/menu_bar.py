@@ -22,15 +22,4 @@ class Menu_Bar(gtk.MenuBar):
 
         file_menu.show()
 
-        tools_menu = gtk.MenuItem("Tools")
-        tools_submenu = gtk.Menu()
-        tools_menu.set_submenu(tools_submenu)
-
-        resize_menu_item = gtk.CheckMenuItem("Resize")
-        resize_menu_item.connect("activate", main_frame.toggle_resize)
-        tools_submenu.append(resize_menu_item)
-
-        tools_menu.show()
-
         self.append (file_menu)
-        self.append (tools_menu)
