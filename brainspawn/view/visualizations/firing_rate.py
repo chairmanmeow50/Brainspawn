@@ -1,7 +1,7 @@
 import numpy as np
 import math
 from matplotlib.patches import Rectangle
-from view.visualizations._visualization import Visualization, registered_plot
+from view.visualizations.visualization import Visualization, registered_plot
 
 import __future__
 

@@ -1,6 +1,6 @@
 import matplotlib.cm as cm
 import numpy as np
-from view.visualizations._visualization import Visualization, registered_plot
+from view.visualizations.visualization import Visualization, registered_plot
 
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
