@@ -58,14 +58,7 @@ class ResizeBox(Gtk.EventBox):
             self._highlight = False
             self.queue_draw()
         
-    def draw_handler(self, widget, event):
-        if (self._highlight):
-            self.draw_selection()
-    
     def do_draw(self, ctx):
-        if (not self._highlight):
-            return
-        
         ctx.set_source_rgba(1, 1, 1, 1)
         ctx.rectangle(0, 0, self._width, self._height)
         ctx.fill()
@@ -101,6 +94,8 @@ class ResizeBox(Gtk.EventBox):
             ctx.move_to(resize_box_plus_x_start, bottom_right_y + settings.RESIZE_BOX_HEIGHT / 2)
             ctx.line_to(resize_box_plus_x_start + settings.RESIZE_BOX_PLUS_LENGTH, bottom_right_y + settings.RESIZE_BOX_HEIGHT / 2)
             ctx.stroke()
+
+        self.propagate_draw(self._canvas, ctx)
     
     def enter_notify_handler(self, widget, event):
         self._highlight = True
