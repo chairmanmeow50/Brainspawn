@@ -63,7 +63,8 @@ class OutputFn(collections.Callable):
         if (self.buffer and self.buffer_start_step is not None):
             start_step = max(self.buffer_start_step, self.sim_manager.current_step - max_window_size)
             start_idx = start_step - self.buffer_start_step
-            end_idx = self.sim_manager.current_step - self.buffer_start_step
+            end_idx = max(self.sim_manager.current_step - self.buffer_start_step, 0)
+            print start_idx, end_idx, self.sim_manager.current_step, self.buffer_start_step
             data = self.buffer.get_data()[start_idx:end_idx]
             fn(start_step, self.sim_manager.dt, data)
 
