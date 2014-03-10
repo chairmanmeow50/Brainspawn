@@ -146,10 +146,15 @@ class MainFrame:
     def menuitem_response(self, widget, string):
         print "%s" % string
 
-    def show_plot(self, canvas):
+    def show_plot(self, canvas, center=False):
         resize_box = ResizeBox(canvas, self.canvas_layout)
         self.all_canvas.append(resize_box.get_canvas())
-        self.canvas_layout.put(resize_box, 0, 0)
+        if (center):
+            x = (self.window.get_allocated_width() - resize_box.get_width()) / 2
+            y = (self.canvas_layout.get_allocated_height() - resize_box.get_height()) / 2
+            self.canvas_layout.put(resize_box, x, y)
+        else:
+            self.canvas_layout.put(resize_box, 0, 0)
 
     def remove_plot(self, canvas):
         self.all_canvas.remove(canvas)
