@@ -91,7 +91,7 @@ class NetworkView(Visualization):
         self._graph_obj_to_name = {}
         self._graph_pos = None
         self._kdtree = None
-        self.view._figure.clear()
+        self.view.figure.clear()
 
         if model is None:
             return
@@ -116,9 +116,11 @@ class NetworkView(Visualization):
                 print "Error: Uknown model object \"", str(obj), "\", unable to add to network view."
                 name = str(obj)
 
-            if name is not None:
+            if name:
                 self.G.add_node(name, obj=obj)
                 self._associate_obj_name(name, obj)
+            else:
+                print "Warning: unable to add object:", str(obj)
 
         # Add connections
         for conn in model.connections:
@@ -147,20 +149,34 @@ class NetworkView(Visualization):
 
             self.G.add_edge(pre_name, post_name)
 
+        # establish color map
+        objs = [self.get_obj_from_name(name) for name in self.G.nodes()]
+        self._node_colors = [self.node_color(o) for o in objs]
+
+        # build the graph layout
+        self._graph_pos = OrderedDict(nx.graphviz_layout(self.G, prog="neato"))
+
         # Draw graph
-        node_diam_sqr = (self._node_radius * 2) ** 2
+        self.repaint()
+        self.rebuild_kd_tree()
+
+    def repaint(self):
+        """ Clears and draws the network view.
+        """
+        self.view.figure.clear()
+        if not self.model:
+            return
 
         axis = None
-        if len(self.view._figure.axes) == 0:
-            axis = self.view._figure.add_subplot(1,1,1)
+        if len(self.view.figure.axes) == 0:
+            axis = self.view.figure.add_subplot(1,1,1)
         else:
-            axis = self.view._figure.axes[0]
+            axis = self.view.figure.axes[0]
 
-        self._graph_pos = OrderedDict(nx.graphviz_layout(self.G, prog="neato"))
-        colors = [self.decide_obj_color(self.get_obj_from_name(obj)) for obj in self.G.nodes()]
-        nx.draw(self.G, self._graph_pos, ax=axis, node_color=colors, node_size=node_diam_sqr)
+        node_diam_sqr = (self._node_radius * 2) ** 2
+        nx.draw(self.G, self._graph_pos, ax=axis, node_color=self._node_colors, node_size=node_diam_sqr)
 
-        self.rebuild_kd_tree()
+        self.view.canvas.queue_draw()
 
     def rebuild_kd_tree(self):
         """ Recalculates the K-D tree used to find graph nodes. Since it's in
@@ -174,12 +190,12 @@ class NetworkView(Visualization):
         # Remember the creation dimensions
         self._kdtree_creation_dim = self.view._canvas.get_width_height()
 
-        axis = self.view._figure.axes[0]
+        axis = self.view.figure.axes[0]
         transform = axis.transData.transform
         display_coords = [transform(node_pos) for node_pos in self._graph_pos.values()]
         self._kdtree = KDTree(display_coords, 2)
 
-    def decide_obj_color(self, nengo_obj):
+    def node_color(self, nengo_obj):
         """ Provides a mapping between graph nodes and their desired colour.
         """
         if isinstance(nengo_obj, nengo.Node):
