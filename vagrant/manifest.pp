@@ -35,6 +35,7 @@ class system {
                'gir1.2-gtk-3.0',
                'python-gi-cairo',
                # matplotlib dependencies
+               'python-gtk2-dev',
                'libpng12-dev',
                'libfreetype6-dev']:
         ensure => installed,

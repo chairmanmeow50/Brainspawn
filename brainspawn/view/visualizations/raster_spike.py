@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import rcParams
-from view.visualizations.__visualization import Visualization
+from view.visualizations._visualization import Visualization
 import __future__
 
 def class_name():

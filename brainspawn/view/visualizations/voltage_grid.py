@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib.patches import Rectangle
-from view.visualizations.__visualization import Visualization
+from view.visualizations._visualization import Visualization
 from view.visualizations.firing_rate import Firing_Rate_Plot
 import __future__
 import random

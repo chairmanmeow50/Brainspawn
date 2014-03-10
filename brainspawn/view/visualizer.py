@@ -11,6 +11,7 @@ import traceback
 from view.components.input_panel import Input_Panel
 from view.components.controller_panel import Controller_Panel
 from view.components.menu_bar import Menu_Bar
+from view.components.resize_box import ResizeBox
 import simulator.sim_manager
 
 from matplotlib.backends.backend_gtk3 import TimerGTK3
@@ -68,75 +69,12 @@ class MainFrame:
         self.vbox.pack_start(self.controller_panel, False, False, 0)
 
         self.layout_event_box.add(self.canvas_layout)
+
         self.vbox.pack_start(self.layout_event_box, True, True, 0)
 
         self.window.add(self.vbox)
 
         self.window.show_all()
-
-    def toggle_resize(self, widget):
-        if (widget.get_active()):
-            self.resize = True
-        else:
-            self.resize = False
-
-    def mouse_on_press(self, event):
-        canvas = event.canvas
-        x0 = self.canvas_layout.child_get_property(canvas, "x")
-        y0 = self.canvas_layout.child_get_property(canvas, "y")
-        widget_x, widget_y = self.canvas_layout.get_pointer()
-        self.press = x0, y0, widget_x, widget_y
-
-    def mouse_on_motion(self, event):
-        if self.press is None: return
-
-        x0, y0, xpress, ypress = self.press
-        owidth, oheight = event.canvas.get_width_height()
-
-        canvas_layout_x, canvas_layout_y = self.canvas_layout.get_pointer()
-
-        if (self.resize):
-            if (self.resize_info == None):
-                self.resize_info = xpress, ypress
-            old_x, old_y = self.resize_info
-            old_y = oheight - old_y
-            o_mag = self.magnitude(old_x, old_y)
-
-            new_mag = self.magnitude(canvas_layout_x, canvas_layout_y)
-            self.resize_info = canvas_layout_x, canvas_layout_y
-            scale = new_mag / o_mag
-            scale = scale * scale
-            new_width = int(owidth * scale)
-            new_height = int(oheight * scale)
-            event.canvas.set_size_request(new_width, new_height)
-        else:
-            # calc dx = currx - pressx
-            widget_x, widget_y = self.canvas_layout.get_pointer()
-            self.press = x0, y0, canvas_layout_x, canvas_layout_y
-            dx = canvas_layout_x - xpress
-            dy = canvas_layout_y - ypress
-            new_x = int(round(x0 + dx))
-            new_y = int(round(y0 + dy))
-            self.canvas_layout.move(event.canvas, new_x, new_y)
-            self.press = new_x, new_y, canvas_layout_x, canvas_layout_y
-
-    def magnitude(self, x, y):
-        sq1 = x * x
-        sq2 = y * y
-        return math.sqrt(sq1 + sq2)
-
-    def mouse_on_release(self, event):
-        self.press = None
-        event.canvas.draw()
-
-    def leave_figure(self, event):
-        if (event and event.canvas):
-            event.canvas.figure.patch.set_facecolor('white')
-            event.canvas.draw()
-
-    def enter_figure(self, event):
-        event.canvas.figure.patch.set_facecolor('#dddddd')
-        event.canvas.draw()
 
     def hscale_change(self, range, scroll, value):
         self.sim_manager.current_step = value
@@ -209,16 +147,9 @@ class MainFrame:
         print "%s" % string
 
     def show_plot(self, canvas):
-        canvas.mpl_connect('figure_enter_event', self.enter_figure)
-        canvas.mpl_connect('figure_leave_event', self.leave_figure)
-        canvas.mpl_connect('button_press_event', self.mouse_on_press)
-        canvas.mpl_connect('button_release_event', self.mouse_on_release)
-        canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
-
-        self.all_canvas.append(canvas)
-        canvas.set_visible(True)
-        canvas.set_size_request(300, 300)
-        self.canvas_layout.put(canvas, 0, 0)
+        resize_box = ResizeBox(canvas, self.canvas_layout)
+        self.all_canvas.append(resize_box.get_canvas())
+        self.canvas_layout.put(resize_box, 0, 0)
 
     def remove_plot(self, canvas):
         canvas.set_visible(False)
