@@ -37,11 +37,14 @@ class XYPlot(Visualization):
             line.set_xdata(t)
             line.set_ydata(data[:,idx:idx+1])
 
-        if end_time > 1 and len(t) > 0:
+        if end_time > 1 and len(t) > 1:
             self.axes.set_xlim([t[0], t[-1]])
         else:
             self.axes.set_xlim([0, 1])
 
         if len(data) > 0:
-            self.axes.set_ylim([min(np.amin(data), 0), max(np.amax(data), 1)])
+            data_max = np.amax(data)
+            data_min = np.amin(data)
+            if data_max != data_min:
+                self.axes.set_ylim([min(data_min, 0), max(data_max, 1)])
 
