@@ -1,13 +1,15 @@
 import nengo
 import networkx as nx
 import matplotlib.pyplot as plt
+from scipy.spatial import KDTree
+from collections import OrderedDict
+
+from view.visualizations._visualization import Visualization
 
 from gi import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version="3.0")
 import gtk
-from math import sqrt
-from view.visualizations._visualization import Visualization
 
 class NetworkView(Visualization):
     """ Visualization of a model's network
@@ -23,7 +25,7 @@ class NetworkView(Visualization):
         self.view.button_press = self.button_press
 
         # Build graph
-        self._node_radius_sq = 100
+        self._node_radius = 10
         self.load_model(model)
 
     @staticmethod
@@ -41,18 +43,26 @@ class NetworkView(Visualization):
         pass
 
     def node_at(self, x, y):
-        if self.model is None:
+        if not self.model or not self._kdtree:
             return None
 
-        for name, data_pos in self._graph_pos.items():
-            screen_pos = self.view._figure.axes[0].transData.transform(data_pos)
-            w, h = self.view._canvas.get_width_height()
-            dist_sq = (screen_pos[0] - x) ** 2 + (screen_pos[1] - (h - y)) ** 2
+        w, h = self.view._canvas.get_width_height()
 
-            if dist_sq <= self._node_radius_sq:
-                return name
+        if (w,h) != self._kdtree_creation_dim:
+            self.rebuild_kd_tree()
 
-        return None
+        # Invert the y coordinate so origin is bottom left (matches networkx coords)
+        y = h - y
+
+        # Gets a list of the hit nodes. The list contains indicies corresponding
+        # to the list given to the KDTree on creation.
+        hit_indicies = self._kdtree.query_ball_point((x, y), self._node_radius)
+        if not hit_indicies:
+            return None
+
+        # We'll just take the first object that was hit
+        node_name = self._graph_pos.keys()[hit_indicies[0]]
+        return node_name
 
     def get_obj_from_name(self, node_name):
         """ Maps the given graph node name to the object it represents
@@ -79,6 +89,8 @@ class NetworkView(Visualization):
         self.G = nx.MultiDiGraph()
         self._graph_name_to_obj = {}
         self._graph_obj_to_name = {}
+        self._graph_pos = None
+        self._kdtree = None
         self.view._figure.clear()
 
         if model is None:
@@ -136,7 +148,7 @@ class NetworkView(Visualization):
             self.G.add_edge(pre_name, post_name)
 
         # Draw graph
-        node_diam_sqr = (sqrt(self._node_radius_sq) * 2) ** 2
+        node_diam_sqr = (self._node_radius * 2) ** 2
 
         axis = None
         if len(self.view._figure.axes) == 0:
@@ -144,9 +156,28 @@ class NetworkView(Visualization):
         else:
             axis = self.view._figure.axes[0]
 
-        self._graph_pos = nx.graphviz_layout(self.G, prog="neato")
+        self._graph_pos = OrderedDict(nx.graphviz_layout(self.G, prog="neato"))
         colors = [self.decide_obj_color(self.get_obj_from_name(obj)) for obj in self.G.nodes()]
         nx.draw(self.G, self._graph_pos, ax=axis, node_color=colors, node_size=node_diam_sqr)
+
+        self.rebuild_kd_tree()
+
+    def rebuild_kd_tree(self):
+        """ Recalculates the K-D tree used to find graph nodes. Since it's in
+        display coordinates, it must be recalculated every time the figure's
+        size changes.
+        """
+        if not self.model:
+            self._kdtree = None
+            return
+
+        # Remember the creation dimensions
+        self._kdtree_creation_dim = self.view._canvas.get_width_height()
+
+        axis = self.view._figure.axes[0]
+        transform = axis.transData.transform
+        display_coords = [transform(node_pos) for node_pos in self._graph_pos.values()]
+        self._kdtree = KDTree(display_coords, 2)
 
     def decide_obj_color(self, nengo_obj):
         """ Provides a mapping between graph nodes and their desired colour.
