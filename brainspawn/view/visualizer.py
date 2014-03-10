@@ -75,6 +75,8 @@ class MainFrame:
         self.window.add(self.vbox)
 
         self.window.show_all()
+        
+        self.controller_panel.toggle_play(False)
 
     def hscale_change(self, range, scroll, value):
         self.sim_manager.current_step = value
