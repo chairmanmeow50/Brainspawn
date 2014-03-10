@@ -101,7 +101,7 @@ class MainFrame:
 
     #Controller code for controller_panel
     def format_slider_value(self, scale, value):
-        return str(value * self.sim_manager.dt)
+        return '%.3f' % (value * self.sim_manager.dt)
 
     def play_pause_button(self, widget):
         if (self.playing == True):
