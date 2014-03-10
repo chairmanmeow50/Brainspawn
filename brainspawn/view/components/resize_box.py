@@ -2,8 +2,9 @@ import gtk
 from gi.repository import Gtk
 import settings
 import math
+import cairo
 
-class ResizeBox(gtk.EventBox):
+class ResizeBox(Gtk.EventBox):
     
     def __init__(self, canvas, canvas_layout):
         super(ResizeBox, self).__init__()
@@ -28,6 +29,15 @@ class ResizeBox(gtk.EventBox):
         self.connect("button_press_event", self.button_press_handler)
         self.connect("button_release_event", self.button_release_handler)
         self.connect("motion_notify_event", self.motion_notify_handler)
+        self.connect("size_allocate", self.size_allocate)
+        
+    def size_allocate(self, widget, allocation):
+        border_width = settings.RESIZE_BOX_WIDTH + settings.RESIZE_BOX_LINE_WIDTH * 2
+        allocation.x = border_width
+        allocation.y = border_width
+        allocation.width = allocation.width - border_width * 2
+        allocation.height = allocation.height - border_width * 2
+        self._canvas.size_allocate(allocation)
         
     def get_canvas(self):
         return self._canvas
@@ -42,45 +52,62 @@ class ResizeBox(gtk.EventBox):
         return self._height
     
     def leave_notify_handler(self, widget, event):
-        self._canvas.draw()
+        print widget
+        print event.detail
+        print event.subwindow
+        if (self.is_resize()):
+            return
+        if (event.detail != gtk.gdk.NOTIFY_INFERIOR):
+            self._highlight = False
+            self.queue_draw()
+        
+    def draw_handler(self, widget, event):
+        if (self._highlight):
+            self.draw_selection()
     
-    def draw_selection(self):
-        ctx = self._canvas.get_property('window').cairo_create()
+    def do_draw(self, ctx):
+        if (not self._highlight):
+            return
         
-        # selection box
-        ctx.new_path()
-        ctx.set_line_width(1)
-        ctx.rectangle(0, 0, self.get_width(), self.get_height())
-        ctx.set_source_rgb(0, 0, 0)
-        ctx.set_dash([5, 10], 2)
-        ctx.stroke()
+        ctx.set_source_rgba(1, 1, 1, 1)
+        ctx.rectangle(0, 0, self._width, self._height)
+        ctx.fill()
         
-        # resize box
-        ctx.new_path()
-        ctx.set_line_width(settings.RESIZE_BOX_LINE_WIDTH)
-        bottom_right_x = self.get_width() - settings.RESIZE_BOX_WIDTH - settings.RESIZE_BOX_LINE_WIDTH / 2
-        bottom_right_y = self.get_height() - settings.RESIZE_BOX_HEIGHT - settings.RESIZE_BOX_LINE_WIDTH / 2
-        ctx.rectangle(bottom_right_x, bottom_right_y, settings.RESIZE_BOX_WIDTH, settings.RESIZE_BOX_HEIGHT)
-        ctx.set_source_rgb(0, 0, 0)
-        ctx.set_dash([], 0)
-        ctx.stroke()
-        
-        #resize plus
-        ctx.new_path()
-        resize_box_plus_y_start = bottom_right_y + (settings.RESIZE_BOX_HEIGHT - settings.RESIZE_BOX_PLUS_LENGTH) / 2
-        ctx.move_to(bottom_right_x + settings.RESIZE_BOX_WIDTH / 2, resize_box_plus_y_start)
-        ctx.line_to(bottom_right_x + settings.RESIZE_BOX_WIDTH / 2, resize_box_plus_y_start + settings.RESIZE_BOX_PLUS_LENGTH)
-        ctx.stroke()
-        
-        ctx.new_path()
-        resize_box_plus_x_start = bottom_right_x + (settings.RESIZE_BOX_WIDTH - settings.RESIZE_BOX_PLUS_LENGTH) / 2
-        ctx.move_to(resize_box_plus_x_start, bottom_right_y + settings.RESIZE_BOX_HEIGHT / 2)
-        ctx.line_to(resize_box_plus_x_start + settings.RESIZE_BOX_PLUS_LENGTH, bottom_right_y + settings.RESIZE_BOX_HEIGHT / 2)
-        ctx.stroke()
+        if (self._highlight):
+            # selection box
+            ctx.new_path()
+            ctx.set_line_width(1)
+            ctx.rectangle(0, 0, self.get_width(), self.get_height())
+            ctx.set_source_rgba(0, 0, 0, 1)
+            ctx.set_dash([5, 10], 2)
+            ctx.stroke()
+            
+            # resize box
+            ctx.new_path()
+            ctx.set_line_width(settings.RESIZE_BOX_LINE_WIDTH)
+            bottom_right_x = self.get_width() - settings.RESIZE_BOX_WIDTH - settings.RESIZE_BOX_LINE_WIDTH / 2
+            bottom_right_y = self.get_height() - settings.RESIZE_BOX_HEIGHT - settings.RESIZE_BOX_LINE_WIDTH / 2
+            ctx.rectangle(bottom_right_x, bottom_right_y, settings.RESIZE_BOX_WIDTH, settings.RESIZE_BOX_HEIGHT)
+            ctx.set_source_rgba(0, 0, 0, 1)
+            ctx.set_dash([], 0)
+            ctx.stroke()
+            
+            #resize plus
+            ctx.new_path()
+            resize_box_plus_y_start = bottom_right_y + (settings.RESIZE_BOX_HEIGHT - settings.RESIZE_BOX_PLUS_LENGTH) / 2
+            ctx.move_to(bottom_right_x + settings.RESIZE_BOX_WIDTH / 2, resize_box_plus_y_start)
+            ctx.line_to(bottom_right_x + settings.RESIZE_BOX_WIDTH / 2, resize_box_plus_y_start + settings.RESIZE_BOX_PLUS_LENGTH)
+            ctx.stroke()
+            
+            ctx.new_path()
+            resize_box_plus_x_start = bottom_right_x + (settings.RESIZE_BOX_WIDTH - settings.RESIZE_BOX_PLUS_LENGTH) / 2
+            ctx.move_to(resize_box_plus_x_start, bottom_right_y + settings.RESIZE_BOX_HEIGHT / 2)
+            ctx.line_to(resize_box_plus_x_start + settings.RESIZE_BOX_PLUS_LENGTH, bottom_right_y + settings.RESIZE_BOX_HEIGHT / 2)
+            ctx.stroke()
     
     def enter_notify_handler(self, widget, event):
         self._highlight = True
-        self.draw_selection()
+        self.queue_draw()
         
     def is_within_resize_bounds(self, x, y):
         x_min = self.get_width() - settings.RESIZE_BOX_WIDTH - settings.RESIZE_BOX_LINE_WIDTH / 2
@@ -102,14 +129,12 @@ class ResizeBox(gtk.EventBox):
             if (self.is_within_resize_bounds(widget_x - self._pos_x, widget_y - self._pos_y)):
                 self._is_resize = True
             self._press = x0, y0, widget_x, widget_y
+            self._original_size = self._width, self._height
         
     def button_release_handler(self, widget, event):
         self._press = None
         if (self.is_resize()):
             self._is_resize = False
-        self._canvas.draw()
-        if (self._highlight):
-            self.draw_selection()
         
     def motion_notify_handler(self, widget, event):
         if self._press is None: return
@@ -120,8 +145,14 @@ class ResizeBox(gtk.EventBox):
         widget_x = canvas_layout_x - self._pos_x
         widget_y = canvas_layout_y - self._pos_y
         if (self.is_resize()):
-            self._width = canvas_layout_x - self._pos_x
-            self._height = canvas_layout_y - self._pos_y
+            unused_x, unused_y, clicked_x, clicked_y = self._press
+            o_width, o_height = self._original_size
+            extra_offset_x = o_width - (clicked_x - self._pos_x)
+            extra_offset_y = o_height - (clicked_y - self._pos_y)
+            self._width = canvas_layout_x - self._pos_x + extra_offset_x
+            self._height = canvas_layout_y - self._pos_y + extra_offset_y
+            self._width = max(self._width, settings.RESIZE_MIN_WIDTH)
+            self._height = max(self._height, settings.RESIZE_MIN_HEIGHT)
             self.set_size_request(self._width, self._height)
             
         else:
@@ -135,5 +166,3 @@ class ResizeBox(gtk.EventBox):
             self._pos_y = new_y
             self._canvas_layout.move(self, self._pos_x, self._pos_y)
             self._press = new_x, new_y, widget_x, widget_y
-        
-        self.draw_selection()
