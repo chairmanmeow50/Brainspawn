@@ -153,6 +153,8 @@ class MainFrame:
             x = (self.window.get_allocated_width() - resize_box.get_width()) / 2
             y = (self.canvas_layout.get_allocated_height() - resize_box.get_height()) / 2
             self.canvas_layout.put(resize_box, x, y)
+            resize_box._pos_x = x
+            resize_box._pos_y = y
         else:
             self.canvas_layout.put(resize_box, 0, 0)
 
