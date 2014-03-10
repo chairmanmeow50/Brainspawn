@@ -4,6 +4,8 @@
 import gtk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
+#from view.visualizations.network_view import NetworkView
+import view.visualizations.network_view
 
 class PlotView(object):
 
@@ -21,7 +23,8 @@ class PlotView(object):
 
         remove_item = gtk.MenuItem("Remove")
         remove_item.connect("activate", controller.remove_plot, self._canvas)
-        self.context_menu.append(remove_item)
+        if (not isinstance(controller, view.visualizations.network_view.NetworkView)):
+            self.context_menu.append(remove_item)
 
         self.context_menu.show_all()
 
