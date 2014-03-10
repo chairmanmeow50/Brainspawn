@@ -11,6 +11,7 @@ import traceback
 from view.components.input_panel import Input_Panel
 from view.components.controller_panel import Controller_Panel
 from view.components.menu_bar import Menu_Bar
+from view.components.resize_box import ResizeBox
 import simulator.sim_manager
 
 from matplotlib.backends.backend_gtk3 import TimerGTK3
@@ -68,6 +69,7 @@ class MainFrame:
         self.vbox.pack_start(self.controller_panel, False, False, 0)
 
         self.layout_event_box.add(self.canvas_layout)
+    
         self.vbox.pack_start(self.layout_event_box, True, True, 0)
 
         self.window.add(self.vbox)
@@ -89,12 +91,11 @@ class MainFrame:
 
     def mouse_on_motion(self, event):
         if self.press is None: return
-
+        
         x0, y0, xpress, ypress = self.press
         owidth, oheight = event.canvas.get_width_height()
-
         canvas_layout_x, canvas_layout_y = self.canvas_layout.get_pointer()
-
+        
         if (self.resize):
             if (self.resize_info == None):
                 self.resize_info = xpress, ypress
@@ -135,8 +136,15 @@ class MainFrame:
             event.canvas.draw()
 
     def enter_figure(self, event):
-        event.canvas.figure.patch.set_facecolor('#dddddd')
-        event.canvas.draw()
+        self.ctx = event.canvas.get_property('window').cairo_create()
+        #self.canvas.draw()
+        self.ctx.new_path()
+        self.ctx.set_line_width(10.5)
+        self.ctx.rectangle(5, 5, 500, 500)
+        self.ctx.set_source_rgb(0, 0, 0)
+        self.ctx.stroke()
+        #event.canvas.figure.patch.set_facecolor('#dddddd')
+        #event.canvas.draw()
 
     def hscale_change(self, range, scroll, value):
         self.sim_manager.current_step = value
@@ -210,16 +218,20 @@ class MainFrame:
         print "%s" % string
 
     def show_plot(self, plot):
-        plot.canvas.mpl_connect('figure_enter_event', self.enter_figure)
-        plot.canvas.mpl_connect('figure_leave_event', self.leave_figure)
-        plot.canvas.mpl_connect('button_press_event', self.mouse_on_press)
-        plot.canvas.mpl_connect('button_release_event', self.mouse_on_release)
-        plot.canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
+        #plot.canvas.mpl_connect('figure_enter_event', self.enter_figure)
+        #plot.canvas.mpl_connect('figure_leave_event', self.leave_figure)
+        #plot.canvas.mpl_connect('button_press_event', self.mouse_on_press)
+        #plot.canvas.mpl_connect('button_release_event', self.mouse_on_release)
+        #plot.canvas.mpl_connect('motion_notify_event', self.mouse_on_motion)
 
-        self.all_canvas.append(plot.canvas)
-        plot.canvas.set_visible(True)
-        plot.canvas.set_size_request(300, 300)
-        self.canvas_layout.put(plot.canvas, 0, 0)
+        self.resize_box = ResizeBox(plot.canvas, self.canvas_layout)
+        #self.all_canvas.append(self.resize_box.get_canvas())
+        #self.all_canvas.append(plot.canvas)
+        #plot.canvas.set_visible(True)
+        #plot.canvas.set_size_request(300, 300)
+        
+        self.canvas_layout.put(self.resize_box, 0, 0)
+        #self.canvas_layout.put(plot.canvas, 0, 0)
 
     def remove_plot(self, plot):
         plot.canvas.set_visible(False)
