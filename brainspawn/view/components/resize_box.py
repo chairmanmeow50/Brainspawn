@@ -52,9 +52,6 @@ class ResizeBox(Gtk.EventBox):
         return self._height
     
     def leave_notify_handler(self, widget, event):
-        print widget
-        print event.detail
-        print event.subwindow
         if (self.is_resize()):
             return
         if (event.detail != gtk.gdk.NOTIFY_INFERIOR):

@@ -97,7 +97,7 @@ class MainFrame:
             self.timer.start(1)
 
     def update_canvas(self):
-        map(lambda canvas:canvas.draw(), self.all_canvas)
+        map(lambda canvas:canvas.queue_draw(), self.all_canvas)
 
     #Controller code for controller_panel
     def format_slider_value(self, scale, value):
@@ -152,9 +152,8 @@ class MainFrame:
         self.canvas_layout.put(resize_box, 0, 0)
 
     def remove_plot(self, canvas):
-        canvas.set_visible(False)
         self.all_canvas.remove(canvas)
-        self.canvas_layout.remove(canvas)
+        self.canvas_layout.remove(canvas.get_parent())
 
     def toggle_panel(self, widget, panel):
         if (widget.get_active()):
