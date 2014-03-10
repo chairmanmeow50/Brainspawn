@@ -119,6 +119,10 @@ class MainFrame:
         self.timer.stop()
         self.playing = False
         self.controller_panel.toggle_play(False)
+        
+        self.controller_panel.hscale_adjustment.set_lower(0)
+        self.controller_panel.hscale_adjustment.set_upper(0)
+        self.controller_panel.update_slider(0, 0, 0, self.sim_manager.dt)
         self.sim_manager.reset()
         self.jump_to(widget, self.sim_manager.min_step)
 
