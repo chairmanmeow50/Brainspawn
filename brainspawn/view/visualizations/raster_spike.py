@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import rcParams
-from view.visualizations._visualization import Visualization, registered_plot
+from view.visualizations.visualization import Visualization, registered_plot
 import __future__
 
 @registered_plot
