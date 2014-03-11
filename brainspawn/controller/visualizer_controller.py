@@ -33,11 +33,11 @@ class VisualizerController(object):
         self.plots = []
         self.load_visualization_files()
 
-        # TODO - Hardcoding model for now
-        self.load_model(example.model)
-
         self.main_frame = MainFrame(self.sim_manager, self)
         self.main_frame.show_plot(self.network_view.view.canvas, True)
+
+        # TODO - Hardcoding model for now
+        self.load_model(example.model)
 
     def init_view(self):
         pass
@@ -81,6 +81,7 @@ class VisualizerController(object):
         if self.sim_manager.current_step > 0:
             self.main_frame.reset_button(None) # a little hacky, but hey
         self.model = model
+        self.main_frame.window.set_title("Nengo Visualizer - " + model.label)
         self.network_view.load_model(model)
         self.sim_manager.load_new_model(model, self.dt) # do we want to copy the model?
 
