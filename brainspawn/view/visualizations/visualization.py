@@ -82,7 +82,7 @@ class Visualization(object):
         self.main_controller.remove_plot_for_obj(self, self._obj, self._cap)
 
     def on_export_pdf(self, widget, canvas):
-        filename = self.main_controller.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, self.title + ".pdf")
+        filename = self.main_controller.file_save(self.title + ".pdf")
         if not filename:
             return
         with open(filename, "wb") as f:
