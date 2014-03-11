@@ -1,8 +1,8 @@
 import numpy as np
-from view.visualizations.visualization import Visualization, registered_plot
+from view.visualizations.plot import Plot, registered_plot
 
 @registered_plot
-class XYPlot(Visualization):
+class XYPlot(Plot):
     """XY Plot
     """
 

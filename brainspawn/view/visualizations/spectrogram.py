@@ -1,12 +1,12 @@
 import matplotlib.cm as cm
 import numpy as np
-from view.visualizations.visualization import Visualization, registered_plot
+from view.visualizations.plot import Plot, registered_plot
 
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 
 @registered_plot
-class Spectrogram(Visualization):
+class Spectrogram(Plot):
 
     def __init__(self, main_controller, obj, cap):
         super(Spectrogram, self).__init__(main_controller, obj, cap)

@@ -4,7 +4,6 @@
 import gtk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
-#from view.visualizations.network_view import NetworkView
 import view.visualizations.network_view
 
 class PlotView(object):
