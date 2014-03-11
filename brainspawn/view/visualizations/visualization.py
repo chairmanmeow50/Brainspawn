@@ -82,11 +82,7 @@ class Visualization(object):
         self.main_controller.remove_plot_for_obj(self, self._obj, self._cap)
 
     def on_export_pdf(self, widget, canvas):
-        filename = self.main_controller.file_save(self.title + ".pdf")
-        if not filename:
-            return
-        with open(filename, "wb") as f:
-            canvas.print_pdf(f)
+        self.main_controller.on_export_pdf(None, canvas, self.title)
 
     def button_press(self, widget, event, canvas):
         if event.button == 3:

@@ -122,14 +122,19 @@ class VisualizerController(object):
             return True
         return False
 
-    def on_export_pdf(self, event_widget, widget):
-        filename = self.file_save("screenshot.pdf")
+    def on_export_pdf(self, event_widget, widget, name=None):
+        if not name:
+            name = self.main_frame.window.get_title()
+        filename = self.file_save(name + ".pdf")
         if not filename:
             return
         with open(filename, "wb") as f:
             allocation = widget.get_allocation()
             cr = cairo.Context(cairo.PDFSurface(f, allocation.width, allocation.height))
-            widget.draw(cr)
+            try:
+                widget.on_draw_event(None, cr)
+            except AttributeError:
+                widget.draw(cr)
             cr.show_page()
             cr.get_target().finish()
 

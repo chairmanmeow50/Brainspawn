@@ -17,7 +17,7 @@ class PlotView(object):
         self._canvas.connect("button_release_event", controller.button_press, self._canvas)
 
         # Context menu setup
-        export_pdf_item = gtk.MenuItem("Export to PDF")
+        export_pdf_item = gtk.MenuItem("Export to PDF...")
         export_pdf_item.connect("activate", controller.on_export_pdf, self._canvas)
         self.context_menu.append(export_pdf_item)
 
