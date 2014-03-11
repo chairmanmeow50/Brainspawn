@@ -8,14 +8,14 @@ from view.visualizations.plot_view import PlotView
 registered_plots = []
 
 def registered_plot(cls):
-    """Decorator for visualization implementations
+    """Decorator for plot implementations
     In order to be accessible by import *, must also add to __all__ in __init__.py
     """
     registered_plots.append(cls)
     return cls
 
-class Visualization(object):
-    """Visualization class
+class Plot(object):
+    """Plot class
     """
 
     __metaclass__ = ABCMeta

@@ -13,7 +13,7 @@ import cairo
 from simulator.sim_manager import SimManager
 from view.visualizer import MainFrame
 from view.visualizations.network_view import NetworkView
-from view.visualizations.visualization import registered_plots
+from view.visualizations.plot import registered_plots
 from view.visualizations import *
 
 # FIXME use this for now

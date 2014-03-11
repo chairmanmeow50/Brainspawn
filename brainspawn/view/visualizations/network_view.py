@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 from scipy.spatial import cKDTree as KDTree
 from collections import OrderedDict
 
-from view.visualizations.visualization import Visualization
+from view.visualizations.plot import Plot
 
 from gi import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version="3.0")
 import gtk
 
-class NetworkView(Visualization):
+class NetworkView(Plot):
     """ Visualization of a model's network
     """
     def __init__(self, controller, model=None, name="Network View", **kwargs):
