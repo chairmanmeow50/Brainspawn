@@ -58,8 +58,7 @@ class ResizeBox(Gtk.EventBox):
         if (event.detail != gtk.gdk.NOTIFY_INFERIOR):
             self._highlight = False
             self.queue_draw()
-            self._press = None
-        
+
     def do_draw(self, ctx):
         ctx.set_source_rgba(1, 1, 1, 1)
         ctx.rectangle(0, 0, self._width, self._height)
@@ -98,7 +97,7 @@ class ResizeBox(Gtk.EventBox):
             ctx.stroke()
 
         self.propagate_draw(self._canvas, ctx)
-    
+
     def enter_notify_handler(self, widget, event):
         self._highlight = True
         self.queue_draw()
