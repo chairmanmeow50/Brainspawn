@@ -4,38 +4,12 @@ brainspawn.views.components package
 Submodules
 ----------
 
-brainspawn.views.components.controller_panel module
----------------------------------------------------
+.. toctree::
 
-.. automodule:: brainspawn.views.components.controller_panel
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-brainspawn.views.components.input_panel module
-----------------------------------------------
-
-.. automodule:: brainspawn.views.components.input_panel
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-brainspawn.views.components.menu_bar module
--------------------------------------------
-
-.. automodule:: brainspawn.views.components.menu_bar
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-brainspawn.views.components.resize_box module
----------------------------------------------
-
-.. automodule:: brainspawn.views.components.resize_box
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   brainspawn.views.components.controller_panel
+   brainspawn.views.components.input_panel
+   brainspawn.views.components.menu_bar
+   brainspawn.views.components.resize_box
 
 Module contents
 ---------------

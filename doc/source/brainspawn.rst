@@ -8,7 +8,6 @@ Subpackages
 
     brainspawn.controllers
     brainspawn.plots
-    brainspawn.sample_networks
     brainspawn.simulator
     brainspawn.tests
     brainspawn.views
@@ -16,22 +15,10 @@ Subpackages
 Submodules
 ----------
 
-brainspawn.brainspawn module
-----------------------------
+.. toctree::
 
-.. automodule:: brainspawn.brainspawn
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-brainspawn.settings module
---------------------------
-
-.. automodule:: brainspawn.settings
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   brainspawn.brainspawn
+   brainspawn.settings
 
 Module contents
 ---------------
