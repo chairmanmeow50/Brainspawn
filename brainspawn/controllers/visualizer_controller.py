@@ -18,7 +18,7 @@ class VisualizerController(object):
     A controller
     """
 
-    def __init__(self, sim_manager):
+    def __init__(self, sim_manager, model_file_name=None):
         self.sim_manager = sim_manager
         self.network_view = NetworkView(self)
         self.dt = 0.001
@@ -28,6 +28,10 @@ class VisualizerController(object):
         self.load_plots()
 
         self.main_frame = MainFrame(self.sim_manager, self)
+        
+        if (model_file_name):
+            self.load_model_from_filename(model_file_name)
+        
         self.main_frame.show_plot(self.network_view.view.canvas, True)
 
     def init_view(self):
@@ -68,7 +72,7 @@ class VisualizerController(object):
         try:
             module = imp.load_source(mod_name, filename)
             self.load_model(module.model)
-        except (AttributeError, ImportError):
+        except (AttributeError, ImportError, IOError):
             dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.INFO,
                 Gtk.ButtonsType.OK, "Error loading model")
             dialog.format_secondary_text(
