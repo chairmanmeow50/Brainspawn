@@ -9,9 +9,13 @@ Welcome to Brainspawn's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-
+   brainspawn.controllers <brainspawn.controllers>
+   brainspawn.plots <brainspawn.plots>
+   brainspawn.sample_networks <brainspawn.sample_networks>
+   brainspawn.simulator <brainspawn.simulator>
+   brainspawn.views <brainspawn.views>
 
 Indices and tables
 ==================
