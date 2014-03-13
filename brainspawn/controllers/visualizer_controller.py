@@ -85,7 +85,8 @@ class VisualizerController(object):
             dialog.destroy()
             
     def load_model(self, model):
-        for plt in self.plots:
+        copy_plots = self.plots[:]
+        for plt in copy_plots:
             plt.remove_plot(None, None)
         self.plots = []
         if self.sim_manager.current_step > 0:
