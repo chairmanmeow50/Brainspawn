@@ -18,7 +18,8 @@ class NetworkView(Plot):
         self._model = model
         self.name = name
 
-        self.menu_items = []
+        self.plots_menu_item = gtk.MenuItem("Plots")
+        self.view.context_menu.append(self.plots_menu_item)
 
         # Hmmm.. we need to spit controller/view functionality here?
         self.view.button_press = self.button_press
@@ -187,24 +188,31 @@ class NetworkView(Plot):
         if event.button == 3:
             node_name = self.node_at(event.x, event.y)
 
-            for item in self.menu_items:
-                self.view.context_menu.remove(item)
-            self.menu_items = []
+            self.view.context_menu.remove(self.plots_menu_item)
 
-            if node_name is not None:
+            if node_name:
                 obj = self.get_obj_from_name(node_name)
                 supported = self.main_controller.plots_for_object(obj)
+                submenu = gtk.Menu()
 
                 for (vz, obj, cap) in supported:
                     item = gtk.MenuItem("View: " + vz.plot_name() + '-' + cap.name)
-                    item.connect("activate", self.main_controller.add_plot_for_obj, vz, obj, cap)
-                    self.view.context_menu.append(item)
+                    # Hack: b-p-e connect (instead of "activate") is a workaround for
+                    # submenu item not getting activate signal unless the submenu is
+                    # also clicked. b-p-e works but has the extra event arg, discarded
+                    # by the call-through
+                    item.connect("button-press-event", self._call_through, vz, obj, cap)
+                    submenu.append(item)
 
-                    self.menu_items.append(item)
+                self.plots_menu_item.set_submenu(submenu)
+                self.view.context_menu.append(self.plots_menu_item)
                 self.view.context_menu.show_all()
 
             return super(NetworkView, self).button_press(widget, event, canvas)
         return False
+
+    def _call_through(self, widget, event, vz, obj, cap):
+        self.main_controller.add_plot_for_obj(widget, vz, obj, cap)
 
 #---------- Helper functions --------
 
