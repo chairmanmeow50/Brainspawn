@@ -251,11 +251,10 @@ def _find_uniq_name(name, collection, threashold=1000):
 
 #---------- Main method (testing) --------
 
-import sample_networks.large_network as example
-
 def main():
-    nv = NetworkView(controller=None, model=example.model)
-    plt.show()
+    # nv = NetworkView(controller=None, model=example.model)
+    #plt.show()
+    pass
 
 if __name__ == '__main__':
     main()

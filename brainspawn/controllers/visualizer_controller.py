@@ -13,9 +13,6 @@ from views.visualizer import MainFrame
 from plots.network_view import NetworkView
 from plots.plot import REGISTERED_PLOTS
 
-# FIXME use this for now
-import sample_networks.two_dimensional_rep as example
-
 class VisualizerController(object):
     """
     A controller
@@ -32,9 +29,6 @@ class VisualizerController(object):
 
         self.main_frame = MainFrame(self.sim_manager, self)
         self.main_frame.show_plot(self.network_view.view.canvas, True)
-
-        # TODO - Hardcoding model for now
-        self.load_model(example.model)
 
     def init_view(self):
         pass
