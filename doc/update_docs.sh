@@ -2,6 +2,10 @@
 SOURCE_FOLDER="../brainspawn"
 RST_FILES="source"
 
+PYTHONPATH=$PYTHONPATH:$(readlink -m ../brainspawn)
+echo "PYTHONPATH => $PYTHONPATH"
+echo
+
 echo ">>> Cleaning old .rst files"
 echo
 rm -v "${RST_FILES}/modules.rst" "${RST_FILES}/brainspawn."* 
