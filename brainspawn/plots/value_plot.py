@@ -24,6 +24,7 @@ class ValuePlot(Plot):
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
         self.axes.set_ylabel(self.config['DATA'])
         self.axes.set_xlabel('time')
+        self.axes.set_xlim([0, 1])
 
     @staticmethod
     def plot_name():
@@ -67,5 +68,10 @@ class ValuePlot(Plot):
             line.set_ydata(data[:,idx:idx+1])
 
         self.axes.relim()
-        self.axes.autoscale_view()
+        self.axes.autoscale_view(tight=True)
+
+        if end_time > 1 and len(t) > 1:
+            self.axes.set_xlim([t[0], t[-1]])
+        else:
+            self.axes.set_xlim([0, 1])
 
