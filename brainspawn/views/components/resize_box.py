@@ -38,6 +38,7 @@ class ResizeBox(Gtk.EventBox):
         allocation.width = allocation.width - border_width * 2
         allocation.height = allocation.height - border_width * 2
         self._canvas.size_allocate(allocation)
+        self._canvas.figure.tight_layout()
 
     def get_canvas(self):
         return self._canvas

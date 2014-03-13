@@ -12,9 +12,9 @@ class Spectrogram(Plot):
         super(Spectrogram, self).__init__(main_controller, obj, cap)
 
         self.axes.set_xlabel('Time (s)')
-        self.axes.xaxis.set_label_coords(0.5, -0.07)
+        #self.axes.xaxis.set_label_coords(0.5, -0.07)
         self.axes.set_ylabel('Frequency (Hz)')
-        self.axes.yaxis.set_label_coords(-0.10, 0.5)
+        #self.axes.yaxis.set_label_coords(-0.10, 0.5)
 
     @staticmethod
     def plot_name():
