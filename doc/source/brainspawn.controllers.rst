@@ -4,14 +4,9 @@ brainspawn.controllers package
 Submodules
 ----------
 
-brainspawn.controllers.visualizer_controller module
----------------------------------------------------
+.. toctree::
 
-.. automodule:: brainspawn.controllers.visualizer_controller
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   brainspawn.controllers.visualizer_controller
 
 Module contents
 ---------------

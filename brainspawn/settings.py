@@ -1,8 +1,6 @@
-'''
-Created on Mar 10, 2014
+""" Global app settings.
+"""
 
-@author: vagrant
-'''
 RESIZE_CONTAINER_DEFAULT_WIDTH = 300
 RESIZE_CONTAINER_DEFAULT_HEIGHT = 300
 RESIZE_BOX_WIDTH = 16

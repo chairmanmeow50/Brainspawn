@@ -4,30 +4,11 @@ brainspawn.tests package
 Submodules
 ----------
 
-brainspawn.tests.adaptor_test module
-------------------------------------
+.. toctree::
 
-.. automodule:: brainspawn.tests.adaptor_test
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-brainspawn.tests.sim_manager_test module
-----------------------------------------
-
-.. automodule:: brainspawn.tests.sim_manager_test
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-brainspawn.tests.visualizer_test module
----------------------------------------
-
-.. automodule:: brainspawn.tests.visualizer_test
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   brainspawn.tests.adaptor_test
+   brainspawn.tests.sim_manager_test
+   brainspawn.tests.visualizer_test
 
 Module contents
 ---------------

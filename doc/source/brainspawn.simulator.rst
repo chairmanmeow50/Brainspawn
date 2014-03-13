@@ -11,22 +11,10 @@ Subpackages
 Submodules
 ----------
 
-brainspawn.simulator.adaptor module
------------------------------------
+.. toctree::
 
-.. automodule:: brainspawn.simulator.adaptor
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-brainspawn.simulator.sim_manager module
----------------------------------------
-
-.. automodule:: brainspawn.simulator.sim_manager
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   brainspawn.simulator.adaptor
+   brainspawn.simulator.sim_manager
 
 Module contents
 ---------------

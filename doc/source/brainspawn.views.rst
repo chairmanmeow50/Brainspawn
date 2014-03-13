@@ -11,22 +11,10 @@ Subpackages
 Submodules
 ----------
 
-brainspawn.views.plot_view module
----------------------------------
+.. toctree::
 
-.. automodule:: brainspawn.views.plot_view
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-brainspawn.views.visualizer module
-----------------------------------
-
-.. automodule:: brainspawn.views.visualizer
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   brainspawn.views.plot_view
+   brainspawn.views.visualizer
 
 Module contents
 ---------------

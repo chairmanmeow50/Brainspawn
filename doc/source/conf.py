@@ -20,6 +20,19 @@ import os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../..'))
 
+# -- Autodoc configuration ------------------------------------------------
+
+autodoc_default_flags = ['special-members']
+autodoc_member_order = 'groupwise' # or 'bysource' or 'alphabetical'
+
+def autodoc_skip_member(app, what, name, obj, skip, options):
+    exclusions = ('__weakref__', '__doc__', '__module__', '__dict__',
+                  '__abstractmethods__')
+    return skip or name in exclusions
+
+def setup(app):
+    app.connect('autodoc-skip-member', autodoc_skip_member)
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.

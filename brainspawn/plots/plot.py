@@ -1,4 +1,4 @@
-""" Abstract base class for Visualizations
+""" Abstract base class for plots.
 """
 
 from abc import ABCMeta, abstractmethod
@@ -7,32 +7,32 @@ from views.plot_view import PlotView
 REGISTERED_PLOTS = {}
 
 def registered_plot(cls):
-    """Decorator for plot implementations
+    """Decorator for plot implementations.
     """
     REGISTERED_PLOTS[cls.__name__] = cls
     return cls
 
 class Plot(object):
-    """Plot class
-    In order to add visualizations to Brainspawn, you will want to
+    """Plot base class.
+    In order to add plots to Brainspawn, you will want to
     inherit from this class.
 
-    Note that subclasses must call the base class' constructor
+    Note that subclasses must call the base class constructor.
     """
 
     __metaclass__ = ABCMeta
 
     def __init__(self, main_controller, nengo_obj, capability):
-        """ Constructor
+        """ Plot constructor.
         Initializes default config values for all plots,
-        Sets up the plot view and axes
+        Sets up the plot view and axes.
 
         Args:
             main_controller (VisualizerController): The top-level controller
-            of the visualizer
-            nengo_obj (Nengo): The nengo object this plot is visualizing
+            of the visualizer.
+            nengo_obj (Nengo): The nengo object this plot is visualizing.
             capability (Capability): The capability of the object that this graph
-            is visualizing
+            is visualizing.
         """
         self.main_controller = main_controller
         self.nengo_obj = nengo_obj
@@ -51,7 +51,7 @@ class Plot(object):
 
         For convenience in title string formatting,
         we set 'TARGET' and 'DATA' to default values of the
-        target object, and represented data, respectively
+        target object, and represented data, respectively.
         """
         if not nengo_obj or not capability:
             return
@@ -61,11 +61,11 @@ class Plot(object):
 
     @property
     def title(self):
-        """ Return a title for the current graph
-        Format the string using self.config as the format dictionary
+        """ Return a title for the current graph.
+        Format the string using self.config as the format dictionary.
 
         Returns:
-            string. A string to use as the title of the current graph
+            string. A string to use as the title of the current graph.
 
         Note the availability of TARGET and DATA for use in the title
         format string.
@@ -78,37 +78,37 @@ class Plot(object):
 
     @property
     def dimensions(self):
-        """Get the dimensions of the object this graph is representing
+        """Get the dimensions of the object this graph is representing.
 
         Returns:
-            int. The ouput dimensions we are plotting
+            int. The ouput dimensions we are plotting.
         """
         return self.capability.get_out_dimensions(self.nengo_obj)
 
     @staticmethod
     def plot_name():
-        """ What we call the plot
+        """ What we call the plot.
         (Used when choosing plot from dropdown menu)
         """
         raise NotImplementedError("Not implemented")
 
     @staticmethod
     def supports_cap(capability):
-        """ Return true if this plot supports the given capability
+        """ Return true if this plot supports the given capability.
 
         Args:
-            capability (Capablility): The capability to check for plotability
+            capability (Capablility): The capability to check for plotability.
         """
         raise NotImplementedError("Not implemented")
 
     @abstractmethod
     def update(self, start_step, step_size, data):
-        """ Callback function passed to observer nodes
+        """ Callback function passed to observer nodes.
 
         Args:
-            start_step (int): The initial step of the given data
-            step_size (int): The time, in simulated seconds, one step represents
-            data (int): The data from the simulator to plot
+            start_step (int): The initial step of the given data.
+            step_size (int): The time, in simulated seconds, one step represents.
+            data (int): The data from the simulator to plot.
         """
         pass
 
