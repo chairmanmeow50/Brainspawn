@@ -75,6 +75,7 @@ class VisualizerController(object):
             if (not self._has_network):
                 self.main_frame.show_plot(self.network_view.view.canvas, True)
                 self._has_network = True
+                self.main_frame.controller_panel.enable_controls()
         except (AttributeError, ImportError, IOError, SyntaxError):
             dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.INFO,
                 Gtk.ButtonsType.OK, "Error loading model")
