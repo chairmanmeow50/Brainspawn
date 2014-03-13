@@ -3,7 +3,7 @@ from matplotlib import rcParams
 from plots.plot import Plot, registered_plot
 import __future__
 
-@registered_plot
+#@registered_plot
 class Raster_Spike_Plot(Plot):
 
     @staticmethod
