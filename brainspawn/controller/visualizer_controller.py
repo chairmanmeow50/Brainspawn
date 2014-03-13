@@ -13,7 +13,7 @@ import cairo
 from simulator.sim_manager import SimManager
 from view.visualizer import MainFrame
 from view.visualizations.network_view import NetworkView
-from view.visualizations.visualization import registered_plots
+from view.visualizations.plot import registered_plots
 from view.visualizations import *
 
 # FIXME use this for now
@@ -33,11 +33,11 @@ class VisualizerController(object):
         self.plots = []
         self.load_visualization_files()
 
-        # TODO - Hardcoding model for now
-        self.load_model(example.model)
-
         self.main_frame = MainFrame(self.sim_manager, self)
         self.main_frame.show_plot(self.network_view.view.canvas, True)
+
+        # TODO - Hardcoding model for now
+        self.load_model(example.model)
 
     def init_view(self):
         pass
@@ -67,7 +67,7 @@ class VisualizerController(object):
         self.main_frame.remove_plot(plot.view.canvas)
 
     def on_open_model(self, widget):
-        filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_OPEN, ext="py", ext_name="Python files")
+        filename = self.file_open(ext="py", ext_name="Python files")
         if not filename:
             return
         mod_name, file_ext = os.path.splitext(os.path.basename(filename))
@@ -81,6 +81,7 @@ class VisualizerController(object):
         if self.sim_manager.current_step > 0:
             self.main_frame.reset_button(None) # a little hacky, but hey
         self.model = model
+        self.main_frame.window.set_title("Nengo Visualizer - " + model.label)
         self.network_view.load_model(model)
         self.sim_manager.load_new_model(model, self.dt) # do we want to copy the model?
 
@@ -122,25 +123,34 @@ class VisualizerController(object):
             return True
         return False
 
-    def on_export_pdf(self, event_widget, widget):
-        filename = self.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, "screenshot.pdf")
+    def on_export_pdf(self, event_widget, widget, name=None):
+        if not name:
+            name = self.main_frame.window.get_title()
+        filename = self.file_save(name + ".pdf")
         if not filename:
             return
         with open(filename, "wb") as f:
             allocation = widget.get_allocation()
             cr = cairo.Context(cairo.PDFSurface(f, allocation.width, allocation.height))
-            widget.draw(cr)
+            try:
+                widget.on_draw_event(None, cr)
+            except AttributeError:
+                widget.draw(cr)
             cr.show_page()
             cr.get_target().finish()
 
-    def file_browse(self, action, name="", ext="", ext_name=""):
-        if (action == gtk.FILE_CHOOSER_ACTION_OPEN):
-            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)
-        else:
-            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK)
+    def file_open(self, ext="", ext_name=""):
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+        return self._file_browse(gtk.FILE_CHOOSER_ACTION_OPEN, buttons, "", ext, ext_name)
+
+    def file_save(self, name="", ext="", ext_name=""):
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK)
+        return self._file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, buttons, name, ext, ext_name)
+
+    def _file_browse(self, action, buttons, name="", ext="", ext_name=""):
         dialog = gtk.FileChooserDialog(title="Select File", action=action, buttons=buttons)
-        dialog.set_do_overwrite_confirmation(True)
         dialog.set_current_folder(os.getcwd())
+        dialog.set_do_overwrite_confirmation(True)
         if action == gtk.FILE_CHOOSER_ACTION_SAVE:
             dialog.set_current_name(name)
 

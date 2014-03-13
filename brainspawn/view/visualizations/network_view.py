@@ -1,17 +1,17 @@
 import nengo
 import networkx as nx
 import matplotlib.pyplot as plt
-from scipy.spatial import KDTree
+from scipy.spatial import cKDTree as KDTree
 from collections import OrderedDict
 
-from view.visualizations.visualization import Visualization
+from view.visualizations.plot import Plot
 
 from gi import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version="3.0")
 import gtk
 
-class NetworkView(Visualization):
+class NetworkView(Plot):
     """ Visualization of a model's network
     """
     def __init__(self, controller, model=None, name="Network View", **kwargs):
@@ -54,15 +54,13 @@ class NetworkView(Visualization):
         # Invert the y coordinate so origin is bottom left (matches networkx coords)
         y = h - y
 
-        # Gets a list of the hit nodes. The list contains indicies corresponding
+        # Check if we hit a node. The returned index corresponds
         # to the list given to the KDTree on creation.
-        hit_indicies = self._kdtree.query_ball_point((x, y), self._node_radius)
-        if not hit_indicies:
+        d, hit_index = self._kdtree.query((x, y), distance_upper_bound=self._node_radius)
+        if hit_index == len(self._graph_pos):
             return None
 
-        # We'll just take the first object that was hit
-        node_name = self._graph_pos.keys()[hit_indicies[0]]
-        return node_name
+        return self._graph_pos.keys()[hit_index]
 
     def get_obj_from_name(self, node_name):
         """ Maps the given graph node name to the object it represents
@@ -193,7 +191,7 @@ class NetworkView(Visualization):
         axis = self.view.figure.axes[0]
         transform = axis.transData.transform
         display_coords = [transform(node_pos) for node_pos in self._graph_pos.values()]
-        self._kdtree = KDTree(display_coords, 2)
+        self._kdtree = KDTree(display_coords)
 
     def node_color(self, nengo_obj):
         """ Provides a mapping between graph nodes and their desired colour.

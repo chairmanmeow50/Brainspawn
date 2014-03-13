@@ -8,14 +8,14 @@ from view.visualizations.plot_view import PlotView
 registered_plots = []
 
 def registered_plot(cls):
-    """Decorator for visualization implementations
+    """Decorator for plot implementations
     In order to be accessible by import *, must also add to __all__ in __init__.py
     """
     registered_plots.append(cls)
     return cls
 
-class Visualization(object):
-    """Visualization class
+class Plot(object):
+    """Plot class
     """
 
     __metaclass__ = ABCMeta
@@ -82,11 +82,7 @@ class Visualization(object):
         self.main_controller.remove_plot_for_obj(self, self._obj, self._cap)
 
     def on_export_pdf(self, widget, canvas):
-        filename = self.main_controller.file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, self.title + ".pdf")
-        if not filename:
-            return
-        with open(filename, "wb") as f:
-            canvas.print_pdf(f)
+        self.main_controller.on_export_pdf(None, canvas, self.title)
 
     def button_press(self, widget, event, canvas):
         if event.button == 3:

@@ -4,7 +4,6 @@
 import gtk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
-#from view.visualizations.network_view import NetworkView
 import view.visualizations.network_view
 
 class PlotView(object):
@@ -17,7 +16,7 @@ class PlotView(object):
         self._canvas.connect("button_release_event", controller.button_press, self._canvas)
 
         # Context menu setup
-        export_pdf_item = gtk.MenuItem("Export to PDF")
+        export_pdf_item = gtk.MenuItem("Export to PDF...")
         export_pdf_item.connect("activate", controller.on_export_pdf, self._canvas)
         self.context_menu.append(export_pdf_item)
 

@@ -9,6 +9,7 @@ class SimManager(object):
     """
 
     def __init__(self):
+        self.dt = 0.0
         self.min_step = 0
         self.last_sim_step = 0
         self._current_step = 0
