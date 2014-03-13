@@ -2,12 +2,12 @@ import numpy as np
 from plots.plot import Plot, registered_plot
 
 @registered_plot
-class XYPlot(Plot):
-    """XY Plot
+class ValuePlot(Plot):
+    """Graph for plotting values over time
     """
 
     def __init__(self, main_controller, obj, cap):
-        super(XYPlot, self).__init__(main_controller, obj, cap)
+        super(ValuePlot, self).__init__(main_controller, obj, cap)
 
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
         self.axes.set_ylabel(self.config['DATA'])
@@ -19,7 +19,7 @@ class XYPlot(Plot):
 
     @staticmethod
     def plot_name():
-        return "XY Plot"
+        return "Value Plot"
 
     @staticmethod
     def supports_cap(cap):
