@@ -11,10 +11,10 @@ import gtk
 import cairo
 
 from simulator.sim_manager import SimManager
-from view.visualizer import MainFrame
-from view.visualizations.network_view import NetworkView
-from view.visualizations.plot import registered_plots
-from view.visualizations import *
+from views.visualizer import MainFrame
+from plots.network_view import NetworkView
+from plots.plot import registered_plots
+from plots import *
 
 # FIXME use this for now
 import sample_networks.two_dimensional_rep as example

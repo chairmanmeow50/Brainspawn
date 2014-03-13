@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib.patches import Rectangle
-from view.visualizations.plot import Plot, registered_plot
-from view.visualizations.firing_rate import Firing_Rate_Plot
+from plots.plot import Plot, registered_plot
+from plots.firing_rate import Firing_Rate_Plot
 import __future__
 import random
 

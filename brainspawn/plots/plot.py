@@ -3,7 +3,7 @@
 
 import gtk
 from abc import ABCMeta, abstractmethod
-from view.visualizations.plot_view import PlotView
+from views.plot_view import PlotView
 
 registered_plots = []
 

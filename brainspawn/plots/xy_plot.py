@@ -1,5 +1,5 @@
 import numpy as np
-from view.visualizations.plot import Plot, registered_plot
+from plots.plot import Plot, registered_plot
 
 @registered_plot
 class XYPlot(Plot):

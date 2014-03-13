@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial import cKDTree as KDTree
 from collections import OrderedDict
 
-from view.visualizations.plot import Plot
+from plots.plot import Plot
 
 from gi import pygtkcompat
 pygtkcompat.enable()

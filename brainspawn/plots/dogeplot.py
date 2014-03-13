@@ -1,6 +1,6 @@
 import numpy as np
-from view.visualizations.xy_plot import XYPlot
-from view.visualizations.plot import registered_plot
+from plots.xy_plot import XYPlot
+from plots.plot import registered_plot
 
 @registered_plot
 class DogePlot(XYPlot):

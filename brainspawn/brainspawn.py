@@ -8,7 +8,7 @@ pygtkcompat.enable_gtk(version="3.0")
 import gtk
 
 from simulator.sim_manager import SimManager
-from controller.visualizer_controller import VisualizerController
+from controllers.visualizer_controller import VisualizerController
 
 def main():
     sim_manager = SimManager()

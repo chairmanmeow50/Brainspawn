@@ -8,10 +8,10 @@ import glob
 import imp
 import traceback
 
-from view.components.input_panel import Input_Panel
-from view.components.controller_panel import Controller_Panel
-from view.components.menu_bar import Menu_Bar
-from view.components.resize_box import ResizeBox
+from views.components.input_panel import Input_Panel
+from views.components.controller_panel import Controller_Panel
+from views.components.menu_bar import Menu_Bar
+from views.components.resize_box import ResizeBox
 import simulator.sim_manager
 
 from matplotlib.backends.backend_gtk3 import TimerGTK3
@@ -121,7 +121,7 @@ class MainFrame:
         self.timer.stop()
         self.playing = False
         self.controller_panel.toggle_play(False)
-        
+
         self.controller_panel.hscale_adjustment.set_lower(0)
         self.controller_panel.hscale_adjustment.set_upper(0)
         self.controller_panel.update_slider(0, 0, 0, self.sim_manager.dt)
