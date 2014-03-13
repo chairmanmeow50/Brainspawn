@@ -1,6 +1,5 @@
 import nengo
 import networkx as nx
-import matplotlib.pyplot as plt
 from scipy.spatial import cKDTree as KDTree
 from collections import OrderedDict
 
@@ -98,20 +97,11 @@ class NetworkView(Plot):
         for obj in model.objs:
             name = None
             if isinstance(obj, nengo.Ensemble):
-                # print "obj.label       = ", obj.label
-                # print "obj.dimensions  = ", obj.dimensions
-                # print "obj.n_neurons   = ", obj.n_neurons
-                # print "obj.probes      = ", obj.probes
-                # print "obj.radius      = ", obj.radius
                 name = _find_uniq_name(obj.label, self.G.nodes())
             elif isinstance(obj, nengo.Node):
-                # print "obj.label      = ", obj.label
-                # print "obj.dimensions = ", obj.size_out
-                # print "obj.output     = ", obj.output
-                # print "obj.probes     = ", obj.probes
                 name = _find_uniq_name(obj.label, self.G.nodes())
             else:
-                print "Error: Uknown model object \"", str(obj), "\", unable to add to network view."
+                print "Warning: model object not recognised: \"", str(obj), "\"."
                 name = str(obj)
 
             if name:
@@ -122,19 +112,6 @@ class NetworkView(Plot):
 
         # Add connections
         for conn in model.connections:
-            # print "conn.label       = ", conn.label
-            # print "conn.pre         = ", conn.pre
-            # print "conn.post        = ", conn.post
-            # print "conn.dimensions  = ", conn.dimensions
-            # print "conn.filter      = ", conn.filter
-            # print "conn.probes      = ", conn.probes
-            # print "conn.transform   = ", conn.transform
-            # print "conn.modularity  = ", conn.modulatory
-
-            # The following are listed as attributes but cause an error when accessed
-            ### print "conn.decoders    = ", conn.decoders
-            ### print "conn.eval_points = ", conn.eval_points
-
             pre_name = self.get_name_from_obj(conn.pre)
             post_name = self.get_name_from_obj(conn.post)
 
@@ -248,13 +225,3 @@ def _find_uniq_name(name, collection, threashold=1000):
 
     # print "Warning: modifying original name to \"%s\" to make it unique." % (name)
     return name
-
-#---------- Main method (testing) --------
-
-def main():
-    # nv = NetworkView(controller=None, model=example.model)
-    #plt.show()
-    pass
-
-if __name__ == '__main__':
-    main()
