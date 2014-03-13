@@ -8,36 +8,30 @@ class system {
     # Development tools
     package { ['vim',
                'tmux',
+               'git',
                'htop',
                'tree',
-               'make',
-               'pkg-config',
-               'graphviz',
-               'libgraphviz-dev']:
+               'build-essential',
+               'pkg-config']:
         ensure => installed,
         require => Exec['apt-get update'],
     }
 
     # Python package dependencies
-    package { [ # Theano dependencies
-               'python-numpy',
+    package { ['python-numpy',
                'python-scipy',
                'python-dev',
                'python-pip',
-               'python-nose',
-               'g++',
-               'libopenblas-dev',
-               'git',
-               # neo dependencies
-               'libhdf5-serial-dev',
-               'cython',
                # gtk3 stuff
                'gir1.2-gtk-3.0',
                'python-gi-cairo',
                # matplotlib dependencies
                'python-gtk2-dev',
                'libpng12-dev',
-               'libfreetype6-dev']:
+               'libfreetype6-dev',
+               # networkx dependencies
+               'graphviz',
+               'libgraphviz-dev']:
         ensure => installed,
         require => Exec['apt-get update'],
     }
@@ -45,7 +39,13 @@ class system {
 
 # Python packages round 1
 class python1 {
-    package { ['distribute']:
+    package { ['ipython',
+               'pytest',
+               'sphinx',
+               'distribute',
+               'networkx',
+               'pygraphviz',
+               'git+git://github.com/mcchong/nengo.git']:
         ensure => latest,
         provider => 'pip',
     }
@@ -53,20 +53,8 @@ class python1 {
 
 # Python packages round 2
 class python2 {
-    package { ['Theano',
-               'quantities',
-               'numexpr',
-               'tables',
-               'neo',
-               'ipython',
-               'pytest',
-               'sphinx',
-               'networkx',
-               'pygraphviz',
-               'matplotlib',
-               'git+git://github.com/mcchong/nengo.git',
-               'git+git://github.com/amtinits/nengo_theano.git']:
-        ensure => installed,
+    package { ['matplotlib']:
+        ensure => latest,
         provider => 'pip',
     }
 }
