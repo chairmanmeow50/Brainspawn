@@ -9,6 +9,7 @@ import imp
 import traceback
 import gtk
 import cairo
+from gi.repository import Gtk
 
 from simulator.sim_manager import SimManager
 from view.visualizer import MainFrame
@@ -70,10 +71,22 @@ class VisualizerController(object):
         filename = self.file_open(ext="py", ext_name="Python files")
         if not filename:
             return
+        self.load_model_from_filename(filename)
+        
+    def load_model_from_filename(self, filename):
         mod_name, file_ext = os.path.splitext(os.path.basename(filename))
-        module = imp.load_source(mod_name, filename)
-        self.load_model(module.model)
-
+        try:
+            module = imp.load_source(mod_name, filename)
+            self.load_model(module.model)
+        except (AttributeError, ImportError):
+            dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.INFO,
+                Gtk.ButtonsType.OK, "Error loading model")
+            dialog.format_secondary_text(
+                "Could not load model from " + str(filename))
+            
+            dialog.run()
+            dialog.destroy()
+            
     def load_model(self, model):
         for plt in self.plots:
             plt.remove_plot(None, None)
