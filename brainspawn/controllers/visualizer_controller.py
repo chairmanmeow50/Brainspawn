@@ -26,13 +26,15 @@ class VisualizerController(object):
         self.registered = []
         self.plots = []
         self.load_plots()
+        
+        self._has_network = False
 
         self.main_frame = MainFrame(self.sim_manager, self)
         
         if (model_file_name):
             self.load_model_from_filename(model_file_name)
-        
-        self.main_frame.show_plot(self.network_view.view.canvas, True)
+            self.main_frame.show_plot(self.network_view.view.canvas, True)
+            self._has_network = True
 
     def init_view(self):
         pass
@@ -72,6 +74,9 @@ class VisualizerController(object):
         try:
             module = imp.load_source(mod_name, filename)
             self.load_model(module.model)
+            if (not self._has_network):
+                self.main_frame.show_plot(self.network_view.view.canvas, True)
+                self._has_network = True
         except (AttributeError, ImportError, IOError):
             dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.INFO,
                 Gtk.ButtonsType.OK, "Error loading model")
