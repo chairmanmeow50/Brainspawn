@@ -10,9 +10,9 @@ class XYPlot(Plot):
         super(XYPlot, self).__init__(main_controller, obj, cap)
 
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
-        self.axes.set_ylabel('time')
+        self.axes.set_ylabel(self.config['DATA'])
         self.axes.yaxis.set_label_coords(-0.05, 0.5)
-        self.axes.set_xlabel('xlabel')
+        self.axes.set_xlabel('time')
         self.axes.xaxis.set_label_coords(0.5, -0.05)
         self.axes.set_ylim([0, 1])
         self.axes.set_xlim([0, 1])
