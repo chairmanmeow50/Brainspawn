@@ -22,6 +22,7 @@ class TutorialPlot(Plot):
         super(TutorialPlot, self).__init__(main_controller, nengo_obj, capability)
 
         # TODO - Let's just plot some arbitrary data onto the axis for now
+        self.axes
 
         # TODO - Let's give the axes some labels
 
