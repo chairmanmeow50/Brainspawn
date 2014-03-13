@@ -6,27 +6,58 @@ class ValuePlot(Plot):
     """Graph for plotting values over time
     """
 
-    def __init__(self, main_controller, obj, cap):
-        super(ValuePlot, self).__init__(main_controller, obj, cap)
+    def __init__(self, main_controller, nengo_obj, capability):
+        """
+        Set up the plot, and axis labels and limits
+
+        Args:
+            main_controller (VisualizerController): The top-level controller
+            of the visualizer
+            nengo_obj (Nengo): The nengo object this plot is visualizing
+            capability (Capability): The capability of the object that this graph
+            is visualizing
+
+        Note the call to super constructor
+        """
+        super(ValuePlot, self).__init__(main_controller, nengo_obj, capability)
 
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
         self.axes.set_ylabel(self.config['DATA'])
-        #self.axes.yaxis.set_label_coords(-0.1, 0.5)
         self.axes.set_xlabel('time')
-        #self.axes.xaxis.set_label_coords(0.5, -0.05)
         self.axes.set_ylim([0, 1])
         self.axes.set_xlim([0, 1])
 
     @staticmethod
     def plot_name():
+        """ What we call the plot
+        (Used when choosing plot from dropdown menu)
+
+        Returns:
+            string. The plot name
+        """
         return "Value Plot"
 
     @staticmethod
     def supports_cap(cap):
+        """ Return true if this plot supports the given capability
+
+        Args:
+            capability (Capablility): The capability to check for plotability
+
+        Returns:
+            bool. True if this plot supports the given capability
+        """
         return cap.name in ['voltages', 'output']
 
     def update(self, start_step, step_size, data):
-        """ Update x data for each line in graph
+        """ Callback function passed to observer nodes
+
+        Update x data for each line in graph, and update axis limits as needed
+
+        Args:
+            start_step (int): The initial step of the given data
+            step_size (int): The time, in simulated seconds, one step represents
+            data (int): The data from the simulator to plot
         """
         start_time = start_step*step_size
         end_time = (start_step + data.shape[0])*step_size
