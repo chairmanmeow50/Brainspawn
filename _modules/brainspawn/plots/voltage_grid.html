@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.plots.voltage_grid &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for brainspawn.plots.voltage_grid</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">Plot</span><span class="p">,</span> <span class="n">registered_plot</span>
+<span class="kn">from</span> <span class="nn">plots.firing_rate</span> <span class="kn">import</span> <span class="n">Firing_Rate_Plot</span>
+<span class="kn">import</span> <span class="nn">__future__</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="nd">@registered_plot</span>
+<div class="viewcode-block" id="Voltage_Grid_Plot"><a class="viewcode-back" href="../../../brainspawn.plots.voltage_grid.html#brainspawn.plots.voltage_grid.Voltage_Grid_Plot">[docs]</a><span class="k">class</span> <span class="nc">Voltage_Grid_Plot</span><span class="p">(</span><span class="n">Firing_Rate_Plot</span><span class="p">):</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Voltage_Grid_Plot.plot_name"><a class="viewcode-back" href="../../../brainspawn.plots.voltage_grid.html#brainspawn.plots.voltage_grid.Voltage_Grid_Plot.plot_name">[docs]</a>    <span class="k">def</span> <span class="nf">plot_name</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s">&quot;Voltage Grid Plot&quot;</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Voltage_Grid_Plot.supports_cap"><a class="viewcode-back" href="../../../brainspawn.plots.voltage_grid.html#brainspawn.plots.voltage_grid.Voltage_Grid_Plot.supports_cap">[docs]</a>    <span class="k">def</span> <span class="nf">supports_cap</span><span class="p">(</span><span class="n">cap</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">cap</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;voltage&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Voltage_Grid_Plot.update"><a class="viewcode-back" href="../../../brainspawn.plots.voltage_grid.html#brainspawn.plots.voltage_grid.Voltage_Grid_Plot.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_step</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; after a tick, gets the values of the neurons and</span>
+<span class="sd">        each row represents the value of the neurons</span>
+<span class="sd">        the columns show the values over time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># TODO - when voltages is fixed, implement</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">random_val</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rect_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage_color</span><span class="p">(</span><span class="n">random_val</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="Voltage_Grid_Plot.voltage_color"><a class="viewcode-back" href="../../../brainspawn.plots.voltage_grid.html#brainspawn.plots.voltage_grid.Voltage_Grid_Plot.voltage_color">[docs]</a>    <span class="k">def</span> <span class="nf">voltage_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">voltage</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; converts the voltage value to a</span>
+<span class="sd">        distribution of colours between yellow</span>
+<span class="sd">        and white to black&quot;&quot;&quot;</span>
+        <span class="n">set_of_colors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c"># black</span>
+        <span class="n">set_of_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;#000000&#39;</span><span class="p">)</span>
+        <span class="c"># grey 1</span>
+        <span class="n">set_of_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;#474747&#39;</span><span class="p">)</span>
+        <span class="c"># grey 2</span>
+        <span class="n">set_of_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;#B2B2B2&#39;</span><span class="p">)</span>
+        <span class="c"># white</span>
+        <span class="n">set_of_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;#FFFFFF&#39;</span><span class="p">)</span>
+        <span class="c"># yellow</span>
+        <span class="n">set_of_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;#FFFF66&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">voltage</span> <span class="o">&gt;</span> <span class="mf">0.95</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">set_of_colors</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">voltage</span> <span class="o">&gt;</span> <span class="mf">0.9</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">set_of_colors</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">voltage</span> <span class="o">&gt;</span> <span class="mf">0.7</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">set_of_colors</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">voltage</span> <span class="o">&gt;</span> <span class="mf">0.6</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">set_of_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">set_of_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Voltage_Grid_Plot.random_color"><a class="viewcode-back" href="../../../brainspawn.plots.voltage_grid.html#brainspawn.plots.voltage_grid.Voltage_Grid_Plot.random_color">[docs]</a>    <span class="k">def</span> <span class="nf">random_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">set_of_colors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c"># white</span>
+        <span class="n">set_of_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;#000000&#39;</span><span class="p">)</span>
+        <span class="c"># grey 1</span>
+        <span class="n">set_of_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;#B2B2B2&#39;</span><span class="p">)</span>
+        <span class="c"># grey 2</span>
+        <span class="n">set_of_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;#474747&#39;</span><span class="p">)</span>
+        <span class="c"># yellow</span>
+        <span class="n">set_of_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;#FFFF66&#39;</span><span class="p">)</span>
+        <span class="c"># black</span>
+        <span class="n">set_of_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;#FFFFFF&#39;</span><span class="p">)</span>
+        <span class="c">#color = np.random.rand(3, 1)</span>
+        <span class="k">return</span> <span class="n">set_of_colors</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+</div>
+<div class="viewcode-block" id="Voltage_Grid_Plot.draw_rects"><a class="viewcode-back" href="../../../brainspawn.plots.voltage_grid.html#brainspawn.plots.voltage_grid.Voltage_Grid_Plot.draw_rects">[docs]</a>    <span class="k">def</span> <span class="nf">draw_rects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; draws the initial rectangles&quot;&quot;&quot;</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">rect</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">((</span><span class="n">x</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">),</span> <span class="n">y</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">)),</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&quot;#000000&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rect_array</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Voltage_Grid_Plot.__init__"><a class="viewcode-back" href="../../../brainspawn.plots.voltage_grid.html#brainspawn.plots.voltage_grid.Voltage_Grid_Plot.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Voltage_Grid_Plot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

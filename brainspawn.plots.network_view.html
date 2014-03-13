@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.plots.network_view module &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="index.html" />
+    <link rel="up" title="brainspawn.plots package" href="brainspawn.plots.html" />
+    <link rel="next" title="brainspawn.plots.plot module" href="brainspawn.plots.plot.html" />
+    <link rel="prev" title="brainspawn.plots.firing_rate module" href="brainspawn.plots.firing_rate.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.plots.plot.html" title="brainspawn.plots.plot module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.plots.firing_rate.html" title="brainspawn.plots.firing_rate module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.plots.html" accesskey="U">brainspawn.plots package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-brainspawn.plots.network_view">
+<span id="brainspawn-plots-network-view-module"></span><h1>brainspawn.plots.network_view module<a class="headerlink" href="#module-brainspawn.plots.network_view" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="brainspawn.plots.network_view.NetworkView">
+<em class="property">class </em><tt class="descclassname">brainspawn.plots.network_view.</tt><tt class="descname">NetworkView</tt><big>(</big><em>controller</em>, <em>model=None</em>, <em>name='Network View'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">plots.plot.Plot</span></tt></p>
+<p>Visualization of a model&#8217;s network</p>
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>controller</em>, <em>model=None</em>, <em>name='Network View'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.button_press">
+<tt class="descname">button_press</tt><big>(</big><em>widget</em>, <em>event</em>, <em>canvas</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.button_press"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.button_press" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides parent&#8217;s method so it can decide which context menu items
+to add, in order to offer adding graphs based on clicked nengo object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.get_name_from_obj">
+<tt class="descname">get_name_from_obj</tt><big>(</big><em>nengo_obj</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.get_name_from_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.get_name_from_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps the given object to the name of the graph node representing it</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.get_obj_from_name">
+<tt class="descname">get_obj_from_name</tt><big>(</big><em>node_name</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.get_obj_from_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.get_obj_from_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps the given graph node name to the object it represents</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.load_model">
+<tt class="descname">load_model</tt><big>(</big><em>model</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.load_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.node_at">
+<tt class="descname">node_at</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.node_at"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.node_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.node_color">
+<tt class="descname">node_color</tt><big>(</big><em>nengo_obj</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.node_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.node_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides a mapping between graph nodes and their desired colour.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="brainspawn.plots.network_view.NetworkView.plot_name">
+<em class="property">static </em><tt class="descname">plot_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.plot_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.rebuild_kd_tree">
+<tt class="descname">rebuild_kd_tree</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.rebuild_kd_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.rebuild_kd_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recalculates the K-D tree used to find graph nodes. Since it&#8217;s in
+display coordinates, it must be recalculated every time the figure&#8217;s
+size changes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.remove_plot">
+<tt class="descname">remove_plot</tt><big>(</big><em>widget</em>, <em>canvas</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.remove_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.remove_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.repaint">
+<tt class="descname">repaint</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.repaint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.repaint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears and draws the network view.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="brainspawn.plots.network_view.NetworkView.supports_cap">
+<em class="property">static </em><tt class="descname">supports_cap</tt><big>(</big><em>cap</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.supports_cap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.supports_cap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.network_view.NetworkView.update">
+<tt class="descname">update</tt><big>(</big><em>start_step</em>, <em>step_size</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/network_view.html#NetworkView.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.network_view.NetworkView.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="brainspawn.plots.firing_rate.html"
+                        title="previous chapter">brainspawn.plots.firing_rate module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="brainspawn.plots.plot.html"
+                        title="next chapter">brainspawn.plots.plot module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/brainspawn.plots.network_view.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.plots.plot.html" title="brainspawn.plots.plot module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.plots.firing_rate.html" title="brainspawn.plots.firing_rate module"
+             >previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.plots.html" >brainspawn.plots package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.views.components.resize_box &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for brainspawn.views.components.resize_box</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">gtk</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="kn">import</span> <span class="n">Gtk</span>
+<span class="kn">import</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">cairo</span>
+
+<div class="viewcode-block" id="ResizeBox"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox">[docs]</a><span class="k">class</span> <span class="nc">ResizeBox</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">EventBox</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ResizeBox.__init__"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">canvas</span><span class="p">,</span> <span class="n">canvas_layout</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ResizeBox</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span> <span class="o">=</span> <span class="n">canvas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span> <span class="o">=</span> <span class="n">canvas_layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_press</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resize_info</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos_x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos_y</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_resize</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_highlight</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_CONTAINER_DEFAULT_WIDTH</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_CONTAINER_DEFAULT_HEIGHT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_size_request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_width</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;enter_notify_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_notify_handler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;leave_notify_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">leave_notify_handler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;button_press_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">button_press_handler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;button_release_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">button_release_handler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;motion_notify_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">motion_notify_handler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;size_allocate&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size_allocate</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.size_allocate"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.size_allocate">[docs]</a>    <span class="k">def</span> <span class="nf">size_allocate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">allocation</span><span class="p">):</span>
+        <span class="n">border_width</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_WIDTH</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_LINE_WIDTH</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="n">allocation</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">border_width</span>
+        <span class="n">allocation</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">border_width</span>
+        <span class="n">allocation</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">allocation</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">border_width</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="n">allocation</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">allocation</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">border_width</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="o">.</span><span class="n">size_allocate</span><span class="p">(</span><span class="n">allocation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.get_canvas"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.get_canvas">[docs]</a>    <span class="k">def</span> <span class="nf">get_canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.get_canvas_layout"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.get_canvas_layout">[docs]</a>    <span class="k">def</span> <span class="nf">get_canvas_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.get_width"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.get_width">[docs]</a>    <span class="k">def</span> <span class="nf">get_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.get_height"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.get_height">[docs]</a>    <span class="k">def</span> <span class="nf">get_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.leave_notify_handler"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.leave_notify_handler">[docs]</a>    <span class="k">def</span> <span class="nf">leave_notify_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_resize</span><span class="p">()):</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">detail</span> <span class="o">!=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">gdk</span><span class="o">.</span><span class="n">NOTIFY_INFERIOR</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_highlight</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_press</span> <span class="o">=</span> <span class="bp">None</span>
+        </div>
+<div class="viewcode-block" id="ResizeBox.do_draw"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.do_draw">[docs]</a>    <span class="k">def</span> <span class="nf">do_draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">fill</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_highlight</span><span class="p">):</span>
+            <span class="c"># selection box</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">new_path</span><span class="p">()</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">set_line_width</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_height</span><span class="p">())</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">set_dash</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">stroke</span><span class="p">()</span>
+
+            <span class="c"># resize box</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">new_path</span><span class="p">()</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">set_line_width</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_LINE_WIDTH</span><span class="p">)</span>
+            <span class="n">bottom_right_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">-</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_WIDTH</span> <span class="o">-</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_LINE_WIDTH</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">bottom_right_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">-</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_HEIGHT</span> <span class="o">-</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_LINE_WIDTH</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">bottom_right_x</span><span class="p">,</span> <span class="n">bottom_right_y</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_WIDTH</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_HEIGHT</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">set_dash</span><span class="p">([],</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">stroke</span><span class="p">()</span>
+
+            <span class="c">#resize plus</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">new_path</span><span class="p">()</span>
+            <span class="n">resize_box_plus_y_start</span> <span class="o">=</span> <span class="n">bottom_right_y</span> <span class="o">+</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_HEIGHT</span> <span class="o">-</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_PLUS_LENGTH</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">bottom_right_x</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_WIDTH</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">resize_box_plus_y_start</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">line_to</span><span class="p">(</span><span class="n">bottom_right_x</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_WIDTH</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">resize_box_plus_y_start</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_PLUS_LENGTH</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">stroke</span><span class="p">()</span>
+
+            <span class="n">ctx</span><span class="o">.</span><span class="n">new_path</span><span class="p">()</span>
+            <span class="n">resize_box_plus_x_start</span> <span class="o">=</span> <span class="n">bottom_right_x</span> <span class="o">+</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_WIDTH</span> <span class="o">-</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_PLUS_LENGTH</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">resize_box_plus_x_start</span><span class="p">,</span> <span class="n">bottom_right_y</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_HEIGHT</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">line_to</span><span class="p">(</span><span class="n">resize_box_plus_x_start</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_PLUS_LENGTH</span><span class="p">,</span> <span class="n">bottom_right_y</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_HEIGHT</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">stroke</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">propagate_draw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="ResizeBox.enter_notify_handler"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.enter_notify_handler">[docs]</a>    <span class="k">def</span> <span class="nf">enter_notify_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_highlight</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.is_within_resize_bounds"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.is_within_resize_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">is_within_resize_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">x_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">-</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_WIDTH</span> <span class="o">-</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_LINE_WIDTH</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">y_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">-</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_HEIGHT</span> <span class="o">-</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_LINE_WIDTH</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">x_max</span> <span class="o">=</span> <span class="n">x_min</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_WIDTH</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_LINE_WIDTH</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">y_max</span> <span class="o">=</span> <span class="n">y_min</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_HEIGHT</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_BOX_LINE_WIDTH</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">x_min</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">x_max</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="n">y_min</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">y_max</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.is_resize"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.is_resize">[docs]</a>    <span class="k">def</span> <span class="nf">is_resize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_resize</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.button_press_handler"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.button_press_handler">[docs]</a>    <span class="k">def</span> <span class="nf">button_press_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span><span class="o">.</span><span class="n">child_get_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;x&quot;</span><span class="p">)</span>
+            <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span><span class="o">.</span><span class="n">child_get_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;y&quot;</span><span class="p">)</span>
+            <span class="n">widget_x</span><span class="p">,</span> <span class="n">widget_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span><span class="o">.</span><span class="n">get_pointer</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_within_resize_bounds</span><span class="p">(</span><span class="n">widget_x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_x</span><span class="p">,</span> <span class="n">widget_y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_y</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_is_resize</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_press</span> <span class="o">=</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">widget_x</span><span class="p">,</span> <span class="n">widget_y</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_original_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.button_release_handler"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.button_release_handler">[docs]</a>    <span class="k">def</span> <span class="nf">button_release_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_press</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_resize</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_resize</span> <span class="o">=</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="ResizeBox.motion_notify_handler"><a class="viewcode-back" href="../../../../brainspawn.views.components.resize_box.html#brainspawn.views.components.resize_box.ResizeBox.motion_notify_handler">[docs]</a>    <span class="k">def</span> <span class="nf">motion_notify_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_press</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="k">return</span>
+
+        <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">xpress</span><span class="p">,</span> <span class="n">ypress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_press</span>
+        <span class="n">canvas_layout_x</span><span class="p">,</span> <span class="n">canvas_layout_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span><span class="o">.</span><span class="n">get_pointer</span><span class="p">()</span>
+
+        <span class="n">widget_x</span> <span class="o">=</span> <span class="n">canvas_layout_x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_x</span>
+        <span class="n">widget_y</span> <span class="o">=</span> <span class="n">canvas_layout_y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_y</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_resize</span><span class="p">()):</span>
+            <span class="n">unused_x</span><span class="p">,</span> <span class="n">unused_y</span><span class="p">,</span> <span class="n">clicked_x</span><span class="p">,</span> <span class="n">clicked_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_press</span>
+            <span class="n">o_width</span><span class="p">,</span> <span class="n">o_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_original_size</span>
+            <span class="n">extra_offset_x</span> <span class="o">=</span> <span class="n">o_width</span> <span class="o">-</span> <span class="p">(</span><span class="n">clicked_x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_x</span><span class="p">)</span>
+            <span class="n">extra_offset_y</span> <span class="o">=</span> <span class="n">o_height</span> <span class="o">-</span> <span class="p">(</span><span class="n">clicked_y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_y</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="n">canvas_layout_x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_x</span> <span class="o">+</span> <span class="n">extra_offset_x</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="n">canvas_layout_y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_y</span> <span class="o">+</span> <span class="n">extra_offset_y</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_MIN_WIDTH</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_height</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESIZE_MIN_HEIGHT</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_size_request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">widget_x</span><span class="p">,</span> <span class="n">widget_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span><span class="o">.</span><span class="n">get_pointer</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_press</span> <span class="o">=</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">widget_x</span><span class="p">,</span> <span class="n">widget_y</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">widget_x</span> <span class="o">-</span> <span class="n">xpress</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">widget_y</span> <span class="o">-</span> <span class="n">ypress</span>
+            <span class="n">new_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">x0</span> <span class="o">+</span> <span class="n">dx</span><span class="p">))</span>
+            <span class="n">new_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">y0</span> <span class="o">+</span> <span class="n">dy</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pos_x</span> <span class="o">=</span> <span class="n">new_x</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pos_y</span> <span class="o">=</span> <span class="n">new_y</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_y</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_press</span> <span class="o">=</span> <span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span><span class="p">,</span> <span class="n">widget_x</span><span class="p">,</span> <span class="n">widget_y</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

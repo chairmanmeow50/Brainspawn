@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.simulator.sim_manager module &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="index.html" />
+    <link rel="up" title="brainspawn.simulator package" href="brainspawn.simulator.html" />
+    <link rel="next" title="brainspawn.views package" href="brainspawn.views.html" />
+    <link rel="prev" title="brainspawn.simulator.adaptor module" href="brainspawn.simulator.adaptor.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.views.html" title="brainspawn.views package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.simulator.adaptor.html" title="brainspawn.simulator.adaptor module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.simulator.html" accesskey="U">brainspawn.simulator package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-brainspawn.simulator.sim_manager">
+<span id="brainspawn-simulator-sim-manager-module"></span><h1>brainspawn.simulator.sim_manager module<a class="headerlink" href="#module-brainspawn.simulator.sim_manager" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="brainspawn.simulator.sim_manager.SimManager">
+<em class="property">class </em><tt class="descclassname">brainspawn.simulator.sim_manager.</tt><tt class="descname">SimManager</tt><a class="reference internal" href="_modules/brainspawn/simulator/sim_manager.html#SimManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.sim_manager.SimManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Class for managing interaction with the simulator</p>
+<dl class="method">
+<dt id="brainspawn.simulator.sim_manager.SimManager.__init__">
+<tt class="descname">__init__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/sim_manager.html#SimManager.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.sim_manager.SimManager.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.sim_manager.SimManager.connect_to_obj">
+<tt class="descname">connect_to_obj</tt><big>(</big><em>obj</em>, <em>cap</em>, <em>fn</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/sim_manager.html#SimManager.connect_to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.sim_manager.SimManager.connect_to_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connects a view to an object for a given cap,
+throws ValueError if this is not possible.
+Creates a buffer for the object, cap if necessary,
+and connects the view to the given buffer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.sim_manager.SimManager.disconnect_from_obj">
+<tt class="descname">disconnect_from_obj</tt><big>(</big><em>obj</em>, <em>cap</em>, <em>fn</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/sim_manager.html#SimManager.disconnect_from_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.sim_manager.SimManager.disconnect_from_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnects a function from an object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.sim_manager.SimManager.get_caps_for_obj">
+<tt class="descname">get_caps_for_obj</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/sim_manager.html#SimManager.get_caps_for_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.sim_manager.SimManager.get_caps_for_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns capabilites of adaptor for given object,
+or an empty list if object is not an object in our
+currrently loaded model for which we have an adaptor</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.sim_manager.SimManager.load_new_model">
+<tt class="descname">load_new_model</tt><big>(</big><em>model</em>, <em>dt</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/sim_manager.html#SimManager.load_new_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.sim_manager.SimManager.load_new_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes a model for visualization and simulation
+Adds adaptor to each object in the model,
+initializes simulator with model</p>
+<p>Note: We modify the model, so you probably want to make
+a copy of it first.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.sim_manager.SimManager.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/sim_manager.html#SimManager.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.sim_manager.SimManager.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets Simulator</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.sim_manager.SimManager.step">
+<tt class="descname">step</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/sim_manager.html#SimManager.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.sim_manager.SimManager.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Advances SimManager by 1 step,
+runs simulator if necessary</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.sim_manager.SimManager.update_all">
+<tt class="descname">update_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/sim_manager.html#SimManager.update_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.sim_manager.SimManager.update_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="brainspawn.simulator.sim_manager.SimManager.current_step">
+<tt class="descname">current_step</tt><a class="reference internal" href="_modules/brainspawn/simulator/sim_manager.html#SimManager.current_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.sim_manager.SimManager.current_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="brainspawn.simulator.adaptor.html"
+                        title="previous chapter">brainspawn.simulator.adaptor module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="brainspawn.views.html"
+                        title="next chapter">brainspawn.views package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/brainspawn.simulator.sim_manager.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.views.html" title="brainspawn.views package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.simulator.adaptor.html" title="brainspawn.simulator.adaptor module"
+             >previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.simulator.html" >brainspawn.simulator package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

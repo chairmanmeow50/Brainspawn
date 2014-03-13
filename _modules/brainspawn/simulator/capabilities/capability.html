@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.simulator.capabilities.capability &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for brainspawn.simulator.capabilities.capability</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Abstract base class for Capabilites</span>
+<span class="sd">Essentially a &#39;data type&#39;</span>
+<span class="sd">Capability represents observable data that a given object</span>
+<span class="sd">in a nengo model has to offer.  The capablity defines how</span>
+<span class="sd">to connect an observer node to the object to be observed</span>
+<span class="sd">in order to collect the data. It also maintains some</span>
+<span class="sd">metadata regarding the type of data offered, including</span>
+<span class="sd">determining the dimensions of the given data from the given</span>
+<span class="sd">object.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<div class="viewcode-block" id="Capability"><a class="viewcode-back" href="../../../../brainspawn.simulator.capabilities.capability.html#brainspawn.simulator.capabilities.capability.Capability">[docs]</a><span class="k">class</span> <span class="nc">Capability</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Capability class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Capability.name"><a class="viewcode-back" href="../../../../brainspawn.simulator.capabilities.capability.html#brainspawn.simulator.capabilities.capability.Capability.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Name of the cap.  Should be unique, like an id,</span>
+<span class="sd">        but we don&#39;t enforce this at the moment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">&quot;Capability&quot;</span>
+</div>
+<div class="viewcode-block" id="Capability.supports_obj"><a class="viewcode-back" href="../../../../brainspawn.simulator.capabilities.capability.html#brainspawn.simulator.capabilities.capability.Capability.supports_obj">[docs]</a>    <span class="k">def</span> <span class="nf">supports_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Determines if the given object offers this cap</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (object): The object to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool.  True if given object offers this capability</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="Capability.get_out_dimensions"><a class="viewcode-back" href="../../../../brainspawn.simulator.capabilities.capability.html#brainspawn.simulator.capabilities.capability.Capability.get_out_dimensions">[docs]</a>    <span class="k">def</span> <span class="nf">get_out_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the output dimensions of this cap for the given object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (object): The object offering the cap</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int.  The number of dimensions of the data offered by</span>
+<span class="sd">            this cap for this obj</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError - This is not a cap for the given object</span>
+
+<span class="sd">        The output dimensions depend on the object and the capability.</span>
+<span class="sd">        Also note here that dimensions are *not* like numpy ndarray dimensions,</span>
+<span class="sd">        they are simply the length of the vector that the signal will be.</span>
+<span class="sd">        I know.  Threw me for a bit of a loop as well.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="Capability.connect_node"><a class="viewcode-back" href="../../../../brainspawn.simulator.capabilities.capability.html#brainspawn.simulator.capabilities.capability.Capability.connect_node">[docs]</a>    <span class="k">def</span> <span class="nf">connect_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Connects an observer node to the given object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (nengo.Node): The observer node to connect to the object</span>
+<span class="sd">            obj (object): The object to observe</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError - This is not a cap for the given object</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

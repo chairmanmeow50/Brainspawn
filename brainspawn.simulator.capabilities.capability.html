@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.simulator.capabilities.capability module &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="index.html" />
+    <link rel="up" title="brainspawn.simulator.capabilities package" href="brainspawn.simulator.capabilities.html" />
+    <link rel="next" title="brainspawn.simulator.capabilities.output_cap module" href="brainspawn.simulator.capabilities.output_cap.html" />
+    <link rel="prev" title="brainspawn.simulator.capabilities.cap_factory module" href="brainspawn.simulator.capabilities.cap_factory.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.simulator.capabilities.output_cap.html" title="brainspawn.simulator.capabilities.output_cap module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.simulator.capabilities.cap_factory.html" title="brainspawn.simulator.capabilities.cap_factory module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.simulator.html" >brainspawn.simulator package</a> &raquo;</li>
+          <li><a href="brainspawn.simulator.capabilities.html" accesskey="U">brainspawn.simulator.capabilities package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-brainspawn.simulator.capabilities.capability">
+<span id="brainspawn-simulator-capabilities-capability-module"></span><h1>brainspawn.simulator.capabilities.capability module<a class="headerlink" href="#module-brainspawn.simulator.capabilities.capability" title="Permalink to this headline">¶</a></h1>
+<p>Abstract base class for Capabilites
+Essentially a &#8216;data type&#8217;
+Capability represents observable data that a given object
+in a nengo model has to offer.  The capablity defines how
+to connect an observer node to the object to be observed
+in order to collect the data. It also maintains some
+metadata regarding the type of data offered, including
+determining the dimensions of the given data from the given
+object.</p>
+<dl class="class">
+<dt id="brainspawn.simulator.capabilities.capability.Capability">
+<em class="property">class </em><tt class="descclassname">brainspawn.simulator.capabilities.capability.</tt><tt class="descname">Capability</tt><a class="reference internal" href="_modules/brainspawn/simulator/capabilities/capability.html#Capability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.capabilities.capability.Capability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Capability class</p>
+<dl class="attribute">
+<dt id="brainspawn.simulator.capabilities.capability.Capability.__metaclass__">
+<tt class="descname">__metaclass__</tt><a class="headerlink" href="#brainspawn.simulator.capabilities.capability.Capability.__metaclass__" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">ABCMeta</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.capabilities.capability.Capability.connect_node">
+<tt class="descname">connect_node</tt><big>(</big><em>node</em>, <em>obj</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/capabilities/capability.html#Capability.connect_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.capabilities.capability.Capability.connect_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connects an observer node to the given object</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>node (nengo.Node): The observer node to connect to the object
+obj (object): The object to observe</dd>
+<dt>Raises:</dt>
+<dd>ValueError - This is not a cap for the given object</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.capabilities.capability.Capability.get_out_dimensions">
+<tt class="descname">get_out_dimensions</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/capabilities/capability.html#Capability.get_out_dimensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.capabilities.capability.Capability.get_out_dimensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the output dimensions of this cap for the given object</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>obj (object): The object offering the cap</dd>
+<dt>Returns:</dt>
+<dd>int.  The number of dimensions of the data offered by
+this cap for this obj</dd>
+<dt>Raises:</dt>
+<dd>ValueError - This is not a cap for the given object</dd>
+</dl>
+<p>The output dimensions depend on the object and the capability.
+Also note here that dimensions are <em>not</em> like numpy ndarray dimensions,
+they are simply the length of the vector that the signal will be.
+I know.  Threw me for a bit of a loop as well.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.capabilities.capability.Capability.supports_obj">
+<tt class="descname">supports_obj</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/capabilities/capability.html#Capability.supports_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.capabilities.capability.Capability.supports_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if the given object offers this cap</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>obj (object): The object to check</dd>
+<dt>Returns:</dt>
+<dd>bool.  True if given object offers this capability</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="brainspawn.simulator.capabilities.capability.Capability.name">
+<tt class="descname">name</tt><a class="reference internal" href="_modules/brainspawn/simulator/capabilities/capability.html#Capability.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.capabilities.capability.Capability.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the cap.  Should be unique, like an id,
+but we don&#8217;t enforce this at the moment</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="brainspawn.simulator.capabilities.cap_factory.html"
+                        title="previous chapter">brainspawn.simulator.capabilities.cap_factory module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="brainspawn.simulator.capabilities.output_cap.html"
+                        title="next chapter">brainspawn.simulator.capabilities.output_cap module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/brainspawn.simulator.capabilities.capability.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.simulator.capabilities.output_cap.html" title="brainspawn.simulator.capabilities.output_cap module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.simulator.capabilities.cap_factory.html" title="brainspawn.simulator.capabilities.cap_factory module"
+             >previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.simulator.html" >brainspawn.simulator package</a> &raquo;</li>
+          <li><a href="brainspawn.simulator.capabilities.html" >brainspawn.simulator.capabilities package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

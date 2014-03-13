@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.simulator.adaptor &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for brainspawn.simulator.adaptor</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Adaptor</span>
+
+<span class="sd">Responsible for creating custom nodes for storing viewable data,</span>
+<span class="sd">and connecting them to the observed object.</span>
+
+<span class="sd">The nodes are added to the model, and this step should be done</span>
+<span class="sd">prior to passing the model to the simulator.</span>
+
+<span class="sd">Views can then subscribe to be updated with the given data,</span>
+<span class="sd">according to the given type of data (&quot;capabilites&quot;).</span>
+
+<span class="sd">Observed data is stored in circular buffers of configurable size,</span>
+
+<span class="sd">NOTE - As implemented, we don&#39;t support watchinng objects with an</span>
+<span class="sd">output signal of zero dimensions</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">nengo</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">capabilities.cap_factory</span> <span class="kn">import</span> <span class="n">CapFactory</span>
+
+<span class="n">max_buffer_elements</span> <span class="o">=</span> <span class="mi">100000</span> <span class="c"># TODO - make configurable</span>
+<span class="n">max_window_size</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<div class="viewcode-block" id="OutputFn"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.OutputFn">[docs]</a><span class="k">class</span> <span class="nc">OutputFn</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">Callable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Callable which is passed to a given node</span>
+
+<span class="sd">    The callable is called by the Node during simulation with inputs</span>
+<span class="sd">    of given dimension, writes the data to the buffer, if the cap is</span>
+<span class="sd">    connected, and publishes the updated buffer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="OutputFn.__init__"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.OutputFn.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_manager</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span> <span class="o">=</span> <span class="n">sim_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">=</span> <span class="n">dimensions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_start_step</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscribed_fns</span> <span class="o">=</span> <span class="p">[]</span>
+</div>
+<div class="viewcode-block" id="OutputFn.__call__"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.OutputFn.__call__">[docs]</a>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">input_signal</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called by Node with data of interest</span>
+<span class="sd">        If we have subscriptions, store data and publish</span>
+
+<span class="sd">        Params as passed by the simulator</span>
+<span class="sd">        :param time: The simulated time of the step</span>
+<span class="sd">        :param input_signal: The numpy ndarray representing the input signal</span>
+
+<span class="sd">        Sets buffer_start_step if necessary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscribed_fns</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">input_signal</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer_start_step</span> <span class="o">==</span> <span class="bp">None</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer_start_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">current_step</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_all</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="OutputFn.update_all"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.OutputFn.update_all">[docs]</a>    <span class="k">def</span> <span class="nf">update_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscribed_fns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OutputFn.update"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.OutputFn.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_start_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">start_step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer_start_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">current_step</span> <span class="o">-</span> <span class="n">max_window_size</span><span class="p">)</span>
+            <span class="n">start_idx</span> <span class="o">=</span> <span class="n">start_step</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_start_step</span>
+            <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">current_step</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_start_step</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
+            <span class="n">fn</span><span class="p">(</span><span class="n">start_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OutputFn.reset"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.OutputFn.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer_start_step</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscribed_fns</span><span class="p">:</span>
+                    <span class="n">fn</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="OutputFn.subscribe"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.OutputFn.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Subscribes fn</span>
+<span class="sd">        Creates data buffer if necessary</span>
+<span class="sd">        Updates with current data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">Buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscribed_fns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OutputFn.unsubscribe"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.OutputFn.unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Unsubscribes fn</span>
+<span class="sd">        Removes data buffer, and resets start time if necessary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscribed_fns</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscribed_fns</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer_start_step</span><span class="o">=</span> <span class="bp">None</span>
+</div></div>
+<div class="viewcode-block" id="Buffer"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Buffer">[docs]</a><span class="k">class</span> <span class="nc">Buffer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Circular Buffer for storing data</span>
+
+<span class="sd">    Buffer takes up max_size*2*dimensions*sizeof(data.dtype) space in memory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Buffer.__init__"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Buffer.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span> <span class="o">=</span> <span class="n">max_buffer_elements</span> <span class="c">#TODO - make configurable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">max_size</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="n">dimensions</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+</div>
+<div class="viewcode-block" id="Buffer.append_data"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Buffer.append_data">[docs]</a>    <span class="k">def</span> <span class="nf">append_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Appends data to end of buffer</span>
+<span class="sd">        numpy raises ValueError if dimensions of data are incorrect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">max_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_data</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">window_start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span>
+</div>
+<div class="viewcode-block" id="Buffer.get_data"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Buffer.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a view of the contents of the buffer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">window_start</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Buffer.reset"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Buffer.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+</div></div>
+<div class="viewcode-block" id="Adaptor"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Adaptor">[docs]</a><span class="k">class</span> <span class="nc">Adaptor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for observing an object in a network.</span>
+
+<span class="sd">    For a given object, creates a node to observe each capability we have for the object.</span>
+<span class="sd">    Views can then subscribe to data from that node.</span>
+<span class="sd">    Data is buffered only if we have at least one subscription to data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Adaptor.__init__"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Adaptor.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_manager</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_fns</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="n">capabilites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_caps</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">cap</span> <span class="ow">in</span> <span class="n">capabilites</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">cap</span><span class="o">.</span><span class="n">supports_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_obj</span><span class="p">(</span><span class="n">sim_manager</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_load_caps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load capabilites</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">CapFactory</span><span class="o">.</span><span class="n">get_caps</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_connect_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_manager</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create Nodes to observe data, and connect them to observed object</span>
+
+<span class="sd">        NOTE:</span>
+<span class="sd">        When the model is given to the simulator, the simulator creates a deep copy</span>
+<span class="sd">        of the given model in order to perform simulations on.  If we just pass our</span>
+<span class="sd">        OutputFn callable, it gets deep copied, and we are unable to subscribe to the</span>
+<span class="sd">        new copied OutputFn.</span>
+
+<span class="sd">        Our sort of hacky way of getting around this is to wrap the callable in a lambda</span>
+<span class="sd">        (which is atomic, so gets around the deep copy), and pass the desired callable as</span>
+<span class="sd">        a default kwarg to the lambda.</span>
+
+<span class="sd">        TODO: OutputFn probably no longer needs to be a callable, we should change this and rename it</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">cap</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caps</span><span class="p">:</span>
+            <span class="n">dimensions</span> <span class="o">=</span> <span class="n">cap</span><span class="o">.</span><span class="n">get_out_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">out_fns</span><span class="p">[</span><span class="n">cap</span><span class="p">]</span> <span class="o">=</span> <span class="n">OutputFn</span><span class="p">(</span><span class="n">sim_manager</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">)</span>
+            <span class="n">obj_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">cap</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;(&#39;</span> <span class="o">+</span> <span class="n">obj_name</span> <span class="o">+</span> <span class="s">&#39;)&#39;</span>
+            <span class="c"># see the documentation of this function for an explanation</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">nengo</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="k">lambda</span> <span class="n">time</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">out_fns</span><span class="p">[</span><span class="n">cap</span><span class="p">]:</span> <span class="n">fn</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span> <span class="n">size_in</span><span class="o">=</span><span class="n">dimensions</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+            <span class="n">cap</span><span class="o">.</span><span class="n">connect_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Adaptor.subscribe"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Adaptor.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cap</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Subscribe to given cap</span>
+<span class="sd">        fn will be called at each step with updated numpy array</span>
+<span class="sd">        containing data from the node</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_fns</span><span class="p">[</span><span class="n">cap</span><span class="p">]</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Adaptor.unsubscribe"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Adaptor.unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cap</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Unsubscribe function from cap</span>
+<span class="sd">        Removes subscription to function,</span>
+<span class="sd">        or does nothing if fn was not subscribed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_fns</span><span class="p">[</span><span class="n">cap</span><span class="p">]</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Adaptor.update_all"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Adaptor.update_all">[docs]</a>    <span class="k">def</span> <span class="nf">update_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">cap</span><span class="p">,</span> <span class="n">out_fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_fns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">out_fn</span><span class="o">.</span><span class="n">update_all</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Adaptor.reset"><a class="viewcode-back" href="../../../brainspawn.simulator.adaptor.html#brainspawn.simulator.adaptor.Adaptor.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">cap</span><span class="p">,</span> <span class="n">out_fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_fns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">out_fn</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.views.components.controller_panel &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for brainspawn.views.components.controller_panel</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on Jul 18, 2013</span>
+
+<span class="sd">@author: vagrant</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">gtk</span>
+
+<div class="viewcode-block" id="Controller_Panel"><a class="viewcode-back" href="../../../../brainspawn.views.components.controller_panel.html#brainspawn.views.components.controller_panel.Controller_Panel">[docs]</a><span class="k">class</span> <span class="nc">Controller_Panel</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">HBox</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    classdocs</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="Controller_Panel.__init__"><a class="viewcode-back" href="../../../../brainspawn.views.components.controller_panel.html#brainspawn.views.components.controller_panel.Controller_Panel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_frame</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="nb">super</span><span class="p">(</span><span class="n">Controller_Panel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="c">#controller_hbox = gtk.HBox(False, 10)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_size_request</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">play_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_button</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_MEDIA_PLAY</span><span class="p">,</span> <span class="s">&quot;clicked&quot;</span><span class="p">,</span> <span class="n">main_frame</span><span class="o">.</span><span class="n">play_pause_button</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">play_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">play_button</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">pause_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_button</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_MEDIA_PAUSE</span><span class="p">,</span> <span class="s">&quot;clicked&quot;</span><span class="p">,</span> <span class="n">main_frame</span><span class="o">.</span><span class="n">play_pause_button</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pause_button</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_label</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="s">&quot;0.000&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_label</span><span class="o">.</span><span class="n">set_alignment</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_label</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_label</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        
+        <span class="n">jump_front_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_button</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_MEDIA_PREVIOUS</span><span class="p">,</span> <span class="s">&quot;clicked&quot;</span><span class="p">,</span> <span class="n">main_frame</span><span class="o">.</span><span class="n">jump_to_front</span><span class="p">)</span>
+        <span class="n">jump_front_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">jump_front_button</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale_adjustment</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">Adjustment</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">HScale</span><span class="p">(</span><span class="n">adjustment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hscale_adjustment</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hscale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale_adjustment</span><span class="o">.</span><span class="n">set_lower</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale_adjustment</span><span class="o">.</span><span class="n">set_upper</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale_adjustment</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hscale_adjustment</span><span class="o">.</span><span class="n">get_upper</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;change-value&quot;</span><span class="p">,</span> <span class="n">main_frame</span><span class="o">.</span><span class="n">hscale_change</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;format-value&quot;</span><span class="p">,</span> <span class="n">main_frame</span><span class="o">.</span><span class="n">format_slider_value</span><span class="p">)</span>
+        
+        <span class="n">jump_end_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_button</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_MEDIA_NEXT</span><span class="p">,</span> <span class="s">&quot;clicked&quot;</span><span class="p">,</span> <span class="n">main_frame</span><span class="o">.</span><span class="n">jump_to_end</span><span class="p">)</span>
+        <span class="n">jump_end_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">jump_end_button</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_label</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="s">&quot;0.000&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_label</span><span class="o">.</span><span class="n">set_alignment</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_label</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_label</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        
+        <span class="n">reset_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_button</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_UNDO</span><span class="p">,</span> <span class="s">&quot;clicked&quot;</span><span class="p">,</span> <span class="n">main_frame</span><span class="o">.</span><span class="n">reset_button</span><span class="p">)</span>
+        <span class="n">reset_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">reset_button</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+        </div>
+<div class="viewcode-block" id="Controller_Panel.create_button"><a class="viewcode-back" href="../../../../brainspawn.views.components.controller_panel.html#brainspawn.views.components.controller_panel.Controller_Panel.create_button">[docs]</a>    <span class="k">def</span> <span class="nf">create_button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stock</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;creates a button with a stock image but no label</span>
+<span class="sd">        also connects the signal to the handler</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">Image</span><span class="p">()</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">set_from_stock</span><span class="p">(</span><span class="n">stock</span><span class="p">,</span> <span class="n">gtk</span><span class="o">.</span><span class="n">ICON_SIZE_BUTTON</span><span class="p">)</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">relief</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">RELIEF_NONE</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    </div>
+<div class="viewcode-block" id="Controller_Panel.toggle_play"><a class="viewcode-back" href="../../../../brainspawn.views.components.controller_panel.html#brainspawn.views.components.controller_panel.Controller_Panel.toggle_play">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_playing</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; hides the play button</span>
+<span class="sd">        then shows the pause button, or vice versa</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">is_playing</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">play_button</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pause_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">play_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pause_button</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        </div>
+<div class="viewcode-block" id="Controller_Panel.set_slider"><a class="viewcode-back" href="../../../../brainspawn.views.components.controller_panel.html#brainspawn.views.components.controller_panel.Controller_Panel.set_slider">[docs]</a>    <span class="k">def</span> <span class="nf">set_slider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; sets the value of the slider</span>
+<span class="sd">        and updates the simulator to the slider value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updating</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        </div>
+<div class="viewcode-block" id="Controller_Panel.update_slider"><a class="viewcode-back" href="../../../../brainspawn.views.components.controller_panel.html#brainspawn.views.components.controller_panel.Controller_Panel.update_slider">[docs]</a>    <span class="k">def</span> <span class="nf">update_slider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; updates the text values and range upper lower range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># slider values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_label</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%.3f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">min</span> <span class="o">*</span> <span class="n">dt</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_label</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%.3f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">max</span> <span class="o">*</span> <span class="n">dt</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale_adjustment</span><span class="o">.</span><span class="n">set_lower</span><span class="p">(</span><span class="nb">min</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hscale_adjustment</span><span class="o">.</span><span class="n">set_upper</span><span class="p">(</span><span class="nb">max</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_slider</span><span class="p">(</span><span class="n">current</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

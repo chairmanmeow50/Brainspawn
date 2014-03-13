@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.views.visualizer &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for brainspawn.views.visualizer</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">gtk</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="kn">import</span> <span class="n">Gtk</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="kn">import</span> <span class="n">GObject</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="kn">from</span> <span class="nn">views.components.input_panel</span> <span class="kn">import</span> <span class="n">Input_Panel</span>
+<span class="kn">from</span> <span class="nn">views.components.controller_panel</span> <span class="kn">import</span> <span class="n">Controller_Panel</span>
+<span class="kn">from</span> <span class="nn">views.components.menu_bar</span> <span class="kn">import</span> <span class="n">Menu_Bar</span>
+<span class="kn">from</span> <span class="nn">views.components.resize_box</span> <span class="kn">import</span> <span class="n">ResizeBox</span>
+<span class="kn">import</span> <span class="nn">simulator.sim_manager</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_gtk3</span> <span class="kn">import</span> <span class="n">TimerGTK3</span>
+
+
+<span class="c"># Fix for a method that is not properly introspected</span>
+<span class="n">_child_get_property</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Container</span><span class="o">.</span><span class="n">child_get_property</span>
+<div class="viewcode-block" id="child_get_property"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.child_get_property">[docs]</a><span class="k">def</span> <span class="nf">child_get_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">GObject</span><span class="o">.</span><span class="n">Value</span><span class="p">()</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">_child_get_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">get_int</span><span class="p">()</span></div>
+<span class="n">Gtk</span><span class="o">.</span><span class="n">Container</span><span class="o">.</span><span class="n">child_get_property</span> <span class="o">=</span> <span class="n">child_get_property</span>
+
+
+<div class="viewcode-block" id="MainFrame"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame">[docs]</a><span class="k">class</span> <span class="nc">MainFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="MainFrame.__init__"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_manager</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span> <span class="o">=</span> <span class="n">sim_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">VBox</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_info</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_canvas</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># create a new window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">Window</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">WINDOW_TOPLEVEL</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">set_default_size</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">&quot;Nengo Visualizer&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;delete_event&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">,</span><span class="n">e</span><span class="p">:</span> <span class="n">gtk</span><span class="o">.</span><span class="n">main_quit</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_panel</span> <span class="o">=</span> <span class="n">Input_Panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span> <span class="o">=</span> <span class="n">Controller_Panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu_bar</span> <span class="o">=</span> <span class="n">Menu_Bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout_event_box</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">EventBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">Layout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout_event_box</span><span class="o">.</span><span class="n">modify_bg</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STATE_NORMAL</span><span class="p">,</span> <span class="n">gtk</span><span class="o">.</span><span class="n">gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span><span class="s">&quot;#ffffff&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout_event_box</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;button_release_event&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">.</span><span class="n">on_layout_button_release</span><span class="p">)</span>
+
+        <span class="c"># Used to control framerate for redrawing graph components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_rate</span> <span class="o">=</span> <span class="mi">6</span> <span class="c"># rate at which we call sim.step()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">framerate</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_gcomponent_redraw</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c"># pretend new_timer is a static method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">TimerGTK3</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">single_shot</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_bar</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout_event_box</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout_event_box</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">toggle_play</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MainFrame.hscale_change"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.hscale_change">[docs]</a>    <span class="k">def</span> <span class="nf">hscale_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">scroll</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">min_step</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">last_sim_step</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_canvas</span><span class="p">()</span>
+
+    <span class="c"># Move some of this functionality to the controller</span></div>
+<div class="viewcode-block" id="MainFrame.step"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">==</span> <span class="bp">True</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">update_slider</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">min_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">last_sim_step</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">current_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_gcomponent_redraw</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_canvas</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">next_gcomponent_redraw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_rate</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">framerate</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">next_gcomponent_redraw</span> <span class="o">-=</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MainFrame.update_canvas"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.update_canvas">[docs]</a>    <span class="k">def</span> <span class="nf">update_canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">canvas</span><span class="p">:</span><span class="n">canvas</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_canvas</span><span class="p">)</span>
+
+    <span class="c">#Controller code for controller_panel</span></div>
+<div class="viewcode-block" id="MainFrame.format_slider_value"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.format_slider_value">[docs]</a>    <span class="k">def</span> <span class="nf">format_slider_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%.3f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MainFrame.play_pause_button"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.play_pause_button">[docs]</a>    <span class="k">def</span> <span class="nf">play_pause_button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">==</span> <span class="bp">True</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">toggle_play</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">playing</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">toggle_play</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">playing</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MainFrame.reset_button"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.reset_button">[docs]</a>    <span class="k">def</span> <span class="nf">reset_button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">toggle_play</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">hscale_adjustment</span><span class="o">.</span><span class="n">set_lower</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">hscale_adjustment</span><span class="o">.</span><span class="n">set_upper</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">update_slider</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jump_to</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">min_step</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MainFrame.jump_to_front"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.jump_to_front">[docs]</a>    <span class="k">def</span> <span class="nf">jump_to_front</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jump_to</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">min_step</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MainFrame.jump_to"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.jump_to">[docs]</a>    <span class="k">def</span> <span class="nf">jump_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">play_pause_button</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">set_slider</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">current_step</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_canvas</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="MainFrame.jump_to_end"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.jump_to_end">[docs]</a>    <span class="k">def</span> <span class="nf">jump_to_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jump_to</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">last_sim_step</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MainFrame.button_press"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.button_press">[docs]</a>    <span class="k">def</span> <span class="nf">button_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">gtk</span><span class="o">.</span><span class="n">gdk</span><span class="o">.</span><span class="n">BUTTON_PRESS</span><span class="p">:</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">popup</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+            <span class="c"># Tell calling code that we have handled this event the buck</span>
+            <span class="c"># stops here.</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="c"># Tell calling code that we have not handled this event pass it on.</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="c"># Print a string when a menu item is selected</span></div>
+<div class="viewcode-block" id="MainFrame.menuitem_response"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.menuitem_response">[docs]</a>    <span class="k">def</span> <span class="nf">menuitem_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">string</span>
+</div>
+<div class="viewcode-block" id="MainFrame.show_plot"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">canvas</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">resize_box</span> <span class="o">=</span> <span class="n">ResizeBox</span><span class="p">(</span><span class="n">canvas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_canvas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resize_box</span><span class="o">.</span><span class="n">get_canvas</span><span class="p">())</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">center</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">()</span> <span class="o">-</span> <span class="n">resize_box</span><span class="o">.</span><span class="n">get_width</span><span class="p">())</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">get_allocated_height</span><span class="p">()</span> <span class="o">-</span> <span class="n">resize_box</span><span class="o">.</span><span class="n">get_height</span><span class="p">())</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">resize_box</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">resize_box</span><span class="o">.</span><span class="n">_pos_x</span> <span class="o">=</span> <span class="n">x</span>
+            <span class="n">resize_box</span><span class="o">.</span><span class="n">_pos_y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">resize_box</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MainFrame.remove_plot"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.remove_plot">[docs]</a>    <span class="k">def</span> <span class="nf">remove_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">canvas</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_canvas</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">canvas</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_parent</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="MainFrame.toggle_panel"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.toggle_panel">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">panel</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">get_active</span><span class="p">()):</span>
+            <span class="n">panel</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">panel</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

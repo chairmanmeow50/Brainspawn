@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.simulator.adaptor module &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="index.html" />
+    <link rel="up" title="brainspawn.simulator package" href="brainspawn.simulator.html" />
+    <link rel="next" title="brainspawn.simulator.sim_manager module" href="brainspawn.simulator.sim_manager.html" />
+    <link rel="prev" title="brainspawn.simulator.capabilities.voltages_cap module" href="brainspawn.simulator.capabilities.voltages_cap.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.simulator.sim_manager.html" title="brainspawn.simulator.sim_manager module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.simulator.capabilities.voltages_cap.html" title="brainspawn.simulator.capabilities.voltages_cap module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.simulator.html" accesskey="U">brainspawn.simulator package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-brainspawn.simulator.adaptor">
+<span id="brainspawn-simulator-adaptor-module"></span><h1>brainspawn.simulator.adaptor module<a class="headerlink" href="#module-brainspawn.simulator.adaptor" title="Permalink to this headline">¶</a></h1>
+<p>Adaptor</p>
+<p>Responsible for creating custom nodes for storing viewable data,
+and connecting them to the observed object.</p>
+<p>The nodes are added to the model, and this step should be done
+prior to passing the model to the simulator.</p>
+<p>Views can then subscribe to be updated with the given data,
+according to the given type of data (&#8220;capabilites&#8221;).</p>
+<p>Observed data is stored in circular buffers of configurable size,</p>
+<p>NOTE - As implemented, we don&#8217;t support watchinng objects with an
+output signal of zero dimensions</p>
+<dl class="class">
+<dt id="brainspawn.simulator.adaptor.Adaptor">
+<em class="property">class </em><tt class="descclassname">brainspawn.simulator.adaptor.</tt><tt class="descname">Adaptor</tt><big>(</big><em>sim_manager</em>, <em>obj</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Adaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Adaptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Class for observing an object in a network.</p>
+<p>For a given object, creates a node to observe each capability we have for the object.
+Views can then subscribe to data from that node.
+Data is buffered only if we have at least one subscription to data.</p>
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.Adaptor.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>sim_manager</em>, <em>obj</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Adaptor.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Adaptor.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.Adaptor.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Adaptor.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Adaptor.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.Adaptor.subscribe">
+<tt class="descname">subscribe</tt><big>(</big><em>cap</em>, <em>fn</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Adaptor.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Adaptor.subscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribe to given cap
+fn will be called at each step with updated numpy array
+containing data from the node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.Adaptor.unsubscribe">
+<tt class="descname">unsubscribe</tt><big>(</big><em>cap</em>, <em>fn</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Adaptor.unsubscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Adaptor.unsubscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unsubscribe function from cap
+Removes subscription to function,
+or does nothing if fn was not subscribed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.Adaptor.update_all">
+<tt class="descname">update_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Adaptor.update_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Adaptor.update_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="brainspawn.simulator.adaptor.Buffer">
+<em class="property">class </em><tt class="descclassname">brainspawn.simulator.adaptor.</tt><tt class="descname">Buffer</tt><big>(</big><em>dimensions</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Buffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Circular Buffer for storing data</p>
+<p>Buffer takes up max_size*2*dimensions*sizeof(data.dtype) space in memory</p>
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.Buffer.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>dimensions</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Buffer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Buffer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.Buffer.append_data">
+<tt class="descname">append_data</tt><big>(</big><em>in_data</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Buffer.append_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Buffer.append_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Appends data to end of buffer
+numpy raises ValueError if dimensions of data are incorrect</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.Buffer.get_data">
+<tt class="descname">get_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Buffer.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Buffer.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a view of the contents of the buffer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.Buffer.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#Buffer.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.Buffer.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="brainspawn.simulator.adaptor.OutputFn">
+<em class="property">class </em><tt class="descclassname">brainspawn.simulator.adaptor.</tt><tt class="descname">OutputFn</tt><big>(</big><em>sim_manager</em>, <em>dimensions</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#OutputFn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.OutputFn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">_abcoll.Callable</span></tt></p>
+<p>Callable which is passed to a given node</p>
+<p>The callable is called by the Node during simulation with inputs
+of given dimension, writes the data to the buffer, if the cap is
+connected, and publishes the updated buffer</p>
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.OutputFn.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>time</em>, <em>input_signal</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#OutputFn.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.OutputFn.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by Node with data of interest
+If we have subscriptions, store data and publish</p>
+<p>Params as passed by the simulator
+:param time: The simulated time of the step
+:param input_signal: The numpy ndarray representing the input signal</p>
+<p>Sets buffer_start_step if necessary</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.OutputFn.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>sim_manager</em>, <em>dimensions</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#OutputFn.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.OutputFn.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.OutputFn.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#OutputFn.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.OutputFn.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.OutputFn.subscribe">
+<tt class="descname">subscribe</tt><big>(</big><em>fn</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#OutputFn.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.OutputFn.subscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribes fn
+Creates data buffer if necessary
+Updates with current data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.OutputFn.unsubscribe">
+<tt class="descname">unsubscribe</tt><big>(</big><em>fn</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#OutputFn.unsubscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.OutputFn.unsubscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unsubscribes fn
+Removes data buffer, and resets start time if necessary</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.OutputFn.update">
+<tt class="descname">update</tt><big>(</big><em>fn</em><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#OutputFn.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.OutputFn.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.simulator.adaptor.OutputFn.update_all">
+<tt class="descname">update_all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/simulator/adaptor.html#OutputFn.update_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.simulator.adaptor.OutputFn.update_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="brainspawn.simulator.capabilities.voltages_cap.html"
+                        title="previous chapter">brainspawn.simulator.capabilities.voltages_cap module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="brainspawn.simulator.sim_manager.html"
+                        title="next chapter">brainspawn.simulator.sim_manager module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/brainspawn.simulator.adaptor.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.simulator.sim_manager.html" title="brainspawn.simulator.sim_manager module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.simulator.capabilities.voltages_cap.html" title="brainspawn.simulator.capabilities.voltages_cap module"
+             >previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.simulator.html" >brainspawn.simulator package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

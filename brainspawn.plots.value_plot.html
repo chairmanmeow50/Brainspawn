@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.plots.value_plot module &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="index.html" />
+    <link rel="up" title="brainspawn.plots package" href="brainspawn.plots.html" />
+    <link rel="next" title="brainspawn.plots.voltage_grid module" href="brainspawn.plots.voltage_grid.html" />
+    <link rel="prev" title="brainspawn.plots.spectrogram module" href="brainspawn.plots.spectrogram.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.plots.voltage_grid.html" title="brainspawn.plots.voltage_grid module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.plots.spectrogram.html" title="brainspawn.plots.spectrogram module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.plots.html" accesskey="U">brainspawn.plots package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-brainspawn.plots.value_plot">
+<span id="brainspawn-plots-value-plot-module"></span><h1>brainspawn.plots.value_plot module<a class="headerlink" href="#module-brainspawn.plots.value_plot" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="brainspawn.plots.value_plot.ValuePlot">
+<em class="property">class </em><tt class="descclassname">brainspawn.plots.value_plot.</tt><tt class="descname">ValuePlot</tt><big>(</big><em>main_controller</em>, <em>nengo_obj</em>, <em>capability</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/value_plot.html#ValuePlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.value_plot.ValuePlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">plots.plot.Plot</span></tt></p>
+<p>Graph for plotting values over time.</p>
+<dl class="method">
+<dt id="brainspawn.plots.value_plot.ValuePlot.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>main_controller</em>, <em>nengo_obj</em>, <em>capability</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/value_plot.html#ValuePlot.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.value_plot.ValuePlot.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up the plot, and axis labels.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>main_controller (VisualizerController): The top-level controller
+of the visualizer.
+nengo_obj (Nengo): The nengo object this plot is visualizing.
+capability (Capability): The capability of the object that this graph
+is visualizing.</dd>
+</dl>
+<p>Note the call to super constructor.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="brainspawn.plots.value_plot.ValuePlot.plot_name">
+<em class="property">static </em><tt class="descname">plot_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/value_plot.html#ValuePlot.plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.value_plot.ValuePlot.plot_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>What we call the plot.
+(Used when choosing plot from dropdown menu)</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>string. The plot name.</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="brainspawn.plots.value_plot.ValuePlot.supports_cap">
+<em class="property">static </em><tt class="descname">supports_cap</tt><big>(</big><em>cap</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/value_plot.html#ValuePlot.supports_cap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.value_plot.ValuePlot.supports_cap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if this plot supports the given capability.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>capability (Capablility): The capability to check for plotability.</dd>
+<dt>Returns:</dt>
+<dd>bool. True if this plot supports the given capability.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.value_plot.ValuePlot.update">
+<tt class="descname">update</tt><big>(</big><em>start_step</em>, <em>step_size</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/value_plot.html#ValuePlot.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.value_plot.ValuePlot.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function passed to observer nodes.</p>
+<p>Update x data for each line in graph, and autoscale axis limits as needed</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>start_step (int): The initial step of the given data.
+step_size (int): The time, in simulated seconds, one step represents.
+data (int): The data from the simulator to plot.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="brainspawn.plots.spectrogram.html"
+                        title="previous chapter">brainspawn.plots.spectrogram module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="brainspawn.plots.voltage_grid.html"
+                        title="next chapter">brainspawn.plots.voltage_grid module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/brainspawn.plots.value_plot.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.plots.voltage_grid.html" title="brainspawn.plots.voltage_grid module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.plots.spectrogram.html" title="brainspawn.plots.spectrogram module"
+             >previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.plots.html" >brainspawn.plots package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
