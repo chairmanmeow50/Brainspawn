@@ -33,8 +33,6 @@ class VisualizerController(object):
         
         if (model_file_name):
             self.load_model_from_filename(model_file_name)
-            self.main_frame.show_plot(self.network_view.view.canvas, True)
-            self._has_network = True
 
     def init_view(self):
         pass
