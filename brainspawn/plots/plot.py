@@ -1,17 +1,15 @@
 """ Abstract base class for Visualizations
 """
 
-import gtk
 from abc import ABCMeta, abstractmethod
 from views.plot_view import PlotView
 
-registered_plots = []
+REGISTERED_PLOTS = {}
 
 def registered_plot(cls):
     """Decorator for plot implementations
-    In order to be accessible by import *, must also add to __all__ in __init__.py
     """
-    registered_plots.append(cls)
+    REGISTERED_PLOTS[cls.__name__] = cls
     return cls
 
 class Plot(object):

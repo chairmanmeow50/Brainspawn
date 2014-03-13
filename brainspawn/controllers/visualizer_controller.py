@@ -3,18 +3,14 @@
 Main Controller for the app
 """
 
-import glob
 import os
 import imp
-import traceback
 import gtk
 import cairo
 
-from simulator.sim_manager import SimManager
 from views.visualizer import MainFrame
 from plots.network_view import NetworkView
-from plots.plot import registered_plots
-from plots import *
+from plots.plot import REGISTERED_PLOTS
 
 # FIXME use this for now
 import sample_networks.two_dimensional_rep as example
@@ -31,7 +27,7 @@ class VisualizerController(object):
 
         self.registered = []
         self.plots = []
-        self.load_visualization_files()
+        self.load_plots()
 
         self.main_frame = MainFrame(self.sim_manager, self)
         self.main_frame.show_plot(self.network_view.view.canvas, True)
@@ -70,8 +66,7 @@ class VisualizerController(object):
         filename = self.file_open(ext="py", ext_name="Python files")
         if not filename:
             return
-        mod_name, file_ext = os.path.splitext(os.path.basename(filename))
-        module = imp.load_source(mod_name, filename)
+        module = self.load_module(filename)
         self.load_model(module.model)
 
     def load_model(self, model):
@@ -85,32 +80,16 @@ class VisualizerController(object):
         self.network_view.load_model(model)
         self.sim_manager.load_new_model(model, self.dt) # do we want to copy the model?
 
-    def load_visualization_files(self):
-        self.registered = registered_plots
+    def load_plots(self):
+        plots_dir = os.path.join(os.path.dirname(__file__), "../plots/")
+        for name in os.listdir(plots_dir):
+            if name.endswith(".py") and not name.startswith("_"):
+                self.load_module(os.path.join(plots_dir, name))
+        self.registered = REGISTERED_PLOTS.values()
 
-    def load_class_from_file(self, filepath):
-        """ Loads class from file as specified by module.class_name()
-        """
-        class_inst = None
-        expected_class = 'MyClass'
-
-        mod_name,file_ext = os.path.splitext(os.path.basename(filepath))
-
-        if file_ext.lower() == '.py':
-            py_mod = imp.load_source(mod_name, filepath)
-
-        elif file_ext.lower() == '.pyc':
-            py_mod = imp.load_compiled(mod_name, filepath)
-
-        mod_class = getattr(py_mod, py_mod.class_name())
-        try:
-            class_inst = mod_class(self, None, None)
-        except TypeError as e:
-            pass # TODO - haha, this will go away soon anyways, lol
-        except AttributeError as e:
-            pass
-
-        return mod_class
+    def load_module(self, filename):
+        mod_name, ext = os.path.splitext(os.path.basename(filename))
+        return imp.load_source(mod_name, filename)
 
     def on_layout_button_release(self, widget, event):
         if event.button == 3:
