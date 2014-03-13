@@ -4,4 +4,4 @@ Vagrantfile
 *.swp
 
 # Ignores for documentation files/folders
-_build
+build/
