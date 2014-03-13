@@ -57,6 +57,7 @@ class ResizeBox(Gtk.EventBox):
         if (event.detail != gtk.gdk.NOTIFY_INFERIOR):
             self._highlight = False
             self.queue_draw()
+            self._press = None
         
     def do_draw(self, ctx):
         ctx.set_source_rgba(1, 1, 1, 1)
