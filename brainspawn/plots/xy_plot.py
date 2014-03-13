@@ -11,9 +11,9 @@ class XYPlot(Plot):
 
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
         self.axes.set_ylabel(self.config['DATA'])
-        self.axes.yaxis.set_label_coords(-0.05, 0.5)
+        #self.axes.yaxis.set_label_coords(-0.1, 0.5)
         self.axes.set_xlabel('time')
-        self.axes.xaxis.set_label_coords(0.5, -0.05)
+        #self.axes.xaxis.set_label_coords(0.5, -0.05)
         self.axes.set_ylim([0, 1])
         self.axes.set_xlim([0, 1])
 
@@ -47,4 +47,3 @@ class XYPlot(Plot):
             data_min = np.amin(data)
             if data_max != data_min:
                 self.axes.set_ylim([min(data_min, 0), max(data_max, 1)])
-

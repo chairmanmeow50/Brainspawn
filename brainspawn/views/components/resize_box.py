@@ -150,6 +150,7 @@ class ResizeBox(Gtk.EventBox):
             self._width = max(self._width, settings.RESIZE_MIN_WIDTH)
             self._height = max(self._height, settings.RESIZE_MIN_HEIGHT)
             self.set_size_request(self._width, self._height)
+            self._canvas.figure.tight_layout()
 
         else:
             widget_x, widget_y = self._canvas_layout.get_pointer()
