@@ -165,7 +165,7 @@ class NetworkView(CanvasItem):
         else:
             return (1,1,1) # white
 
-    def button_press(self, widget, event, canvas):
+    def on_button_release(self, widget, event, canvas):
         """ Overrides parent's method so it can decide which context menu items
         to add, in order to offer adding graphs based on clicked nengo object.
         """
