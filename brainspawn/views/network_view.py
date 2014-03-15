@@ -22,9 +22,15 @@ class NetworkView(CanvasItem):
         self.plots_menu_item = gtk.MenuItem("Plots")
         self._context_menu.append(self.plots_menu_item)
 
+        self.canvas.connect("button_press_event", self.on_button_press)
+        self.canvas.connect("motion_notify_event", self.on_mouse_motion)
+
         # Build graph
         self._node_radius = 10
         self.load_model(model)
+
+        # Used for grabbing + dragging node positions
+        self.node_grabbed = None
 
     def node_at(self, x, y):
         if not self.model or not self._kdtree:
@@ -41,10 +47,10 @@ class NetworkView(CanvasItem):
         # Check if we hit a node. The returned index corresponds
         # to the list given to the KDTree on creation.
         d, hit_index = self._kdtree.query((x, y), distance_upper_bound=self._node_radius)
-        if hit_index == len(self._graph_pos):
+        if hit_index == len(self._node_positions):
             return None
 
-        return self._graph_pos.keys()[hit_index]
+        return self._node_positions.keys()[hit_index]
 
     def get_obj_from_name(self, node_name):
         """ Maps the given graph node name to the object it represents
@@ -71,7 +77,7 @@ class NetworkView(CanvasItem):
         self.G = nx.MultiDiGraph()
         self._graph_name_to_obj = {}
         self._graph_obj_to_name = {}
-        self._graph_pos = None
+        self._node_positions = None
         self._kdtree = None
         self.figure.clear()
 
@@ -114,7 +120,7 @@ class NetworkView(CanvasItem):
         self._node_colors = [self.node_color(o) for o in objs]
 
         # build the graph layout
-        self._graph_pos = OrderedDict(nx.graphviz_layout(self.G, prog="neato"))
+        self._node_positions = OrderedDict(nx.graphviz_layout(self.G, prog="neato"))
 
         # Draw graph
         self.repaint()
@@ -134,7 +140,7 @@ class NetworkView(CanvasItem):
             axis = self.figure.axes[0]
 
         node_diam_sqr = (self._node_radius * 2) ** 2
-        nx.draw(self.G, self._graph_pos, ax=axis, node_color=self._node_colors, node_size=node_diam_sqr)
+        nx.draw(self.G, self._node_positions, ax=axis, node_color=self._node_colors, node_size=node_diam_sqr)
 
         self.canvas.queue_draw()
 
@@ -152,7 +158,7 @@ class NetworkView(CanvasItem):
 
         axis = self.figure.axes[0]
         transform = axis.transData.transform
-        display_coords = [transform(node_pos) for node_pos in self._graph_pos.values()]
+        display_coords = [transform(node_pos) for node_pos in self._node_positions.values()]
         self._kdtree = KDTree(display_coords)
 
     def node_color(self, nengo_obj):
@@ -165,10 +171,40 @@ class NetworkView(CanvasItem):
         else:
             return (1,1,1) # white
 
+    def move_node(self, node_name, x, y):
+        w, h = self.canvas.get_width_height()
+        # Invert the y coordinate so origin is bottom left (matches networkx coords)
+        y = h - y
+
+        trans = self.figure.axes[0].transData.inverted().transform
+        old = self._node_positions[node_name]
+        new = trans((x, y))
+
+        # TODO(gmdavis): if moved past canvas edges, resize canvas
+        print "move %s: (%.0f, %.0f) -> (%.0f, %.0f)"%(node_name, old[0], old[1], new[0], new[1])
+        self._node_positions[node_name] = new
+        self.repaint()
+
+    def on_button_press(self, widget, event):
+        if event.button == 1:
+            node_name = self.node_at(event.x, event.y)
+            if node_name:
+                self.node_grabbed = node_name
+                print "Grabbing:", self.node_grabbed, "at (%.0f, %.0f) " % (event.x, event.y)
+                return True
+
+        return False
+
     def on_button_release(self, widget, event, canvas):
         """ Overrides parent's method so it can decide which context menu items
         to add, in order to offer adding graphs based on clicked nengo object.
         """
+        if event.button == 1:
+            if self.node_grabbed:
+                print "Released:", self.node_grabbed, "at (%.0f, %.0f) " % (event.x, event.y)
+                self.rebuild_kd_tree()
+                self.node_grabbed = None
+                return True
         if event.button == 3:
             node_name = self.node_at(event.x, event.y)
 
@@ -192,11 +228,17 @@ class NetworkView(CanvasItem):
                 self._context_menu.append(self.plots_menu_item)
                 self._context_menu.show_all()
 
-            return super(NetworkView, self).button_press(widget, event, canvas)
+            return super(NetworkView, self).on_button_release(widget, event, canvas)
         return False
 
     def _call_through(self, widget, event, vz, obj, cap):
         self.main_controller.add_plot_for_obj(widget, vz, obj, cap)
+
+    def on_mouse_motion(self, widget, event):
+        if self.node_grabbed:
+            self.move_node(self.node_grabbed, event.x, event.y)
+            return True
+        return False
 
 #---------- Helper functions --------
 

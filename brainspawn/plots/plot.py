@@ -129,4 +129,3 @@ class Plot(CanvasItem):
 
     def remove_plot(self, widget, canvas):
         self.main_controller.remove_plot_for_obj(self, self.nengo_obj, self.capability)
-

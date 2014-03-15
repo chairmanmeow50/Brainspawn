@@ -20,7 +20,7 @@ class CanvasItem(object):
 
         self._context_menu = gtk.Menu()
         self._build_context_menu()
-        self.canvas.connect("button_release_event", self.button_press, self.canvas)
+        self.canvas.connect("button_release_event", self.on_button_release, self.canvas)
 
     def _build_context_menu(self):
         """Context menu setup
@@ -34,9 +34,8 @@ class CanvasItem(object):
     def on_export_pdf(self, widget, canvas):
         self.main_controller.on_export_pdf(None, canvas, self.title)
 
-    def button_press(self, widget, event, canvas):
+    def on_button_release(self, widget, event, canvas):
         if event.button == 3:
             self._context_menu.popup(None, None, None, None, event.button, event.time)
             return True
         return False
-
