@@ -14,10 +14,10 @@ import gtk
 class NetworkView(CanvasItem):
     """ Visualization of a model's network
     """
-    def __init__(self, controller, model=None, name="Network View", **kwargs):
+    def __init__(self, controller, model=None, **kwargs):
         super(NetworkView, self).__init__(controller)
         self._model = model
-        self.name = name
+        self.axes = self.figure.add_subplot(111)
 
         self.plots_menu_item = gtk.MenuItem("Plots")
         self._context_menu.append(self.plots_menu_item)
@@ -79,7 +79,7 @@ class NetworkView(CanvasItem):
         self._graph_obj_to_name = {}
         self._node_positions = None
         self._kdtree = None
-        self.figure.clear()
+        self.axes.clear()
 
         if model is None:
             return
@@ -129,18 +129,12 @@ class NetworkView(CanvasItem):
     def repaint(self):
         """ Clears and draws the network view.
         """
-        self.figure.clear()
+        self.axes.clear()
         if not self.model:
             return
 
-        axis = None
-        if len(self.figure.axes) == 0:
-            axis = self.figure.add_subplot(1,1,1)
-        else:
-            axis = self.figure.axes[0]
-
         node_diam_sqr = (self._node_radius * 2) ** 2
-        nx.draw(self.G, self._node_positions, ax=axis, node_color=self._node_colors, node_size=node_diam_sqr)
+        nx.draw(self.G, self._node_positions, ax=self.axes, node_color=self._node_colors, node_size=node_diam_sqr)
 
         self.canvas.queue_draw()
 
@@ -156,8 +150,7 @@ class NetworkView(CanvasItem):
         # Remember the creation dimensions
         self._kdtree_creation_dim = self.canvas.get_width_height()
 
-        axis = self.figure.axes[0]
-        transform = axis.transData.transform
+        transform = self.axes.transData.transform
         display_coords = [transform(node_pos) for node_pos in self._node_positions.values()]
         self._kdtree = KDTree(display_coords)
 
@@ -176,7 +169,7 @@ class NetworkView(CanvasItem):
         # Invert the y coordinate so origin is bottom left (matches networkx coords)
         y = h - y
 
-        trans = self.figure.axes[0].transData.inverted().transform
+        trans = self.axes.transData.inverted().transform
         old = self._node_positions[node_name]
         new = trans((x, y))
 
