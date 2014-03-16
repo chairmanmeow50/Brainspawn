@@ -42,6 +42,7 @@ class Plot(object):
 
         self.view = PlotView(self)
         self.axes = self.view.figure.add_subplot(111) # take first from list
+        self.axes.patch.set_alpha(0.0)
         self.axes.set_title(self.title)
 
     def init_default_config(self, nengo_obj, capability):

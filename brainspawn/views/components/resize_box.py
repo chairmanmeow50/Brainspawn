@@ -1,8 +1,6 @@
 import gtk
 from gi.repository import Gtk
 import settings
-import math
-import cairo
 
 class ResizeBox(Gtk.EventBox):
 
@@ -60,10 +58,6 @@ class ResizeBox(Gtk.EventBox):
             self.queue_draw()
 
     def do_draw(self, ctx):
-        ctx.set_source_rgba(1, 1, 1, 1)
-        ctx.rectangle(0, 0, self._width, self._height)
-        ctx.fill()
-
         if (self._highlight):
             # selection box
             ctx.new_path()

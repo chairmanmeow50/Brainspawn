@@ -10,8 +10,8 @@ class PlotView(object):
 
     def __init__(self, controller):
         self._figure = Figure()
+        self._figure.patch.set_alpha(0.0)
         self._canvas = FigureCanvas(self._figure)
-        self._figure.patch.set_facecolor('white')
         self.context_menu = gtk.Menu()
         self._canvas.connect("button_release_event", controller.button_press, self._canvas)
 
