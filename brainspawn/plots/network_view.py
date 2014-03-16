@@ -196,7 +196,7 @@ class NetworkView(Plot):
                 submenu = gtk.Menu()
 
                 for (vz, obj, cap) in supported:
-                    item = gtk.MenuItem(vz.plot_name() + '-' + cap.name)
+                    item = gtk.MenuItem("%s (%s)" % (vz.plot_name(), cap.name))
                     # Hack: b-p-e connect (instead of "activate") is a workaround for
                     # submenu item not getting activate signal unless the submenu is
                     # also clicked. b-p-e works but has the extra event arg, discarded
