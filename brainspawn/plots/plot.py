@@ -25,7 +25,7 @@ class Plot(object):
     def __init__(self, main_controller, nengo_obj, capability):
         """ Plot constructor.
         Initializes default config values for all plots,
-        Sets up the plot view and axes.
+        Sets up the plot view.
 
         Args:
             main_controller (VisualizerController): The top-level controller
@@ -41,9 +41,6 @@ class Plot(object):
         self.init_default_config(nengo_obj, capability)
 
         self.view = PlotView(self)
-        self.axes = self.view.figure.add_subplot(111) # take first from list
-        self.axes.patch.set_alpha(0.0)
-        self.axes.set_title(self.title)
 
     def init_default_config(self, nengo_obj, capability):
         """Sets default config values for all plots

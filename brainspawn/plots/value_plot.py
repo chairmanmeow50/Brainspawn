@@ -21,10 +21,14 @@ class ValuePlot(Plot):
         """
         super(ValuePlot, self).__init__(main_controller, nengo_obj, capability)
 
-        self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
+        self.axes = self.view.figure.add_subplot(111) # take first from list
+        self.axes.patch.set_alpha(0.0)
+        self.axes.set_title(self.title)
         self.axes.set_ylabel(self.config['DATA'])
         self.axes.set_xlabel('time')
         self.axes.set_xlim([0, 1])
+
+        self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
 
     @staticmethod
     def plot_name():
