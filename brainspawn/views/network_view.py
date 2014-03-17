@@ -405,6 +405,7 @@ class NetworkView(CanvasItem):
                 if not self._selected_nodes and not self._single_node_moved:
                     self.add_selected_node(self.node_grabbed)
                 self.node_grabbed = None
+                self._selected_grabbed = False
                 return True
         if event.button == 3:
             node_name = self.node_at(event.x, event.y)
