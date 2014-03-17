@@ -5,8 +5,7 @@ class CustomizeWindow:
     def __init__(self, plot, **kwargs):
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.plot = plot
-        name = "Customize " + kwargs.get('name') if 'name' in kwargs else "Customize"
-        self.window.set_title(name)
+        self.window.set_title("Customize")
         
         self.options = plot.get_options_dict()
         
@@ -20,7 +19,6 @@ class CustomizeWindow:
                 if (self.options[option_name].configurable):
                     data_type = self.options[option_name].data_type
                     text_label = gtk.Label(self.options[option_name].display_name)
-                    type_label = gtk.Label(data_type)
                     self.revert_data[option_name] = self.options[option_name].value
                     
                     if (data_type == 'text'):
@@ -45,6 +43,15 @@ class CustomizeWindow:
                         color_selection = color_selection_dialog.get_color_selection()
                         self.controls[option_name] = color_selection
                         color_selection.connect("color_changed", self.apply_all)
+                    elif (data_type == 'slider'):
+                        slider_adjustment = Gtk.Adjustment()
+                        control = Gtk.HScale(adjustment = slider_adjustment)
+                        (min, max) = self.options[option_name].bounds
+                        slider_adjustment.set_lower(min)
+                        slider_adjustment.set_upper(max)
+                        slider_adjustment.set_value(self.options[option_name].value)
+                        self.controls[option_name] = control
+                        slider_adjustment.connect("value_changed", self.apply_all)
                                 
                     if (control):
                         if (data_type == 'text' or data_type == 'combo'):
@@ -52,12 +59,11 @@ class CustomizeWindow:
                         elif (data_type == 'boolean'):
                             control.connect("toggled", self.apply_all)
                             
-                        if (data_type != 'color'):
+                        if (data_type != 'color' and data_type != 'slider'):
                             self.controls[option_name] = control
                         
                         hbox = Gtk.HBox(True, 10)
                         hbox.pack_start(text_label, True, True, 10)
-                        hbox.pack_start(type_label, True, True, 10)
                         hbox.pack_start(control, True, True, 10)
                         
                         self.vbox.pack_start(hbox, True, False, 10)
@@ -131,6 +137,8 @@ class CustomizeWindow:
             self.controls[option_name].set_active(revert_val_index)
         elif (data_type == 'boolean'):
             self.controls[option_name].set_active(revert_val)
+        elif (data_type == 'slider'):
+            self.controls[option_name].set_value(revert_val)
 
         self.controls[option_name].queue_draw()
         
@@ -153,4 +161,5 @@ class CustomizeWindow:
         elif (data_type == 'color'):
             rgba = self.controls[option_name].get_current_color()
             return (rgba.red/65535.0, rgba.green/65535.0, rgba.blue/65535.0)
-        
+        elif (data_type == 'slider'):
+            return self.controls[option_name].get_value()

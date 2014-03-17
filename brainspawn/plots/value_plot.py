@@ -27,7 +27,7 @@ class ValuePlot(Plot):
         self.axes.set_ylabel(self.config['DATA'].value)
         self.axes.set_xlabel('Time (s)')
         self.axes.set_xlim([0, 1])
-        self.axes.patch.set_alpha(1.0)
+        self.axes.patch.set_alpha(0.0)
 
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
 
@@ -89,6 +89,14 @@ class ValuePlot(Plot):
                                                      data_type = "color",
                                                      value = "#FFFFFF",
                                                      function = self.axes.set_axis_bgcolor)
+        
+        self.config['bg_alpha'] = Configuration(
+                                                     configurable = True,
+                                                     display_name = "Background Alpha",
+                                                     data_type = "slider",
+                                                     value = 0,
+                                                     function = self.axes.patch.set_alpha,
+                                                     bounds = [0, 1])
         
         return self.config
 
