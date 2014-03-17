@@ -42,6 +42,8 @@ class BasePlot(CanvasItem):
         self.nengo_obj = nengo_obj
         self.capability = capability
         self.config = OrderedDict()
+        self.init_default_config(nengo_obj, capability)
+        self.set_config_values(config)
 
     def _build_context_menu(self):
         """Context menu setup
@@ -82,9 +84,13 @@ class BasePlot(CanvasItem):
     def make_config_tuple(self):
         Config_Tuple = namedtuple('Configuration', ['configurable', 'display_name', 'data_type', 'value', 'function', 'combo'])
         return Config_Tuple._make([None, None, None, None, None, None])
-        
+
     def get_config_values(self):
         return {key : configuration.value for key, configuration in self.config.iteritems()}
+
+    def set_config_values(self, config):
+        for key, val in config.items():
+            #self.config[key].value = val
 
     @property
     def title(self):
