@@ -262,9 +262,9 @@ class NetworkView(CanvasItem):
         """ Provides a mapping between graph nodes and their desired colour.
         """
         if isinstance(nengo_obj, nengo.Node):
-            return (1, 0.9, 0.1, 1)
+            return (30/255.0, 144/255.0, 255/255.0, 1)
         if isinstance(nengo_obj, nengo.Ensemble):
-            return (0.9, 0.1, 0.9, 1)
+            return (50/255.0, 205/255.0, 50/255.0, 1)
         else:
             return (1,1,1, 1) # white
 
