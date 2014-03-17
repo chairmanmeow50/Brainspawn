@@ -42,13 +42,11 @@ class BasePlot(CanvasItem):
         self.nengo_obj = nengo_obj
         self.capability = capability
         self.config = OrderedDict()
-        #self.init_default_config(nengo_obj, capability)
 
-        self._add_to_context_menu()
-
-    def _add_to_context_menu(self):
+    def _build_context_menu(self):
         """Context menu setup
         """
+        super(BasePlot, self)._build_context_menu()
         remove_item = gtk.MenuItem("Remove")
         remove_item.connect("activate", self.remove_plot, self.canvas)
         

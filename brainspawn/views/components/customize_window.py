@@ -4,7 +4,6 @@ from gi.repository import Gtk
 class CustomizeWindow:
     def __init__(self, plot, **kwargs):
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        #self.window.set_default_size(640, 480)
         self.plot = plot
         name = "Customize " + kwargs.get('name') if 'name' in kwargs else "Customize"
         self.window.set_title(name)

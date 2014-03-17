@@ -17,7 +17,6 @@ class Controller_Panel(gtk.HBox):
         '''
         
         super(Controller_Panel, self).__init__(False, 10)
-        #controller_hbox = gtk.HBox(False, 10)
         self.set_size_request(300, 50)
         
         self.play_button = self.create_button(gtk.STOCK_MEDIA_PLAY, "clicked", main_frame.play_pause_button)

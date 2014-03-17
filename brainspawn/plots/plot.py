@@ -37,16 +37,6 @@ class Plot(BasePlot):
         self.init_default_config(nengo_obj, capability)
         self.axes.set_title(self.title)
 
-    def _build_context_menu(self):
-        """Context menu setup
-        """
-        super(Plot, self)._build_context_menu()
-        remove_item = gtk.MenuItem("Remove")
-        remove_item.connect("activate", self.remove_plot, self.canvas)
-        self._context_menu.append(remove_item)
-
-        self._context_menu.show_all()
-
     def init_default_config(self, nengo_obj, capability):
         """Sets default config values for all plots
         The values contained in this dictionary are used to configure
