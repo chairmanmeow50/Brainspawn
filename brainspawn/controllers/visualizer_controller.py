@@ -53,12 +53,12 @@ class VisualizerController(object):
         plot = plt(self, obj, cap, config)
         self.plots.append(plot)
         self.sim_manager.connect_to_obj(obj, cap, plot.update)
-        self.main_frame.show_plot(plot.canvas, False, position, size)
+        self.main_frame.show_plot(plot, False, position, size)
 
     def remove_plot_for_obj(self, plot, obj, cap):
         self.sim_manager.disconnect_from_obj(obj, cap, plot.update)
         self.plots.remove(plot)
-        self.main_frame.remove_plot(plot.canvas)
+        self.main_frame.remove_plot(plot)
 
     def on_save_layout(self, widget):
         name = self.main_frame.window.get_title()
@@ -150,7 +150,7 @@ class VisualizerController(object):
             self.load_model(module.model)
             self._loaded_model_file = filename
             if (not self._has_network):
-                self.main_frame.show_plot(self.network_view.canvas, True)
+                self.main_frame.show_plot(self.network_view, True)
                 self._has_network = True
                 self.main_frame.controller_panel.enable_controls()
         except (AttributeError, ImportError, IOError, SyntaxError) as e:

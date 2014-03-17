@@ -155,15 +155,15 @@ class MainFrame:
     def menuitem_response(self, widget, string):
         print "%s" % string
 
-    def show_plot(self, canvas, center=False, position=None, size=None):
+    def show_plot(self, plot, center=False, position=None, size=None):
         """
         center (boolean): center the plot, ignore position
         position (tuple): x, y coords to position the plot
         """
-        resize_box = ResizeBox(canvas, self.canvas_layout)
+        resize_box = ResizeBox(plot, self.canvas_layout)
         self.all_canvas.append(resize_box.get_canvas())
         self.canvas_layout.put(resize_box, 0, 0)
-        self.resize_boxes[canvas] = resize_box
+        self.resize_boxes[plot] = resize_box
         # Set position
         if (center):
             x = (self.window.get_allocated_width() - resize_box.get_width()) / 2
@@ -178,9 +178,9 @@ class MainFrame:
         if size:
             resize_box.set_size(*size)
 
-    def remove_plot(self, canvas):
-        self.all_canvas.remove(canvas)
-        self.canvas_layout.remove(canvas.get_parent())
+    def remove_plot(self, plot):
+        self.all_canvas.remove(plot.canvas)
+        self.canvas_layout.remove(plot.canvas.get_parent())
 
     def get_canvas_position(self, canvas):
         return (self.resize_boxes[canvas].pos_x, self.resize_boxes[canvas].pos_y)

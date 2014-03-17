@@ -5,9 +5,10 @@ from views.network_view import NetworkView
 
 class ResizeBox(Gtk.EventBox):
 
-    def __init__(self, canvas, canvas_layout):
+    def __init__(self, plot, canvas_layout):
         super(ResizeBox, self).__init__()
-        self._canvas = canvas
+        self._canvas = plot.canvas
+        self._plot = plot
         self._canvas_layout = canvas_layout
         self.pos_x = 0
         self.pos_y = 0
@@ -35,7 +36,7 @@ class ResizeBox(Gtk.EventBox):
 
     def button_press_handler(self, widget, event):
         if (event.button == 1):
-            if not isinstance(self._canvas, NetworkView):
+            if not isinstance(self._plot, NetworkView):
                 getattr(self.get_window(), 'raise')()
             if (self.is_within_resize_bounds(int(event.x), int(event.x))):
                 self._is_resize = True
