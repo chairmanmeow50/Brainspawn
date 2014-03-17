@@ -75,6 +75,13 @@ class ValuePlot(Plot):
                                                                  function = self.axes.set_xscale,
                                                                  combo = ['linear', 'log', 'symlog'])
         
+        self.config['frame'] = self.make_config_tuple()._replace(
+                                                                 configurable = True,
+                                                                 display_name = "Frame",
+                                                                 data_type = "boolean",
+                                                                 value = True,
+                                                                 function = self.axes.set_frame_on)
+        
         return self.config
 
     def update(self, start_step, step_size, data):

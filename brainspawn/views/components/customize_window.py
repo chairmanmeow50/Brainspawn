@@ -31,9 +31,15 @@ class CustomizeWindow:
                     control.set_entry_text_column(0)
                     
                     control.set_active(combo_values.index(self.options[option_name].value))
-                        
+                elif (data_type == 'boolean'):
+                    control = Gtk.CheckButton()
+                    control.set_active(self.options[option_name].value)
+                            
                 if (control):
-                    control.connect("changed", self.apply_all)
+                    if (data_type == 'text' or data_type == 'combo'):
+                        control.connect("changed", self.apply_all)
+                    elif (data_type == 'boolean'):
+                        control.connect("toggled", self.apply_all)
                     self.controls[option_name] = control
                     
                     hbox = Gtk.HBox(True, 10)
@@ -71,4 +77,6 @@ class CustomizeWindow:
             text = self.controls[option_name].get_active_text()
             self.controls[option_name].queue_draw()
             return text
+        elif (data_type == 'boolean'):
+            return self.controls[option_name].get_active()
         
