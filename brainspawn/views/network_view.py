@@ -230,6 +230,7 @@ class NetworkView(CanvasItem):
     def on_mouse_motion(self, widget, event):
         if self.node_grabbed:
             self.move_node(self.node_grabbed, event.x, event.y)
+            event.request_motions()
             return True
         return False
 
