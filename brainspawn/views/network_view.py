@@ -42,6 +42,9 @@ class NetworkView(CanvasItem):
         # Used for grabbing + dragging node positions
         self.node_grabbed = None
 
+        # Used for highlighting mouseover node
+        self._last_highlighted = None
+
     def node_at(self, x, y):
         if not self.model or not self._kdtree:
             return None
@@ -259,11 +262,11 @@ class NetworkView(CanvasItem):
         """ Provides a mapping between graph nodes and their desired colour.
         """
         if isinstance(nengo_obj, nengo.Node):
-            return (1,1,0)
+            return (30/255.0, 144/255.0, 255/255.0, 1)
         if isinstance(nengo_obj, nengo.Ensemble):
-            return (1,0,1)
+            return (50/255.0, 205/255.0, 50/255.0, 1)
         else:
-            return (1,1,1) # white
+            return (1,1,1, 1) # white
 
     def move_node(self, node_name, x, y, rebuild_kd_tree=True):
         """ All coordinates, unless otherwise mentioned, are in screen coordinates
@@ -359,6 +362,34 @@ class NetworkView(CanvasItem):
             self.move_node(self.node_grabbed, event.x, event.y, rebuild_kd_tree=False)
             event.request_motions()
             return True
+
+        return self._update_node_highlighting(event.x, event.y)
+
+    def _update_node_highlighting(self, x, y):
+        curr = self.node_at(x, y)
+        prev = self._last_highlighted
+
+        if curr == prev:
+            return curr is not None
+
+        colors = self._node_collection.get_facecolors()
+
+        if curr:
+            idx = self.G.nodes().index(curr)
+            r, g, b, a = colors[idx]
+            c = 1.4
+            colors[idx] = min(1, r*c), min(1, g*c), min(1, b*c), a
+
+        if prev:
+            idx = self.G.nodes().index(prev)
+            colors[idx] = self.node_color(self.get_obj_from_name(prev))
+
+        if curr or prev:
+            self._node_collection.set_facecolors(colors)
+            self.repaint()
+            self._last_highlighted = curr
+            return True
+
         return False
 
     def on_size_allocate(self, widget, allocation):

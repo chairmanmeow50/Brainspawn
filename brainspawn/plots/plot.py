@@ -34,7 +34,6 @@ class Plot(BasePlot):
 
         self.axes = self.figure.add_subplot(111)
         self.axes.patch.set_alpha(0.0)
-        self.init_default_config(nengo_obj, capability)
         self.axes.set_title(self.title)
 
     def init_default_config(self, nengo_obj, capability):
@@ -56,5 +55,7 @@ class Plot(BasePlot):
                                       display_name = "Title",
                                       data_type = 'text',
                                       value = '{TARGET} - {DATA}',
-                                      function = self.axes.set_title)
+                                      function = self.set_title)
 
+    def set_title(self, title):
+        self.axes.set_title(title)
