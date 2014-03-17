@@ -50,6 +50,7 @@ class NetworkView(CanvasItem):
         self._selected_relative_positions = {}
         self._selected_grabbed = False
         self._selected_moved = False
+        self._single_node_moved = False
 
     def node_at(self, x, y):
         if not self.model or not self._kdtree:
@@ -359,33 +360,30 @@ class NetworkView(CanvasItem):
                         self._selected_moved = False
                     else:
                         self.clear_selected_nodes()
-                        self.add_selected_node(node_name)
+                        self._single_node_moved = False
                 # Finally, set sel_rel_pos
                 self._selected_relative_positions = self.get_relative_positions(self._selected_nodes)
                 return True
 
             self.clear_selected_nodes()
-            return True
-        elif event.button == 2:
+            return False
+        elif event.button == 3:
             node_name = self.node_at(event.x, event.y)
             if node_name not in self._selected_nodes:
                 self.clear_selected_nodes()
-                return True
+                return False
 
         return False
 
     def add_selected_node(self, node):
-        print 'adding', node
         self._selected_nodes.append(node)
         self._highlight_node(node)
 
     def remove_selected_node(self, node):
-        print 'removing', node
         self._selected_nodes.remove(node)
         self._unhighlight_node(node)
 
     def clear_selected_nodes(self):
-        print 'clearing', self._selected_nodes
         for node in self._selected_nodes:
             self._unhighlight_node(node)
         self._selected_nodes = []
@@ -401,6 +399,8 @@ class NetworkView(CanvasItem):
                 if self._selected_grabbed and not self._selected_moved:
                     self.clear_selected_nodes()
                     self.add_selected_node(self.node_grabbed)
+                if not self._selected_nodes and not self._single_node_moved:
+                    self.add_selected_node(self.node_grabbed)
                 self.node_grabbed = None
                 return True
         if event.button == 3:
@@ -408,7 +408,7 @@ class NetworkView(CanvasItem):
 
             self._context_menu.remove(self.plots_menu_item)
 
-            if self._selected_nodes:
+            if len(self._selected_nodes) > 1:
                 return True
 
             if node_name:
@@ -443,6 +443,7 @@ class NetworkView(CanvasItem):
                         event.x, event.y, rebuild_kd_tree=False)
                 self._selected_moved = True
             else:
+                self._single_node_moved = True
                 self.move_node(self.node_grabbed, event.x, event.y, rebuild_kd_tree=False)
             event.request_motions()
             return True
@@ -534,7 +535,7 @@ class NetworkView(CanvasItem):
                                               data_type = "text",
                                               value = "Network",
                                               function = self.axes.set_title)
-        
+
         return self.config
 
 #---------- Helper functions --------
