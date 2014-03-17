@@ -39,7 +39,7 @@ class ValuePlot(Plot):
         Returns:
             string. The plot name.
         """
-        return "Value Plot"
+        return "Value"
 
     @staticmethod
     def supports_cap(cap):

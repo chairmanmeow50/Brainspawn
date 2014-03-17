@@ -8,7 +8,7 @@ class Raster_Spike_Plot(Plot):
 
     @staticmethod
     def plot_name():
-        return "Raster Spike Plot"
+        return "Raster Spike"
 
     @staticmethod
     def supports_cap(cap):

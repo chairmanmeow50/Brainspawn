@@ -3,14 +3,12 @@ import math
 from matplotlib.patches import Rectangle
 from plots.plot import Plot, registered_plot
 
-import __future__
-
 @registered_plot
 class Firing_Rate_Plot(Plot):
 
     @staticmethod
     def plot_name():
-        return "Firing Rate Plot"
+        return "Firing Rate"
 
     @staticmethod
     def supports_cap(cap):
