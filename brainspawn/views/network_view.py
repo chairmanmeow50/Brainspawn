@@ -462,18 +462,17 @@ class NetworkView(CanvasItem):
 
         colors = self._node_collection.get_facecolors()
 
-        if curr and curr not in self._selected_nodes:
+        if curr:
             idx = self.G.nodes().index(curr)
             r, g, b, a = colors[idx]
             c = 1.4
             colors[idx] = min(1, r*c), min(1, g*c), min(1, b*c), a
 
-        if prev and prev not in self._selected_nodes:
+        if prev:
             idx = self.G.nodes().index(prev)
             colors[idx] = self.node_color(self.get_obj_from_name(prev))
 
-        if (curr and curr not in self._selected_nodes or
-                prev and prev not in self._selected_nodes):
+        if curr or prev:
             self._node_collection.set_facecolors(colors)
             self.repaint()
             self._last_highlighted = curr
@@ -482,19 +481,33 @@ class NetworkView(CanvasItem):
         return False
 
     def _highlight_node(self, node):
-        idx = self.G.nodes().index(node)
-        colors = self._node_collection.get_facecolors()
-        r, g, b, a = colors[idx]
-        c = 1.4
-        colors[idx] = min(1, r*c), min(1, g*c), min(1, b*c), a
-        self._node_collection.set_facecolors(colors)
+        node_idx = self.G.nodes().index(node)
+
+        edges = self._node_collection.get_linewidths()
+        new_edges = [edges[idx%len(edges)] for idx, node in enumerate(self.G.nodes())]
+        new_edges[node_idx] += 1
+        self._node_collection.set_linewidths(new_edges)
+
+        edgecolors = self._node_collection.get_edgecolors()
+        new_edgecolors = [edgecolors[idx%len(edges)] for idx, node in enumerate(self.G.nodes())]
+        new_edgecolors[node_idx] = (255/255.0, 192/255.0, 40/255.0, 1)
+        self._node_collection.set_edgecolors(new_edgecolors)
+
         self.repaint()
 
     def _unhighlight_node(self, node):
-        idx = self.G.nodes().index(node)
-        colors = self._node_collection.get_facecolors()
-        colors[idx] = self.node_color(self.get_obj_from_name(node))
-        self._node_collection.set_facecolors(colors)
+        node_idx = self.G.nodes().index(node)
+
+        edges = self._node_collection.get_linewidths()
+        new_edges = [edges[idx%len(edges)] for idx, node in enumerate(self.G.nodes())]
+        new_edges[node_idx] -= 1
+        self._node_collection.set_linewidths(new_edges)
+
+        edgecolors = self._node_collection.get_edgecolors()
+        new_edgecolors = [edgecolors[idx%len(edges)] for idx, node in enumerate(self.G.nodes())]
+        new_edgecolors[node_idx] = (0, 0, 0, 1)
+        self._node_collection.set_edgecolors(new_edgecolors)
+
         self.repaint()
 
     def on_size_allocate(self, widget, allocation):
