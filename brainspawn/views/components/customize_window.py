@@ -34,13 +34,23 @@ class CustomizeWindow:
                 elif (data_type == 'boolean'):
                     control = Gtk.CheckButton()
                     control.set_active(self.options[option_name].value)
+                elif (data_type == 'color'):
+                    control = Gtk.Button("Color chooser...")
+                    
+                    color_selection_dialog = Gtk.ColorSelectionDialog()
+                    control.connect("clicked", self.show_color_selection_dialog, color_selection_dialog)
+                    color_selection = color_selection_dialog.get_color_selection()
+                    self.controls[option_name] = color_selection
+                    color_selection.connect("color_changed", self.apply_all)
                             
                 if (control):
                     if (data_type == 'text' or data_type == 'combo'):
                         control.connect("changed", self.apply_all)
                     elif (data_type == 'boolean'):
                         control.connect("toggled", self.apply_all)
-                    self.controls[option_name] = control
+                        
+                    if (data_type != 'color'):
+                        self.controls[option_name] = control
                     
                     hbox = Gtk.HBox(True, 10)
                     hbox.pack_start(text_label, True, True, 10)
@@ -54,6 +64,13 @@ class CustomizeWindow:
         self.vbox.pack_start(apply_button)
         self.window.add(self.vbox)
         self.window.show_all()
+        
+    def show_color_selection_dialog(self, widget, dialog):
+        response = dialog.run()
+        if (response != Gtk.ResponseType.OK):
+            color_selection = dialog.get_color_selection()
+            color_selection.set_current_color(color_selection.get_previous_color())
+        dialog.hide()
     
     def apply_all(self, widget):
         for option_name in self.options:
@@ -79,4 +96,7 @@ class CustomizeWindow:
             return text
         elif (data_type == 'boolean'):
             return self.controls[option_name].get_active()
+        elif (data_type == 'color'):
+            rgba = self.controls[option_name].get_current_color()
+            return (rgba.red/65535.0, rgba.green/65535.0, rgba.blue/65535.0)
         

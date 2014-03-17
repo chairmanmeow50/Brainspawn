@@ -27,6 +27,7 @@ class ValuePlot(Plot):
         self.axes.set_ylabel(self.config['DATA'].value)
         self.axes.set_xlabel('time')
         self.axes.set_xlim([0, 1])
+        self.axes.patch.set_alpha(1.0)
 
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
 
@@ -81,6 +82,13 @@ class ValuePlot(Plot):
                                                                  data_type = "boolean",
                                                                  value = True,
                                                                  function = self.axes.set_frame_on)
+        
+        self.config['axes_bg_color'] = self.make_config_tuple()._replace(
+                                                                 configurable = True,
+                                                                 display_name = "Axis Background Color",
+                                                                 data_type = "color",
+                                                                 value = "#FFFFFF",
+                                                                 function = self.axes.set_axis_bgcolor)
         
         return self.config
 
