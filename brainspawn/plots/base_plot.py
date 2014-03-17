@@ -77,7 +77,7 @@ class BasePlot(CanvasItem):
             return
         
         self.config['TARGET'] = Configuration(configurable = False, value = nengo_obj.label)
-        self.config['DATA'] = Configuration(configurable = False, value = capability.name)
+        self.config['DATA'] = Configuration(configurable = False, value = capability.name.title())
 
     def get_config_values(self):
         return {key : configuration.value for key, configuration in self.config.iteritems()}
