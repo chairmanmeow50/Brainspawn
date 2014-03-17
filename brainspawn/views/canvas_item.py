@@ -33,7 +33,7 @@ class CanvasItem(object):
         export_pdf_item = gtk.MenuItem("Export to PDF...")
         export_pdf_item.connect("activate", self.on_export_pdf, self.canvas)
         
-        customize_item = gtk.MenuItem("Customize")
+        customize_item = gtk.MenuItem("Customize...")
         customize_item.connect("activate", self.show_customize)
         
         self._context_menu.append(export_pdf_item)
