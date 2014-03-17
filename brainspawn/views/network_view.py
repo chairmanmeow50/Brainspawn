@@ -262,6 +262,18 @@ class NetworkView(CanvasItem):
             return True
         return False
 
+    def store_layout(self):
+        """Returns a dictionary representing the
+        current node positions
+        """
+        pass #TODO
+
+    def restore_layout(self, layout):
+        """Restores node positions from layout
+        dictionary
+        """
+        pass #TODO
+
 #---------- Helper functions --------
 
 def _find_uniq_name(name, collection, threashold=1000):

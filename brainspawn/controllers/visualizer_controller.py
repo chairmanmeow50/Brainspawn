@@ -7,6 +7,7 @@ import os
 import imp
 import gtk
 import cairo
+import json
 from gi.repository import Gtk
 
 from views.visualizer import MainFrame
@@ -28,14 +29,12 @@ class VisualizerController(object):
         self.load_plots()
 
         self._has_network = False
+        self._loaded_model_file = None
 
         self.main_frame = MainFrame(self.sim_manager, self)
 
         if (model_file_name):
             self.load_model_from_filename(model_file_name)
-
-    def init_view(self):
-        pass
 
     def plots_for_object(self, obj):
         """ Returns a list of plots available for this object
@@ -61,17 +60,62 @@ class VisualizerController(object):
         self.plots.remove(plot)
         self.main_frame.remove_plot(plot.canvas)
 
+    def on_save_layout(self, widget):
+        name = self.main_frame.window.get_title()
+        filename = self.file_save(name + ".bpwn")
+        if not filename:
+            return
+        with open(filename, 'wb') as f:
+            json.dump(self.get_layout_dict(), f)
+
+    def on_restore_layout(self, widget):
+        filename = self.file_open(ext="bpwn", ext_name="Layout files")
+        if not filename:
+            return
+        with open(filename, 'rb') as f:
+            self.restore_layout_dict(json.load(f))
+
     def on_open_model(self, widget):
         filename = self.file_open(ext="py", ext_name="Python files")
         if not filename:
             return
         self.load_model_from_filename(filename)
 
+    def restore_layout_dict(self, dct):
+        layout_dict = dct['layout']
+
+        # Restore model file
+        self.load_model_from_filename(layout_dict['model'])
+
+        # Restore plots
+        for plot_dict in layout_dict['plots']:
+            pass # - TODO
+
+        # Restore network
+        self.network_view.restore_layout(layout_dict['network_layout'])
+
+    def get_layout_dict(self):
+        layout_dict = {}
+
+        # Save model file
+        layout_dict['model'] = self._loaded_model_file
+
+        # Save plots
+        layout_dict['plots'] = []
+        for plot in self.plots:
+            layout_dict['plots'].append(plot.store_layout())
+
+        # Save network
+        layout_dict['network_layout'] = self.network_view.store_layout()
+
+        return {'layout': layout_dict}
+
     def load_model_from_filename(self, filename):
         mod_name, file_ext = os.path.splitext(os.path.basename(filename))
         try:
             module = imp.load_source(mod_name, filename)
             self.load_model(module.model)
+            self._loaded_model_file = filename
             if (not self._has_network):
                 self.main_frame.show_plot(self.network_view.canvas, True)
                 self._has_network = True

@@ -120,12 +120,17 @@ class Plot(CanvasItem):
             data (numpy.ndarray): The data from the simulator to plot.
         """
         pass
-    
+
     def get_options_dict(self):
         pass
         #return OrderedDict([
         #        ('Title', ('string', 'text', self.axes.set_title))
         #        ])
+
+    def store_layout(self):
+        """ Returns a dict storing the layout of the plot
+        """
+        pass
 
     def remove_plot(self, widget, canvas):
         self.main_controller.remove_plot_for_obj(self, self.nengo_obj, self.capability)
