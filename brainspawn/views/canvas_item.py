@@ -5,7 +5,6 @@ import gtk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
 from collections import OrderedDict
-from plots.configuration import Configuration
 from views.components.customize_window import CustomizeWindow
 
 class CanvasItem(object):
@@ -32,8 +31,7 @@ class CanvasItem(object):
         """
         export_pdf_item = gtk.MenuItem("Export to PDF...")
         export_pdf_item.connect("activate", self.on_export_pdf, self.canvas)
-
-        customize_item = gtk.MenuItem("Customize")
+        customize_item = gtk.MenuItem("Customize...")
         customize_item.connect("activate", self.show_customize)
 
         self._context_menu.append(export_pdf_item)
@@ -71,4 +69,3 @@ class CanvasItem(object):
             self.customize_window.window.show()
         else:
             self.customize_window = CustomizeWindow(self)
-
