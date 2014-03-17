@@ -3,7 +3,6 @@ import networkx as nx
 from scipy.spatial import cKDTree as KDTree
 from collections import OrderedDict
 
-from plots.plot import Plot
 from views.canvas_item import CanvasItem
 
 from gi import pygtkcompat
@@ -27,7 +26,13 @@ class NetworkView(CanvasItem):
 
         # Build graph
         self._node_radius = 10
+        self._xlim = None
+        self._ylim = None
         self.load_model(model)
+
+        # Remove the invisible axes to get more drawing room
+        self.axes.get_xaxis().set_visible(False)
+        self.axes.get_yaxis().set_visible(False)
 
         # Used for grabbing + dragging node positions
         self.node_grabbed = None
@@ -79,6 +84,8 @@ class NetworkView(CanvasItem):
         self._graph_obj_to_name = {}
         self._node_positions = None
         self._kdtree = None
+        self._xlim = None
+        self._ylim = None
         self.axes.clear()
 
         if model is None:
@@ -136,6 +143,15 @@ class NetworkView(CanvasItem):
         node_diam_sqr = (self._node_radius * 2) ** 2
         nx.draw(self.G, self._node_positions, ax=self.axes, node_color=self._node_colors, node_size=node_diam_sqr)
 
+        # Save the limits of the first draw, and restore them after each
+        # additional repaint, to avoid autoresizing
+        if not self._xlim:
+            self._xlim = self.axes.get_xlim()
+        if not self._ylim:
+            self._ylim = self.axes.get_ylim()
+        self.axes.set_xlim(self._xlim)
+        self.axes.set_ylim(self._ylim)
+
         self.canvas.queue_draw()
 
     def rebuild_kd_tree(self):
@@ -164,19 +180,31 @@ class NetworkView(CanvasItem):
         else:
             return (1,1,1) # white
 
-    def move_node(self, node_name, x, y):
+    def move_node(self, node_name, x, y, rebuild_kd_tree=True):
+        """ All coordinates, unless otherwise mentioned, are in screen coordinates
+        """
         w, h = self.canvas.get_width_height()
         # Invert the y coordinate so origin is bottom left (matches networkx coords)
         y = h - y
 
-        trans = self.axes.transData.inverted().transform
-        old = self._node_positions[node_name]
-        new = trans((x, y))
+        trans = self.axes.transData.transform
+        invtrans = self.axes.transData.inverted().transform
 
-        # TODO(gmdavis): if moved past canvas edges, resize canvas
-        print "move %s: (%.0f, %.0f) -> (%.0f, %.0f)"%(node_name, old[0], old[1], new[0], new[1])
-        self._node_positions[node_name] = new
+        xmin, ymin = trans((self._xlim[0], self._ylim[0]))
+        xmax, ymax = trans((self._xlim[1], self._ylim[1]))
+
+        correction_factor = 4
+        xmin += self._node_radius + correction_factor
+        xmax -= self._node_radius + correction_factor
+        ymin += self._node_radius + correction_factor
+        ymax -= self._node_radius + correction_factor
+        x = max(xmin, min(xmax, x))
+        y = max(ymin, min(ymax, y))
+
+        self._node_positions[node_name] = invtrans((x, y))
         self.repaint()
+        if rebuild_kd_tree:
+            self.rebuild_kd_tree()
 
     def on_button_press(self, widget, event):
         if event.button == 1:
@@ -229,7 +257,7 @@ class NetworkView(CanvasItem):
 
     def on_mouse_motion(self, widget, event):
         if self.node_grabbed:
-            self.move_node(self.node_grabbed, event.x, event.y)
+            self.move_node(self.node_grabbed, event.x, event.y, rebuild_kd_tree=False)
             event.request_motions()
             return True
         return False
