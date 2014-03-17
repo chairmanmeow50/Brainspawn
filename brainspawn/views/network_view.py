@@ -78,6 +78,11 @@ class NetworkView(CanvasItem):
         unique names, they are modified to a similar but unique name. In order
         to keep the association, these maps are used.
         """
+        if node_name in self._graph_name_to_obj:
+            print "Warning: \"%s\" already in dictionary" % node_name
+        if nengo_obj in self._graph_obj_to_name:
+            print "Warning: \"%s\" already in dictionary" % nengo_obj
+
         self._graph_name_to_obj[node_name] = nengo_obj
         self._graph_obj_to_name[nengo_obj] = node_name
 
@@ -115,24 +120,37 @@ class NetworkView(CanvasItem):
 
         # Add connections
         for conn in model.connections:
-            pre_name = self.get_name_from_obj(conn.pre)
-            post_name = self.get_name_from_obj(conn.post)
+            pre, post = conn.pre, conn.post
+            if isinstance(conn.pre, nengo.objects.Neurons):
+                for obj in model.objs:
+                    if isinstance(obj, nengo.Ensemble) and conn.pre == obj.neurons:
+                        print "Warning: treating neuron connection as connection to parent ensemble", obj
+                        pre = obj
+            if isinstance(conn.post, nengo.objects.Neurons):
+                for obj in model.objs:
+                    if isinstance(obj, nengo.Ensemble) and conn.post == obj.neurons:
+                        print "Warning: treating neuron connection as connection to parent ensemble", obj
+                        post = obj
 
-            if pre_name is None:
-                print "Error: unable to determine connection's pre. Dropping edge \"%s\"." % (conn.pre)
+            pre_name = self.get_name_from_obj(pre)
+            post_name = self.get_name_from_obj(post)
+
+            if not pre_name:
+                print "Error: unable to determine connection's pre. Dropping edge \"%s\"." % (pre)
                 continue
-            if pre_name is None:
-                print "Error: unable to determine connection's post. Dropping edge \"%s\"." % (conn.pre)
+            if not pre_name:
+                print "Error: unable to determine connection's post. Dropping edge \"%s\"." % (pre)
                 continue
 
-            self.G.add_edge(pre_name, post_name)
+            self.G.add_edge(str(pre_name), str(post_name))
 
         # establish color map
         objs = [self.get_obj_from_name(name) for name in self.G.nodes()]
         self._node_colors = [self.node_color(o) for o in objs]
 
         # build the graph layout
-        self._node_positions = OrderedDict(nx.graphviz_layout(self.G, prog="neato"))
+        pos = nx.graphviz_layout(self.G, prog="neato")
+        self._node_positions = OrderedDict(pos)
 
         # Draw graph
         self.full_repaint()

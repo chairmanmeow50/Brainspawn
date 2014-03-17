@@ -10,8 +10,8 @@ class ResizeBox(Gtk.EventBox):
         self._canvas_layout = canvas_layout
         self._press = None
         self._resize_info = None
-        self._pos_x = 0
-        self._pos_y = 0
+        self.pos_x = 0
+        self.pos_y = 0
         self._is_resize = False
         self._highlight = False
 
@@ -101,7 +101,7 @@ class ResizeBox(Gtk.EventBox):
             x0 = self._canvas_layout.child_get_property(self, "x")
             y0 = self._canvas_layout.child_get_property(self, "y")
             widget_x, widget_y = self._canvas_layout.get_pointer()
-            if (self.is_within_resize_bounds(widget_x - self._pos_x, widget_y - self._pos_y)):
+            if (self.is_within_resize_bounds(widget_x - self.pos_x, widget_y - self.pos_y)):
                 self._is_resize = True
             else:
                 self.hide()
@@ -120,20 +120,19 @@ class ResizeBox(Gtk.EventBox):
 
         x0, y0, xpress, ypress = self._press
         canvas_layout_x, canvas_layout_y = self._canvas_layout.get_pointer()
-        widget_x = canvas_layout_x - self._pos_x
-        widget_y = canvas_layout_y - self._pos_y
+        widget_x = canvas_layout_x - self.pos_x
+        widget_y = canvas_layout_y - self.pos_y
 
         if self.is_resize():
             unused_x, unused_y, clicked_x, clicked_y = self._press
             o_width, o_height = self._original_size
-            extra_offset_x = o_width - (clicked_x - self._pos_x)
-            extra_offset_y = o_height - (clicked_y - self._pos_y)
-            self._width = canvas_layout_x - self._pos_x + extra_offset_x
-            self._height = canvas_layout_y - self._pos_y + extra_offset_y
-            self._width = max(self._width, settings.RESIZE_MIN_WIDTH)
-            self._height = max(self._height, settings.RESIZE_MIN_HEIGHT)
-            self.set_size_request(self._width, self._height)
-            self._canvas.figure.tight_layout()
+            extra_offset_x = o_width - (clicked_x - self.pos_x)
+            extra_offset_y = o_height - (clicked_y - self.pos_y)
+            new_width = canvas_layout_x - self.pos_x + extra_offset_x
+            new_height = canvas_layout_y - self.pos_y + extra_offset_y
+            new_width = max(new_width, settings.RESIZE_MIN_WIDTH)
+            new_height = max(new_height, settings.RESIZE_MIN_HEIGHT)
+            self.set_size(new_width, new_height)
         else:
             widget_x, widget_y = self._canvas_layout.get_pointer()
             self._press = x0, y0, widget_x, widget_y
@@ -141,9 +140,19 @@ class ResizeBox(Gtk.EventBox):
             dy = widget_y - ypress
             new_x = int(round(x0 + dx))
             new_y = int(round(y0 + dy))
-            self._pos_x = new_x
-            self._pos_y = new_y
-            self._canvas_layout.move(self, self._pos_x, self._pos_y)
+            self.set_position(new_x, new_y)
             self._press = new_x, new_y, widget_x, widget_y
 
         event.request_motions()
+
+    def set_position(self, new_x, new_y):
+        self.pos_x = new_x
+        self.pos_y = new_y
+        self._canvas_layout.move(self, self.pos_x, self.pos_y)
+
+    def set_size(self, new_width, new_height):
+        self._width = new_width
+        self._height = new_height
+        self.set_size_request(self._width, self._height)
+        self._canvas.figure.tight_layout()
+

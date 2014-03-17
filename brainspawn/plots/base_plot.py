@@ -26,7 +26,7 @@ class BasePlot(CanvasItem):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, main_controller, nengo_obj, capability):
+    def __init__(self, main_controller, nengo_obj, capability, config=None):
         super(BasePlot, self).__init__(main_controller)
         """ Plot constructor.
         Initializes default config values for all plots,
@@ -49,10 +49,10 @@ class BasePlot(CanvasItem):
         super(BasePlot, self)._build_context_menu()
         remove_item = gtk.MenuItem("Remove")
         remove_item.connect("activate", self.remove_plot, self.canvas)
-        
+
         customize_item = gtk.MenuItem("Customize")
         customize_item.connect("activate", self.show_customize)
-        
+
         self._context_menu.append(remove_item)
         self._context_menu.append(customize_item)
 
@@ -67,18 +67,18 @@ class BasePlot(CanvasItem):
         we set 'TARGET' and 'DATA' to default values of the
         target object, and represented data, respectively.
         """
-        
+
         if not nengo_obj or not capability:
             return
-        
+
         empty_tuple = self.make_config_tuple()
-        
+
         self.config['TARGET'] = empty_tuple._replace(configurable = False,
                                        value = nengo_obj.label)
-        
+
         self.config['DATA'] = empty_tuple._replace(configurable = False,
                                      value = capability.name)
-        
+
     def make_config_tuple(self):
         Config_Tuple = namedtuple('Configuration', ['configurable', 'display_name', 'data_type', 'value', 'function', 'combo'])
         return Config_Tuple._make([None, None, None, None, None, None])
@@ -139,12 +139,9 @@ class BasePlot(CanvasItem):
             data (numpy.ndarray): The data from the simulator to plot.
         """
         pass
-    
+
     def show_customize(self, event):
         self.customize_window = CustomizeWindow(self)
-    
-    def get_options_dict(self):
-        pass
 
     def remove_plot(self, widget, canvas):
         self.main_controller.remove_plot_for_obj(self, self.nengo_obj, self.capability)
