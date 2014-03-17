@@ -6,8 +6,8 @@ class DogePlot(ValuePlot):
     """DogePlot
     """
 
-    def __init__(self, main_controller, obj, cap):
-        super(DogePlot, self).__init__(main_controller, obj, cap)
+    def __init__(self, main_controller, obj, cap, config=None):
+        super(DogePlot, self).__init__(main_controller, obj, cap, config)
         self.text = []
         self.text.append(self.axes.text(0.27, 0.77, "such line", fontsize=12, color='orange'))
         self.text.append(self.axes.text(0.7, 0.57, "very neuron", fontsize=12, color='green'))

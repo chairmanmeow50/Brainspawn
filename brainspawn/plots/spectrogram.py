@@ -8,8 +8,8 @@ import matplotlib.lines as mlines
 @registered_plot
 class Spectrogram(Plot):
 
-    def __init__(self, main_controller, obj, cap):
-        super(Spectrogram, self).__init__(main_controller, obj, cap)
+    def __init__(self, main_controller, obj, cap, config=None):
+        super(Spectrogram, self).__init__(main_controller, obj, cap, config)
 
         self.axes = self.figure.add_subplot(111) # take first from list
         self.axes.patch.set_alpha(0.0)
