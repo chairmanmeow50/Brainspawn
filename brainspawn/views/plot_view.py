@@ -4,7 +4,9 @@
 import gtk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
-import plots.network_view
+#from view.visualizations.network_view import NetworkView
+import view.visualizations.network_view
+from view.components.customize_window import CustomizeWindow
 
 class PlotView(object):
 
@@ -22,10 +24,18 @@ class PlotView(object):
 
         remove_item = gtk.MenuItem("Remove")
         remove_item.connect("activate", controller.remove_plot, self._canvas)
-        if (not isinstance(controller, plots.network_view.NetworkView)):
-            self.context_menu.append(remove_item)
 
+        customize_item = gtk.MenuItem("Customize")
+        customize_item.connect("activate", self.show_customize)
+        
+        if (not isinstance(controller, view.visualizations.network_view.NetworkView)):
+            self.context_menu.append(remove_item)
+            self.context_menu.append(customize_item)
+            
         self.context_menu.show_all()
+        
+    def show_customize(self, event):
+        self.customize_window = CustomizeWindow()
 
     @property
     def figure(self):

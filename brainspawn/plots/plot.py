@@ -3,6 +3,7 @@
 
 from abc import ABCMeta, abstractmethod
 from views.plot_view import PlotView
+from collections import OrderedDict
 
 REGISTERED_PLOTS = {}
 
@@ -111,6 +112,12 @@ class Plot(object):
             data (int): The data from the simulator to plot.
         """
         pass
+    
+    def get_options_dict(self):
+        pass
+        #return OrderedDict([
+        #        ('Title', ('string', 'text', self.axes.set_title))
+        #        ])
 
     def remove_plot(self, widget, canvas):
         self.main_controller.remove_plot_for_obj(self, self.nengo_obj, self.capability)

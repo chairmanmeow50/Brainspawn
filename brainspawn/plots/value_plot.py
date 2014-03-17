@@ -1,5 +1,6 @@
 import numpy as np
 from plots.plot import Plot, registered_plot
+from collections import OrderedDict
 
 @registered_plot
 class ValuePlot(Plot):
@@ -47,6 +48,13 @@ class ValuePlot(Plot):
             bool. True if this plot supports the given capability.
         """
         return cap.name in ['voltages', 'output']
+    
+    def get_options_dict(self):
+        return OrderedDict([
+                ('Title', ('string', 'text', self.axes.set_title)),
+                ('Y Label', ('string', 'text', self.axes.set_ylabel)),
+                ('X Label', ('string', 'text', self.axes.set_xlabel))
+                ])
 
     def update(self, start_step, step_size, data):
         """ Callback function passed to observer nodes.
