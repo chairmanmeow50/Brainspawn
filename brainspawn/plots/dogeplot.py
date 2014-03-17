@@ -1,6 +1,6 @@
 import numpy as np
 from plots.value_plot import ValuePlot
-from plots.plot import registered_plot
+from plots.base_plot import registered_plot
 
 @registered_plot
 class DogePlot(ValuePlot):

@@ -1,6 +1,7 @@
 import matplotlib.cm as cm
 import numpy as np
-from plots.plot import Plot, registered_plot
+from plots.plot import Plot
+from plots.base_plot import registered_plot
 
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines

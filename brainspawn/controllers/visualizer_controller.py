@@ -11,7 +11,7 @@ from gi.repository import Gtk
 
 from views.visualizer import MainFrame
 from views.network_view import NetworkView
-from plots.plot import REGISTERED_PLOTS
+from plots.base_plot import REGISTERED_PLOTS
 
 class VisualizerController(object):
     """

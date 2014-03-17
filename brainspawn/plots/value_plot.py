@@ -1,5 +1,6 @@
 import numpy as np
-from plots.plot import Plot, registered_plot
+from plots.plot import Plot
+from plots.base_plot import registered_plot
 from collections import OrderedDict
 
 @registered_plot
@@ -22,10 +23,8 @@ class ValuePlot(Plot):
         """
         super(ValuePlot, self).__init__(main_controller, nengo_obj, capability)
 
-        self.axes = self.figure.add_subplot(111) # take first from list
-        self.axes.patch.set_alpha(0.0)
-        self.axes.set_title(self.title)
-        self.axes.set_ylabel(self.config['DATA'])
+        self.init_default_config(nengo_obj, capability)
+        self.axes.set_ylabel(self.config['DATA'].value)
         self.axes.set_xlabel('time')
         self.axes.set_xlim([0, 1])
 
@@ -54,11 +53,21 @@ class ValuePlot(Plot):
         return cap.name in ['voltages', 'output']
     
     def get_options_dict(self):
-        return OrderedDict([
-                ('Title', ('string', 'text', self.axes.set_title)),
-                ('Y Label', ('string', 'text', self.axes.set_ylabel)),
-                ('X Label', ('string', 'text', self.axes.set_xlabel))
-                ])
+        self.config['xlabel'] = self.make_config_tuple()._replace(
+                                                                 configurable = True,
+                                                                 display_name = "X Label",
+                                                                 data_type = "text",
+                                                                 value = "time",
+                                                                 function = self.axes.set_xlabel)
+        
+        self.config['ylabel'] = self.make_config_tuple()._replace(
+                                                                 configurable = True,
+                                                                 display_name = "Y Label",
+                                                                 data_type = "text",
+                                                                 value = self.config['DATA'].value,
+                                                                 function = self.axes.set_ylabel)
+        
+        return self.config
 
     def update(self, start_step, step_size, data):
         """ Callback function passed to observer nodes.

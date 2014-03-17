@@ -1,7 +1,8 @@
 import numpy as np
 import math
 from matplotlib.patches import Rectangle
-from plots.plot import Plot, registered_plot
+from plots.plot import Plot 
+from plots.base_plot import registered_plot
 
 import __future__
 
