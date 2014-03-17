@@ -50,6 +50,23 @@ class CanvasItem(object):
             for key, val in config.items():
                 #self.config[key].value = val
                 pass
+            
+    def apply_config(self, revert_data=None, get_function=None):
+        for option_name in self.get_options_dict():
+            if (self.config[option_name].configurable):
+                if (self.config[option_name].function):
+                    function = self.config[option_name].function
+                    if (revert_data):
+                        new_val = revert_data[option_name]
+                    elif (get_function):
+                        new_val = get_function(option_name)
+                    else:
+                        new_val = self.config[option_name].value
+                        
+                    function(new_val)
+                    self.config[option_name].value = new_val
+        
+        self.canvas.queue_draw()
 
     @property
     def title(self):

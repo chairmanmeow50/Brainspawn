@@ -24,10 +24,7 @@ class ValuePlot(Plot):
         super(ValuePlot, self).__init__(main_controller, nengo_obj, capability, config)
 
         self.init_default_config(nengo_obj, capability)
-        self.axes.set_ylabel(self.config['DATA'].value)
-        self.axes.set_xlabel('Time (s)')
         self.axes.set_xlim([0, 1])
-        self.axes.patch.set_alpha(0.0)
 
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
 
@@ -58,7 +55,7 @@ class ValuePlot(Plot):
                                               configurable = True,
                                               display_name = "X Label",
                                               data_type = "text",
-                                              value = "time",
+                                              value = 'Time (s)',
                                               function = self.axes.set_xlabel)
         
         self.config['ylabel'] = Configuration(
@@ -68,12 +65,12 @@ class ValuePlot(Plot):
                                               value = self.config['DATA'].value,
                                               function = self.axes.set_ylabel)
         
-        self.config['ylabel'] = Configuration(
+        self.config['yscale'] = Configuration(
                                               configurable = True,
-                                              display_name = "X Scale",
+                                              display_name = "Y Scale",
                                               data_type = "combo",
                                               value = 'linear',
-                                              function = self.axes.set_xscale,
+                                              function = self.axes.set_yscale,
                                               combo = ['linear', 'log', 'symlog'])
         
         self.config['frame'] = Configuration(

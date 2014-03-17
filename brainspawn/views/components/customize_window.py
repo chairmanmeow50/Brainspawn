@@ -25,7 +25,7 @@ class CustomizeWindow:
                         control = gtk.Entry()
                         control.set_text(self.options[option_name].value)
                     elif (data_type == 'combo'):
-                        control = Gtk.ComboBoxText.new_with_entry()
+                        control = Gtk.ComboBoxText()
                         combo_values = self.options[option_name].combo
                         for combo_value in combo_values:
                             control.append(combo_value, combo_value)
@@ -100,7 +100,7 @@ class CustomizeWindow:
         self.window.hide()
         
     def revert_all(self, widget):
-        self.apply_all(None, self.revert_data)
+        self.plot.apply_config(self.revert_data, None)
         for option_name in self.options:
             if (self.options[option_name].configurable):
                 self.set_val(option_name, self.revert_data)
@@ -112,20 +112,8 @@ class CustomizeWindow:
             color_selection.set_current_color(color_selection.get_previous_color())
         dialog.hide()
     
-    def apply_all(self, widget, revert_data=None):
-        for option_name in self.options:
-            if (self.options[option_name].configurable):
-                if (self.options[option_name].function):
-                    function = self.options[option_name].function
-                    if (revert_data):
-                        new_val = revert_data[option_name]
-                    else:
-                        new_val = self.get_val(option_name)
-                        
-                    function(new_val)
-                    self.options[option_name].value = new_val
-        
-        self.plot.canvas.queue_draw()
+    def apply_all(self, widget):
+        self.plot.apply_config(None, self.get_val)
             
     def set_val(self, option_name, revert_data):
         data_type = self.options[option_name].data_type

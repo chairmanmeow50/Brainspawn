@@ -177,6 +177,8 @@ class MainFrame:
         # Set size
         if size:
             resize_box.set_size(*size)
+            
+        plot.apply_config()
 
     def remove_plot(self, plot):
         self.all_canvas.remove(plot.canvas)

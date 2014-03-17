@@ -56,4 +56,4 @@ class Plot(BasePlot):
                                       function = self.set_title)
 
     def set_title(self, title):
-        self.axes.set_title(title)
+        self.axes.set_title(self.title)
