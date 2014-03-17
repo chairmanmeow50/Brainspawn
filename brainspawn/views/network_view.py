@@ -4,17 +4,18 @@ from scipy.spatial import cKDTree as KDTree
 from collections import OrderedDict
 
 from plots.plot import Plot
+from views.canvas_item import CanvasItem
 
 from gi import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version="3.0")
 import gtk
 
-class NetworkView(Plot):
+class NetworkView(CanvasItem):
     """ Visualization of a model's network
     """
     def __init__(self, controller, model=None, name="Network View", **kwargs):
-        super(NetworkView, self).__init__(controller, None, None)
+        super(NetworkView, self).__init__(controller)
         self._model = model
         self.name = name
 
@@ -24,20 +25,6 @@ class NetworkView(Plot):
         # Build graph
         self._node_radius = 10
         self.load_model(model)
-
-    @staticmethod
-    def plot_name():
-        return 'Network View'
-
-    @staticmethod
-    def supports_cap(cap):
-        return False
-
-    def update(self, start_step, step_size, data):
-        pass
-
-    def remove_plot(self, widget, canvas):
-        pass
 
     def node_at(self, x, y):
         if not self.model or not self._kdtree:

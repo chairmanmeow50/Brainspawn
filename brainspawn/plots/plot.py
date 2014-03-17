@@ -2,9 +2,8 @@
 """
 
 import gtk
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
 from abc import ABCMeta, abstractmethod
+from views.canvas_item import CanvasItem
 
 
 REGISTERED_PLOTS = {}
@@ -15,7 +14,7 @@ def registered_plot(cls):
     REGISTERED_PLOTS[cls.__name__] = cls
     return cls
 
-class Plot(object):
+class Plot(CanvasItem):
     """Plot base class.
     In order to add plots to Brainspawn, you will want to
     inherit from this class.
@@ -26,6 +25,7 @@ class Plot(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, main_controller, nengo_obj, capability):
+        super(Plot, self).__init__(main_controller)
         """ Plot constructor.
         Initializes default config values for all plots,
         Sets up the plot view.
@@ -37,27 +37,16 @@ class Plot(object):
             capability (Capability): The capability of the object that this graph
             is visualizing.
         """
-        self.main_controller = main_controller
         self.nengo_obj = nengo_obj
         self.capability = capability
         self.config = {}
         self.init_default_config(nengo_obj, capability)
 
-        self.figure = Figure()
-        self.figure.patch.set_alpha(0.0)
-        self.canvas = FigureCanvas(self.figure)
+        self._add_to_context_menu()
 
-        self._context_menu = gtk.Menu()
-        self._build_context_menu()
-        self.canvas.connect("button_release_event", self.button_press, self.canvas)
-
-    def _build_context_menu(self):
+    def _add_to_context_menu(self):
         """Context menu setup
         """
-        export_pdf_item = gtk.MenuItem("Export to PDF...")
-        export_pdf_item.connect("activate", self.on_export_pdf, self.canvas)
-        self._context_menu.append(export_pdf_item)
-
         remove_item = gtk.MenuItem("Remove")
         remove_item.connect("activate", self.remove_plot, self.canvas)
         self._context_menu.append(remove_item)
@@ -134,13 +123,4 @@ class Plot(object):
 
     def remove_plot(self, widget, canvas):
         self.main_controller.remove_plot_for_obj(self, self.nengo_obj, self.capability)
-
-    def on_export_pdf(self, widget, canvas):
-        self.main_controller.on_export_pdf(None, canvas, self.title)
-
-    def button_press(self, widget, event, canvas):
-        if event.button == 3:
-            self._context_menu.popup(None, None, None, None, event.button, event.time)
-            return True
-        return False
 

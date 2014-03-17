@@ -10,7 +10,7 @@ import cairo
 from gi.repository import Gtk
 
 from views.visualizer import MainFrame
-from plots.network_view import NetworkView
+from views.network_view import NetworkView
 from plots.plot import REGISTERED_PLOTS
 
 class VisualizerController(object):
