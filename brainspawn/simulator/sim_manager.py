@@ -1,7 +1,7 @@
 import nengo
-import copy
-from adaptor import Adaptor, max_buffer_elements
+from adaptor import Adaptor
 from capabilities.cap_factory import CapFactory
+import settings
 
 class SimManager(object):
     """
@@ -14,7 +14,7 @@ class SimManager(object):
         self.last_sim_step = 0
         self._current_step = 0
         self.adaptors = {}
-        self.max_buffer_elements = max_buffer_elements
+        self.max_buffer_elements = settings.MAX_BUFFER_ELEMENTS
 
     @property
     def current_step(self):

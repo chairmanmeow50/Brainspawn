@@ -20,9 +20,7 @@ import collections
 import nengo
 import numpy as np
 from capabilities.cap_factory import CapFactory
-
-max_buffer_elements = 100000 # TODO - make configurable
-max_window_size = 1000
+import settings
 
 class OutputFn(collections.Callable):
     """Callable which is passed to a given node
@@ -61,7 +59,7 @@ class OutputFn(collections.Callable):
 
     def update(self, fn):
         if (self.buffer and self.buffer_start_step is not None):
-            start_step = max(self.buffer_start_step, self.sim_manager.current_step - max_window_size)
+            start_step = max(self.buffer_start_step, self.sim_manager.current_step - settings.MAX_WINDOW_SIZE)
             start_idx = start_step - self.buffer_start_step
             end_idx = max(self.sim_manager.current_step - self.buffer_start_step, 0)
             data = self.buffer.get_data()[start_idx:end_idx]
@@ -100,7 +98,7 @@ class Buffer(object):
     """
 
     def __init__(self, dimensions):
-        self.max_size = max_buffer_elements #TODO - make configurable
+        self.max_size = settings.MAX_BUFFER_ELEMENTS
         self.data = np.empty([self.max_size*2,dimensions])
         self.window_start = 0
         self.size = 0
