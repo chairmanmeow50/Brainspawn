@@ -6,6 +6,7 @@ from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
 from plots.base_plot import BasePlot
 from views.components.customize_window import CustomizeWindow
+from plots.configuration import Configuration
 
 class Plot(BasePlot):
     """Plot class.
@@ -49,9 +50,8 @@ class Plot(BasePlot):
         if not nengo_obj or not capability:
             return
 
-        empty_tuple = self.make_config_tuple()
-
-        self.config['title'] = empty_tuple._replace(configurable = True,
+        self.config['title'] = Configuration(
+                                      configurable = True,
                                       display_name = "Title",
                                       data_type = 'text',
                                       value = '{TARGET} - {DATA}',

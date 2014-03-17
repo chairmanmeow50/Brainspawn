@@ -107,15 +107,16 @@ class CustomizeWindow:
     
     def apply_all(self, widget, revert_data=None):
         for option_name in self.options:
-            if (self.options[option_name].function):
-                function = self.options[option_name].function
-                if (revert_data):
-                    new_val = revert_data[option_name]
-                else:
-                    new_val = self.get_val(option_name)
-                    
-                function(new_val)
-                self.options[option_name]._replace(value = new_val)
+            if (self.options[option_name].configurable):
+                if (self.options[option_name].function):
+                    function = self.options[option_name].function
+                    if (revert_data):
+                        new_val = revert_data[option_name]
+                    else:
+                        new_val = self.get_val(option_name)
+                        
+                    function(new_val)
+                    self.options[option_name].value = new_val
         
         self.plot.canvas.queue_draw()
             

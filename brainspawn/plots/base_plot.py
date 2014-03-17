@@ -7,6 +7,7 @@ from collections import OrderedDict
 from views.canvas_item import CanvasItem
 from views.components.customize_window import CustomizeWindow
 from collections import namedtuple
+from plots.configuration import Configuration
 
 REGISTERED_PLOTS = {}
 
@@ -74,26 +75,18 @@ class BasePlot(CanvasItem):
 
         if not nengo_obj or not capability:
             return
-
-        empty_tuple = self.make_config_tuple()
-
-        self.config['TARGET'] = empty_tuple._replace(configurable = False,
-                                       value = nengo_obj.label)
-
-        self.config['DATA'] = empty_tuple._replace(configurable = False,
-                                     value = capability.name)
-
-    def make_config_tuple(self):
-        Config_Tuple = namedtuple('Configuration', ['configurable', 'display_name', 'data_type', 'value', 'function', 'combo'])
-        return Config_Tuple._make([None, None, None, None, None, None])
+        
+        self.config['TARGET'] = Configuration(configurable = False, value = nengo_obj.label)
+        self.config['DATA'] = Configuration(configurable = False, value = capability.name)
 
     def get_config_values(self):
         return {key : configuration.value for key, configuration in self.config.iteritems()}
 
     def set_config_values(self, config):
-        for key, val in config.items():
-            #self.config[key].value = val
-            pass
+        if (config):
+            for key, val in config.items():
+                #self.config[key].value = val
+                pass
 
     @property
     def title(self):

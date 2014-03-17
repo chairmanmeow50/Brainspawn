@@ -1,7 +1,7 @@
 import numpy as np
 from plots.plot import Plot
 from plots.base_plot import registered_plot
-from collections import OrderedDict
+from plots.configuration import Configuration
 
 @registered_plot
 class ValuePlot(Plot):
@@ -54,41 +54,41 @@ class ValuePlot(Plot):
         return cap.name in ['voltages', 'output']
 
     def get_options_dict(self):
-        self.config['xlabel'] = self.make_config_tuple()._replace(
-                                                                 configurable = True,
-                                                                 display_name = "X Label",
-                                                                 data_type = "text",
-                                                                 value = "time",
-                                                                 function = self.axes.set_xlabel)
+        self.config['xlabel'] = Configuration(
+                                              configurable = True,
+                                              display_name = "X Label",
+                                              data_type = "text",
+                                              value = "time",
+                                              function = self.axes.set_xlabel)
         
-        self.config['ylabel'] = self.make_config_tuple()._replace(
-                                                                 configurable = True,
-                                                                 display_name = "Y Label",
-                                                                 data_type = "text",
-                                                                 value = self.config['DATA'].value,
-                                                                 function = self.axes.set_ylabel)
+        self.config['ylabel'] = Configuration(
+                                              configurable = True,
+                                              display_name = "Y Label",
+                                              data_type = "text",
+                                              value = self.config['DATA'].value,
+                                              function = self.axes.set_ylabel)
         
-        self.config['xscale'] = self.make_config_tuple()._replace(
-                                                                 configurable = True,
-                                                                 display_name = "X Scale",
-                                                                 data_type = "combo",
-                                                                 value = 'linear',
-                                                                 function = self.axes.set_xscale,
-                                                                 combo = ['linear', 'log', 'symlog'])
+        self.config['ylabel'] = Configuration(
+                                              configurable = True,
+                                              display_name = "X Scale",
+                                              data_type = "combo",
+                                              value = 'linear',
+                                              function = self.axes.set_xscale,
+                                              combo = ['linear', 'log', 'symlog'])
         
-        self.config['frame'] = self.make_config_tuple()._replace(
-                                                                 configurable = True,
-                                                                 display_name = "Frame",
-                                                                 data_type = "boolean",
-                                                                 value = True,
-                                                                 function = self.axes.set_frame_on)
+        self.config['frame'] = Configuration(
+                                             configurable = True,
+                                             display_name = "Frame",
+                                             data_type = "boolean",
+                                             value = True,
+                                             function = self.axes.set_frame_on)
         
-        self.config['axes_bg_color'] = self.make_config_tuple()._replace(
-                                                                 configurable = True,
-                                                                 display_name = "Axis Background Color",
-                                                                 data_type = "color",
-                                                                 value = "#FFFFFF",
-                                                                 function = self.axes.set_axis_bgcolor)
+        self.config['axes_bg_color'] = Configuration(
+                                                     configurable = True,
+                                                     display_name = "Axis Background Color",
+                                                     data_type = "color",
+                                                     value = "#FFFFFF",
+                                                     function = self.axes.set_axis_bgcolor)
         
         return self.config
 
