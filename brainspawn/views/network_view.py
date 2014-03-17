@@ -422,7 +422,7 @@ class NetworkView(CanvasItem):
                     # submenu item not getting activate signal unless the submenu is
                     # also clicked. b-p-e works but has the extra event arg, discarded
                     # by the call-through
-                    item.connect("button-press-event", self._call_through, vz, obj, cap)
+                    item.connect("button-release-event", self._call_through, vz, obj, cap)
                     submenu.append(item)
 
                 self.plots_menu_item.set_submenu(submenu)
