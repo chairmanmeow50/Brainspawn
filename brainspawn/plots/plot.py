@@ -24,7 +24,7 @@ class Plot(CanvasItem):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, main_controller, nengo_obj, capability):
+    def __init__(self, main_controller, nengo_obj, capability, config=None):
         super(Plot, self).__init__(main_controller)
         """ Plot constructor.
         Initializes default config values for all plots,
@@ -36,17 +36,17 @@ class Plot(CanvasItem):
             nengo_obj (Nengo): The nengo object this plot is visualizing.
             capability (Capability): The capability of the object that this graph
             is visualizing.
+            config (dict): saved config options for the plot
         """
         self.nengo_obj = nengo_obj
         self.capability = capability
         self.config = {}
         self.init_default_config(nengo_obj, capability)
 
-        self._add_to_context_menu()
-
-    def _add_to_context_menu(self):
+    def _build_context_menu(self):
         """Context menu setup
         """
+        super(Plot, self)._build_context_menu()
         remove_item = gtk.MenuItem("Remove")
         remove_item.connect("activate", self.remove_plot, self.canvas)
         self._context_menu.append(remove_item)
