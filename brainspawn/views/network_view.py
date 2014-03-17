@@ -53,7 +53,7 @@ class NetworkView(CanvasItem):
 
     @property
     def title(self):
-        return 'Network View' + self.model.label
+        return 'Network View - ' + self.model.label
 
     def node_at(self, x, y):
         if not self.model or not self._kdtree:
