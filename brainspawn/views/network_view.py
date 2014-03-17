@@ -367,7 +367,7 @@ class NetworkView(CanvasItem):
 
             self.clear_selected_nodes()
             return False
-        elif event.button == 2:
+        elif event.button == 3:
             node_name = self.node_at(event.x, event.y)
             if node_name not in self._selected_nodes:
                 self.clear_selected_nodes()
@@ -408,7 +408,7 @@ class NetworkView(CanvasItem):
 
             self._context_menu.remove(self.plots_menu_item)
 
-            if self._selected_nodes:
+            if len(self._selected_nodes) > 1:
                 return True
 
             if node_name:
