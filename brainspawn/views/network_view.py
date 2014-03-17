@@ -365,27 +365,24 @@ class NetworkView(CanvasItem):
                 return True
 
             self.clear_selected_nodes()
-            return True
+            return False
         elif event.button == 2:
             node_name = self.node_at(event.x, event.y)
             if node_name not in self._selected_nodes:
                 self.clear_selected_nodes()
-                return True
+                return False
 
         return False
 
     def add_selected_node(self, node):
-        print 'adding', node
         self._selected_nodes.append(node)
         self._highlight_node(node)
 
     def remove_selected_node(self, node):
-        print 'removing', node
         self._selected_nodes.remove(node)
         self._unhighlight_node(node)
 
     def clear_selected_nodes(self):
-        print 'clearing', self._selected_nodes
         for node in self._selected_nodes:
             self._unhighlight_node(node)
         self._selected_nodes = []
