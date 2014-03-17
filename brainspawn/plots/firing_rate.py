@@ -74,7 +74,7 @@ class Firing_Rate_Plot(Plot):
     def __init__(self, main_controller, obj, cap):
         super(Firing_Rate_Plot, self).__init__(main_controller, obj, cap)
 
-        self.axes = self.view.figure.add_subplot(111) # take first from list
+        self.axes = self.figure.add_subplot(111) # take first from list
         self.axes.patch.set_alpha(0.0)
         self.axes.set_title(self.title)
 

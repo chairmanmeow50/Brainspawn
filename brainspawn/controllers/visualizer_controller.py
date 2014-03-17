@@ -26,11 +26,11 @@ class VisualizerController(object):
         self.registered = []
         self.plots = []
         self.load_plots()
-        
+
         self._has_network = False
 
         self.main_frame = MainFrame(self.sim_manager, self)
-        
+
         if (model_file_name):
             self.load_model_from_filename(model_file_name)
 
@@ -54,37 +54,38 @@ class VisualizerController(object):
         plot = plt(self, obj, cap)
         self.plots.append(plot)
         self.sim_manager.connect_to_obj(obj, cap, plot.update)
-        self.main_frame.show_plot(plot.view.canvas)
+        self.main_frame.show_plot(plot.canvas)
 
     def remove_plot_for_obj(self, plot, obj, cap):
         self.sim_manager.disconnect_from_obj(obj, cap, plot.update)
         self.plots.remove(plot)
-        self.main_frame.remove_plot(plot.view.canvas)
+        self.main_frame.remove_plot(plot.canvas)
 
     def on_open_model(self, widget):
         filename = self.file_open(ext="py", ext_name="Python files")
         if not filename:
             return
         self.load_model_from_filename(filename)
-        
+
     def load_model_from_filename(self, filename):
         mod_name, file_ext = os.path.splitext(os.path.basename(filename))
         try:
             module = imp.load_source(mod_name, filename)
             self.load_model(module.model)
             if (not self._has_network):
-                self.main_frame.show_plot(self.network_view.view.canvas, True)
+                self.main_frame.show_plot(self.network_view.canvas, True)
                 self._has_network = True
                 self.main_frame.controller_panel.enable_controls()
-        except (AttributeError, ImportError, IOError, SyntaxError):
+        except (AttributeError, ImportError, IOError, SyntaxError) as e:
+            print e
             dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.INFO,
                 Gtk.ButtonsType.OK, "Error loading model")
             dialog.format_secondary_text(
                 "Could not load model from " + str(filename))
-            
+
             dialog.run()
             dialog.destroy()
-            
+
     def load_model(self, model):
         copy_plots = self.plots[:]
         for plt in copy_plots:

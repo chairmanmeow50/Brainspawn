@@ -19,10 +19,7 @@ class NetworkView(Plot):
         self.name = name
 
         self.plots_menu_item = gtk.MenuItem("Plots")
-        self.view.context_menu.append(self.plots_menu_item)
-
-        # Hmmm.. we need to spit controller/view functionality here?
-        self.view.button_press = self.button_press
+        self._context_menu.append(self.plots_menu_item)
 
         # Build graph
         self._node_radius = 10
@@ -46,7 +43,7 @@ class NetworkView(Plot):
         if not self.model or not self._kdtree:
             return None
 
-        w, h = self.view._canvas.get_width_height()
+        w, h = self.canvas.get_width_height()
 
         if (w,h) != self._kdtree_creation_dim:
             self.rebuild_kd_tree()
@@ -89,7 +86,7 @@ class NetworkView(Plot):
         self._graph_obj_to_name = {}
         self._graph_pos = None
         self._kdtree = None
-        self.view.figure.clear()
+        self.figure.clear()
 
         if model is None:
             return
@@ -139,20 +136,20 @@ class NetworkView(Plot):
     def repaint(self):
         """ Clears and draws the network view.
         """
-        self.view.figure.clear()
+        self.figure.clear()
         if not self.model:
             return
 
         axis = None
-        if len(self.view.figure.axes) == 0:
-            axis = self.view.figure.add_subplot(1,1,1)
+        if len(self.figure.axes) == 0:
+            axis = self.figure.add_subplot(1,1,1)
         else:
-            axis = self.view.figure.axes[0]
+            axis = self.figure.axes[0]
 
         node_diam_sqr = (self._node_radius * 2) ** 2
         nx.draw(self.G, self._graph_pos, ax=axis, node_color=self._node_colors, node_size=node_diam_sqr)
 
-        self.view.canvas.queue_draw()
+        self.canvas.queue_draw()
 
     def rebuild_kd_tree(self):
         """ Recalculates the K-D tree used to find graph nodes. Since it's in
@@ -164,9 +161,9 @@ class NetworkView(Plot):
             return
 
         # Remember the creation dimensions
-        self._kdtree_creation_dim = self.view._canvas.get_width_height()
+        self._kdtree_creation_dim = self.canvas.get_width_height()
 
-        axis = self.view.figure.axes[0]
+        axis = self.figure.axes[0]
         transform = axis.transData.transform
         display_coords = [transform(node_pos) for node_pos in self._graph_pos.values()]
         self._kdtree = KDTree(display_coords)
@@ -188,7 +185,7 @@ class NetworkView(Plot):
         if event.button == 3:
             node_name = self.node_at(event.x, event.y)
 
-            self.view.context_menu.remove(self.plots_menu_item)
+            self._context_menu.remove(self.plots_menu_item)
 
             if node_name:
                 obj = self.get_obj_from_name(node_name)
@@ -205,8 +202,8 @@ class NetworkView(Plot):
                     submenu.append(item)
 
                 self.plots_menu_item.set_submenu(submenu)
-                self.view.context_menu.append(self.plots_menu_item)
-                self.view.context_menu.show_all()
+                self._context_menu.append(self.plots_menu_item)
+                self._context_menu.show_all()
 
             return super(NetworkView, self).button_press(widget, event, canvas)
         return False
