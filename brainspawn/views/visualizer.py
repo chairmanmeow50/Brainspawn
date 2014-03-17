@@ -141,7 +141,7 @@ class MainFrame:
     def jump_to_end(self, widget):
         self.jump_to(widget, self.sim_manager.last_sim_step)
 
-    def button_press(self, widget, event):
+    def on_button_release(self, widget, event):
         if event.type == gtk.gdk.BUTTON_PRESS:
             widget.popup(None, None, None, event.button, event.time)
             # Tell calling code that we have handled this event the buck

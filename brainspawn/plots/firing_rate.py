@@ -4,14 +4,12 @@ from matplotlib.patches import Rectangle
 from plots.plot import Plot 
 from plots.base_plot import registered_plot
 
-import __future__
-
 @registered_plot
 class Firing_Rate_Plot(Plot):
 
     @staticmethod
     def plot_name():
-        return "Firing Rate Plot"
+        return "Firing Rate"
 
     @staticmethod
     def supports_cap(cap):
@@ -72,8 +70,8 @@ class Firing_Rate_Plot(Plot):
                 self.rect_array_color[x] = np.zeros(self.rows)
                 self.axes.add_patch(rect)
 
-    def __init__(self, main_controller, obj, cap):
-        super(Firing_Rate_Plot, self).__init__(main_controller, obj, cap)
+    def __init__(self, main_controller, obj, cap, config=None):
+        super(Firing_Rate_Plot, self).__init__(main_controller, obj, cap, config)
 
         self.axes = self.figure.add_subplot(111) # take first from list
         self.axes.patch.set_alpha(0.0)

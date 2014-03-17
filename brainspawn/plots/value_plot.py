@@ -8,7 +8,7 @@ class ValuePlot(Plot):
     """Graph for plotting values over time.
     """
 
-    def __init__(self, main_controller, nengo_obj, capability):
+    def __init__(self, main_controller, nengo_obj, capability, config=None):
         """
         Set up the plot, and axis labels.
 
@@ -21,7 +21,7 @@ class ValuePlot(Plot):
 
         Note the call to super constructor.
         """
-        super(ValuePlot, self).__init__(main_controller, nengo_obj, capability)
+        super(ValuePlot, self).__init__(main_controller, nengo_obj, capability, config)
 
         self.init_default_config(nengo_obj, capability)
         self.axes.set_ylabel(self.config['DATA'].value)
@@ -38,7 +38,7 @@ class ValuePlot(Plot):
         Returns:
             string. The plot name.
         """
-        return "Value Plot"
+        return "Value"
 
     @staticmethod
     def supports_cap(cap):
@@ -51,7 +51,7 @@ class ValuePlot(Plot):
             bool. True if this plot supports the given capability.
         """
         return cap.name in ['voltages', 'output']
-    
+
     def get_options_dict(self):
         self.config['xlabel'] = self.make_config_tuple()._replace(
                                                                  configurable = True,

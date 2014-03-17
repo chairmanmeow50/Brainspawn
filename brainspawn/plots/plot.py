@@ -17,7 +17,7 @@ class Plot(BasePlot):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, main_controller, nengo_obj, capability):
+    def __init__(self, main_controller, nengo_obj, capability, config=None):
         super(Plot, self).__init__(main_controller, nengo_obj, capability)
         """ Plot constructor.
         Initializes default config values for all plots,
@@ -29,12 +29,23 @@ class Plot(BasePlot):
             nengo_obj (Nengo): The nengo object this plot is visualizing.
             capability (Capability): The capability of the object that this graph
             is visualizing.
+            config (dict): saved config options for the plot
         """
         
         self.axes = self.figure.add_subplot(111)
         self.axes.patch.set_alpha(0.0)
         self.init_default_config(nengo_obj, capability)
         self.axes.set_title(self.title)
+
+    def _build_context_menu(self):
+        """Context menu setup
+        """
+        super(Plot, self)._build_context_menu()
+        remove_item = gtk.MenuItem("Remove")
+        remove_item.connect("activate", self.remove_plot, self.canvas)
+        self._context_menu.append(remove_item)
+
+        self._context_menu.show_all()
 
     def init_default_config(self, nengo_obj, capability):
         """Sets default config values for all plots
@@ -56,3 +67,4 @@ class Plot(BasePlot):
                                       data_type = 'text',
                                       value = '{TARGET} - {DATA}',
                                       function = self.axes.set_title)
+

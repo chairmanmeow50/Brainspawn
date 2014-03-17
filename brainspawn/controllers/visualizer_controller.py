@@ -7,6 +7,7 @@ import os
 import imp
 import gtk
 import cairo
+import json
 from gi.repository import Gtk
 
 from views.visualizer import MainFrame
@@ -28,14 +29,12 @@ class VisualizerController(object):
         self.load_plots()
 
         self._has_network = False
+        self._loaded_model_file = None
 
         self.main_frame = MainFrame(self.sim_manager, self)
 
         if (model_file_name):
             self.load_model_from_filename(model_file_name)
-
-    def init_view(self):
-        pass
 
     def plots_for_object(self, obj):
         """ Returns a list of plots available for this object
@@ -48,10 +47,10 @@ class VisualizerController(object):
                     supported_plots.append((vz, obj, cap))
         return supported_plots
 
-    def add_plot_for_obj(self, menu_item, plt, obj, cap):
+    def add_plot_for_obj(self, plt, obj, cap, config=None):
         """ Callback for menu item
         """
-        plot = plt(self, obj, cap)
+        plot = plt(self, obj, cap, config)
         self.plots.append(plot)
         self.sim_manager.connect_to_obj(obj, cap, plot.update)
         self.main_frame.show_plot(plot.canvas)
@@ -61,17 +60,93 @@ class VisualizerController(object):
         self.plots.remove(plot)
         self.main_frame.remove_plot(plot.canvas)
 
+    def on_save_layout(self, widget):
+        name = self.main_frame.window.get_title()
+        filename = self.file_save(name + ".bpwn")
+        if not filename:
+            return
+        with open(filename, 'wb') as f:
+            json.dump(self.get_layout_dict(), f)
+
+    def on_restore_layout(self, widget):
+        filename = self.file_open(ext="bpwn", ext_name="Layout files")
+        if not filename:
+            return
+        with open(filename, 'rb') as f:
+            self.restore_layout_dict(json.load(f))
+
     def on_open_model(self, widget):
         filename = self.file_open(ext="py", ext_name="Python files")
         if not filename:
             return
         self.load_model_from_filename(filename)
 
+    def restore_layout_dict(self, dct):
+        """Restores layout from dict
+        Throws:
+            ValueError - dct could not be loaded
+        """
+        layout_dict = dct['layout']
+
+        # Restore model file
+        self.load_model_from_filename(layout_dict['model'])
+
+        # Restore plots
+        for plot_dict in layout_dict['plots']:
+            target_obj = self.get_nengo_for_uid(plot_dict['target_obj'])
+            target_cap_name = plot_dict['target_cap']
+            target_cap = None
+            for cap in self.sim_manager.get_caps_for_obj(target_obj):
+                if cap.name == target_cap_name:
+                    target_cap = cap
+            if not target_cap:
+                raise ValueError("No capability for nengo object: " + target_obj + " with name: " + target_cap_name)
+            plot_type = plot_dict['plot_type']
+            for plot_cls in self.registered:
+                if plot_type == plot_cls.__name__:
+                    self.add_plot_for_obj(plot_cls, target_obj, target_cap, plot_dict['config'])
+                    break
+            else:
+                # loop exited without break
+                raise ValueError("No plot:" + plot_type + "for nengo object: " + target_obj + " with name: " + target_cap_name)
+
+        # Restore network
+        self.network_view.restore_layout(layout_dict['network_layout'])
+
+    def get_layout_dict(self):
+        layout_dict = {}
+        # Save model file
+        layout_dict['model'] = self._loaded_model_file
+        # Save plots
+        layout_dict['plots'] = []
+        for plot in self.plots:
+            plot_dict = {}
+            plot_dict['plot_type'] = plot.__class__.__name__
+            plot_dict['target_obj'] = self.get_uid_for_nengo(plot.nengo_obj)
+            plot_dict['target_cap'] = plot.capability.name
+            plot_dict['config'] = plot.store_layout()
+            layout_dict['plots'].append(plot_dict)
+        # Save network
+        layout_dict['network_layout'] = self.network_view.store_layout()
+        return {'layout': layout_dict}
+
+    def get_uid_for_nengo(self, nengo_obj):
+        """Gets a consistent uid for the given nengo object
+        """
+        # Let's just use the network view's method right now, since that seems to be working great
+        return self.network_view.get_name_from_obj(nengo_obj)
+
+    def get_nengo_for_uid(self, uid):
+        """Gets a nengo object for a given uid
+        """
+        return self.network_view.get_obj_from_name(uid)
+
     def load_model_from_filename(self, filename):
         mod_name, file_ext = os.path.splitext(os.path.basename(filename))
         try:
             module = imp.load_source(mod_name, filename)
             self.load_model(module.model)
+            self._loaded_model_file = filename
             if (not self._has_network):
                 self.main_frame.show_plot(self.network_view.canvas, True)
                 self._has_network = True

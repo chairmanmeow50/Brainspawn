@@ -31,7 +31,7 @@ class ResizeBox(Gtk.EventBox):
         self.connect("size_allocate", self.size_allocate)
 
     def size_allocate(self, widget, allocation):
-        border_width = settings.RESIZE_BOX_WIDTH + settings.RESIZE_BOX_LINE_WIDTH * 2
+        border_width = settings.RESIZE_BOX_WIDTH + settings.RESIZE_BOX_LINE_WIDTH
         allocation.x = border_width
         allocation.y = border_width
         allocation.width = allocation.width - border_width * 2
@@ -76,19 +76,6 @@ class ResizeBox(Gtk.EventBox):
             ctx.rectangle(bottom_right_x, bottom_right_y, settings.RESIZE_BOX_WIDTH, settings.RESIZE_BOX_HEIGHT)
             ctx.set_source_rgba(0, 0, 0, 1)
             ctx.set_dash([], 0)
-            ctx.stroke()
-
-            #resize plus
-            ctx.new_path()
-            resize_box_plus_y_start = bottom_right_y + (settings.RESIZE_BOX_HEIGHT - settings.RESIZE_BOX_PLUS_LENGTH) / 2
-            ctx.move_to(bottom_right_x + settings.RESIZE_BOX_WIDTH / 2, resize_box_plus_y_start)
-            ctx.line_to(bottom_right_x + settings.RESIZE_BOX_WIDTH / 2, resize_box_plus_y_start + settings.RESIZE_BOX_PLUS_LENGTH)
-            ctx.stroke()
-
-            ctx.new_path()
-            resize_box_plus_x_start = bottom_right_x + (settings.RESIZE_BOX_WIDTH - settings.RESIZE_BOX_PLUS_LENGTH) / 2
-            ctx.move_to(resize_box_plus_x_start, bottom_right_y + settings.RESIZE_BOX_HEIGHT / 2)
-            ctx.line_to(resize_box_plus_x_start + settings.RESIZE_BOX_PLUS_LENGTH, bottom_right_y + settings.RESIZE_BOX_HEIGHT / 2)
             ctx.stroke()
 
         self.propagate_draw(self._canvas, ctx)

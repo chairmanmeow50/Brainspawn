@@ -9,7 +9,7 @@ class Raster_Spike_Plot(Plot):
 
     @staticmethod
     def plot_name():
-        return "Raster Spike Plot"
+        return "Raster Spike"
 
     @staticmethod
     def supports_cap(cap):
@@ -35,8 +35,8 @@ class Raster_Spike_Plot(Plot):
             self.axes.set_ylim(0.4, 1.6)  # eventplot plots different for len==1
         self.axes.set_xlim(left=0)
 
-    def __init__(self, main_controller, obj, cap):
-        super(Raster_Spike_Plot, self).__init__(main_controller, obj, cap)
+    def __init__(self, main_controller, obj, cap, config=None):
+        super(Raster_Spike_Plot, self).__init__(main_controller, obj, cap, config)
 
         self.axes = self.figure.add_subplot(111) # take first from list
         self.axes.patch.set_alpha(0.0)
