@@ -25,7 +25,7 @@ class ValuePlot(Plot):
 
         self.init_default_config(nengo_obj, capability)
         self.axes.set_ylabel(self.config['DATA'].value)
-        self.axes.set_xlabel('time')
+        self.axes.set_xlabel('Time (s)')
         self.axes.set_xlim([0, 1])
         self.axes.patch.set_alpha(1.0)
 

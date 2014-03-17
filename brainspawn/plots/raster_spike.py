@@ -1,11 +1,24 @@
-import numpy as np
-from matplotlib import rcParams
-from plots.plot import Plot
 from plots.base_plot import registered_plot
-import __future__
+from plots.plot import Plot
+import settings
 
-#@registered_plot
-class Raster_Spike_Plot(Plot):
+@registered_plot
+class RasterSpike(Plot):
+
+    WINDOW_SIZE = 100
+
+    def __init__(self, main_controller, obj, cap, config=None):
+        super(RasterSpike, self).__init__(main_controller, obj, cap, config)
+
+        self.axes = self.figure.add_subplot(111)
+        self.axes.patch.set_alpha(0.0)
+        self.axes.set_title(self.title)
+        self.axes.set_ylabel("Neurons")
+        self.axes.set_xlabel("Time (s)")
+        #TODO: The 1.0 here shouldn't be hardcoded, as with all plots
+        self._initial_end_time = 1.0 * self.WINDOW_SIZE / settings.MAX_WINDOW_SIZE
+        self.axes.set_xlim([0, self._initial_end_time])
+        self._image = None
 
     @staticmethod
     def plot_name():
@@ -13,34 +26,19 @@ class Raster_Spike_Plot(Plot):
 
     @staticmethod
     def supports_cap(cap):
-        return cap.name in ['spikes']
+        return cap.name in ["spikes"]
 
     def update(self, start_step, step_size, spikes):
-        start_time = start_step*step_size
-        end_time = (start_step + spikes.shape[0])*step_size
-        trange = np.linspace(start_time, end_time, spikes.shape[0])
-
-        color_cycle = rcParams['axes.color_cycle']
-        colors = [color_cycle[ix % len(color_cycle)]
-                       for ix in range(spikes.shape[1])]
-
-        spikes = [trange[spikes[:, i] > 0].flatten()
-                  for i in range(spikes.shape[1])]
-        for ix in range(len(spikes)):
-            if spikes[ix].shape == (0,):
-                spikes[ix] = np.array([-1])
-        self.axes.eventplot(spikes, colors=colors)
-        self.axes.set_ylim(len(spikes) - 0.5, -0.5)
-        if len(spikes) == 1:
-            self.axes.set_ylim(0.4, 1.6)  # eventplot plots different for len==1
-        self.axes.set_xlim(left=0)
-
-    def __init__(self, main_controller, obj, cap, config=None):
-        super(Raster_Spike_Plot, self).__init__(main_controller, obj, cap, config)
-
-        self.axes = self.figure.add_subplot(111) # take first from list
-        self.axes.patch.set_alpha(0.0)
-        self.axes.set_title(self.title)
-        self.axes.set_xlim([0, 1])
-        self.axes.set_ylim([0, 1])
-
+        if self._image:
+            self._image.remove()
+            self._image = None
+        if len(spikes) == 0:
+            return
+        spikes_view = spikes[-self.WINDOW_SIZE:]
+        end_step = start_step + spikes.shape[0]
+        start_time = (end_step - spikes_view.shape[0]) * step_size
+        end_time = end_step * step_size
+        self._image = self.axes.imshow(  # interpolation="none" is not supported on cairo
+                spikes_view.T, cmap="binary", aspect="auto", interpolation="nearest", origin="lower",
+                extent=(start_time, end_time, 0, spikes_view.shape[1]))
+        self.axes.set_xlim([start_time, max(end_time, self._initial_end_time)])

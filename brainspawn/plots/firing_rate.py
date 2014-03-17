@@ -83,5 +83,7 @@ class Firing_Rate_Plot(Plot):
         self.rect_array_color = [[] for i in range(self.rows)]
         self.axes.set_xlim(0, 1)
         self.axes.set_ylim(0, 1)
+        self.axes.get_xaxis().set_visible(False)
+        self.axes.get_yaxis().set_visible(False)
 
         self.draw_rects()
