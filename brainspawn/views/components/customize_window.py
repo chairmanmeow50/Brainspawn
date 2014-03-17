@@ -15,51 +15,52 @@ class CustomizeWindow:
         self.revert_data = {}
         control = None
         
-        for option_name in self.options:
-            if (self.options[option_name].configurable):
-                data_type = self.options[option_name].data_type
-                text_label = gtk.Label(self.options[option_name].display_name)
-                type_label = gtk.Label(data_type)
-                self.revert_data[option_name] = self.options[option_name].value
-                
-                if (data_type == 'text'):
-                    control = gtk.Entry()
-                    control.set_text(self.options[option_name].value)
-                elif (data_type == 'combo'):
-                    control = Gtk.ComboBoxText.new_with_entry()
-                    combo_values = self.options[option_name].combo
-                    for combo_value in combo_values:
-                        control.append(combo_value, combo_value)
-                    control.set_entry_text_column(0)
+        if (self.options):
+            for option_name in self.options:
+                if (self.options[option_name].configurable):
+                    data_type = self.options[option_name].data_type
+                    text_label = gtk.Label(self.options[option_name].display_name)
+                    type_label = gtk.Label(data_type)
+                    self.revert_data[option_name] = self.options[option_name].value
                     
-                    control.set_active(combo_values.index(self.options[option_name].value))
-                elif (data_type == 'boolean'):
-                    control = Gtk.CheckButton()
-                    control.set_active(self.options[option_name].value)
-                elif (data_type == 'color'):
-                    control = Gtk.Button("Color chooser...")
-                    
-                    color_selection_dialog = Gtk.ColorSelectionDialog()
-                    control.connect("clicked", self.show_color_selection_dialog, color_selection_dialog)
-                    color_selection = color_selection_dialog.get_color_selection()
-                    self.controls[option_name] = color_selection
-                    color_selection.connect("color_changed", self.apply_all)
-                            
-                if (control):
-                    if (data_type == 'text' or data_type == 'combo'):
-                        control.connect("changed", self.apply_all)
-                    elif (data_type == 'boolean'):
-                        control.connect("toggled", self.apply_all)
+                    if (data_type == 'text'):
+                        control = gtk.Entry()
+                        control.set_text(self.options[option_name].value)
+                    elif (data_type == 'combo'):
+                        control = Gtk.ComboBoxText.new_with_entry()
+                        combo_values = self.options[option_name].combo
+                        for combo_value in combo_values:
+                            control.append(combo_value, combo_value)
+                        control.set_entry_text_column(0)
                         
-                    if (data_type != 'color'):
-                        self.controls[option_name] = control
-                    
-                    hbox = Gtk.HBox(True, 10)
-                    hbox.pack_start(text_label, True, True, 10)
-                    hbox.pack_start(type_label, True, True, 10)
-                    hbox.pack_start(control, True, True, 10)
-                    
-                    self.vbox.pack_start(hbox, True, False, 10)
+                        control.set_active(combo_values.index(self.options[option_name].value))
+                    elif (data_type == 'boolean'):
+                        control = Gtk.CheckButton()
+                        control.set_active(self.options[option_name].value)
+                    elif (data_type == 'color'):
+                        control = Gtk.Button("Color chooser...")
+                        
+                        color_selection_dialog = Gtk.ColorSelectionDialog()
+                        control.connect("clicked", self.show_color_selection_dialog, color_selection_dialog)
+                        color_selection = color_selection_dialog.get_color_selection()
+                        self.controls[option_name] = color_selection
+                        color_selection.connect("color_changed", self.apply_all)
+                                
+                    if (control):
+                        if (data_type == 'text' or data_type == 'combo'):
+                            control.connect("changed", self.apply_all)
+                        elif (data_type == 'boolean'):
+                            control.connect("toggled", self.apply_all)
+                            
+                        if (data_type != 'color'):
+                            self.controls[option_name] = control
+                        
+                        hbox = Gtk.HBox(True, 10)
+                        hbox.pack_start(text_label, True, True, 10)
+                        hbox.pack_start(type_label, True, True, 10)
+                        hbox.pack_start(control, True, True, 10)
+                        
+                        self.vbox.pack_start(hbox, True, False, 10)
 
         ok_button = gtk.Button(label="Ok")
         ok_button.connect("clicked", self.ok_clicked)

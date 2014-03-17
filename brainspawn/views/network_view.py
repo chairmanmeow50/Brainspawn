@@ -4,6 +4,7 @@ import numpy
 from matplotlib.collections import LineCollection
 from scipy.spatial import cKDTree as KDTree
 from collections import OrderedDict
+from plots.configuration import Configuration
 
 from views.canvas_item import CanvasItem
 
@@ -406,6 +407,16 @@ class NetworkView(CanvasItem):
         dictionary
         """
         pass #TODO
+    
+    def get_options_dict(self):
+        self.config['title'] = Configuration(
+                                              configurable = True,
+                                              display_name = "Title",
+                                              data_type = "text",
+                                              value = "Network",
+                                              function = self.axes.set_title)
+        
+        return self.config
 
 #---------- Helper functions --------
 

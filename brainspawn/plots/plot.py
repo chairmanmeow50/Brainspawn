@@ -3,9 +3,7 @@
 
 import gtk
 from abc import ABCMeta, abstractmethod
-from collections import OrderedDict
 from plots.base_plot import BasePlot
-from views.components.customize_window import CustomizeWindow
 from plots.configuration import Configuration
 
 class Plot(BasePlot):
