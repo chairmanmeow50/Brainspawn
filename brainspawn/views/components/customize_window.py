@@ -12,6 +12,7 @@ class CustomizeWindow:
         
         self.vbox = gtk.VBox()
         self.controls = {}
+        self.revert_data = {}
         control = None
         
         for option_name in self.options:
@@ -19,6 +20,7 @@ class CustomizeWindow:
                 data_type = self.options[option_name].data_type
                 text_label = gtk.Label(self.options[option_name].display_name)
                 type_label = gtk.Label(data_type)
+                self.revert_data[option_name] = self.options[option_name].value
                 
                 if (data_type == 'text'):
                     control = gtk.Entry()
@@ -59,11 +61,42 @@ class CustomizeWindow:
                     
                     self.vbox.pack_start(hbox, True, False, 10)
 
-        apply_button = gtk.Button(label="Apply")
-        apply_button.connect("clicked", self.apply_all)
-        self.vbox.pack_start(apply_button)
+        ok_button = gtk.Button(label="Ok")
+        ok_button.connect("clicked", self.ok_clicked)
+        ok_button.set_size_request(80, 20)
+        
+        revert_button = gtk.Button(label="Revert")
+        revert_button.connect("clicked", self.revert_all)
+        revert_button.set_size_request(80, 20)
+        
+        button_hbox = Gtk.Box(Gtk.Orientation.HORIZONTAL, 20)
+        button_hbox.set_homogeneous(True)
+        
+        alignment = Gtk.Alignment()
+        alignment.set(0.5, 0.9, 0, 0)
+        alignment.add(button_hbox)
+        
+        button_hbox.pack_end(ok_button, False, False)
+        button_hbox.pack_end(revert_button, False, False)
+        
+        self.vbox.pack_start(alignment)
         self.window.add(self.vbox)
         self.window.show_all()
+        
+        self.window.connect("destroy", self.destroy_handler)
+        self.not_destroyed = True
+        
+    def destroy_handler(self, widget):
+        self.not_destroyed = False
+        
+    def ok_clicked(self, widget):
+        self.window.hide()
+        
+    def revert_all(self, widget):
+        self.apply_all(None, self.revert_data)
+        for option_name in self.options:
+            if (self.options[option_name].configurable):
+                self.set_val(option_name, self.revert_data)
         
     def show_color_selection_dialog(self, widget, dialog):
         response = dialog.run()
@@ -72,14 +105,33 @@ class CustomizeWindow:
             color_selection.set_current_color(color_selection.get_previous_color())
         dialog.hide()
     
-    def apply_all(self, widget):
+    def apply_all(self, widget, revert_data=None):
         for option_name in self.options:
             if (self.options[option_name].function):
                 function = self.options[option_name].function
-                function(self.get_val(option_name))
+                if (revert_data):
+                    new_val = revert_data[option_name]
+                else:
+                    new_val = self.get_val(option_name)
+                    
+                function(new_val)
+                self.options[option_name]._replace(value = new_val)
         
         self.plot.canvas.queue_draw()
             
+    def set_val(self, option_name, revert_data):
+        data_type = self.options[option_name].data_type
+        revert_val = revert_data[option_name]
+        if (data_type == 'text'):
+            self.controls[option_name].set_text(revert_val)
+        elif (data_type == 'combo'):
+            revert_val_index = self.options[option_name].combo.index(revert_val)
+            self.controls[option_name].set_active(revert_val_index)
+        elif (data_type == 'boolean'):
+            self.controls[option_name].set_active(revert_val)
+
+        self.controls[option_name].queue_draw()
+        
     def get_val(self, option_name):
         data_type = self.options[option_name].data_type
         if (data_type == 'text'):

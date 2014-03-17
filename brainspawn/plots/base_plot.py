@@ -42,6 +42,8 @@ class BasePlot(CanvasItem):
         self.nengo_obj = nengo_obj
         self.capability = capability
         self.config = OrderedDict()
+        
+        self.customize_window = None
 
     def _build_context_menu(self):
         """Context menu setup
@@ -141,8 +143,14 @@ class BasePlot(CanvasItem):
         pass
 
     def show_customize(self, event):
-        self.customize_window = CustomizeWindow(self)
+        if (self.customize_window and self.customize_window.not_destroyed):
+            self.customize_window.window.show()
+        else:
+            self.customize_window = CustomizeWindow(self)
 
     def remove_plot(self, widget, canvas):
         self.main_controller.remove_plot_for_obj(self, self.nengo_obj, self.capability)
+        
+    def get_options_dict(self):
+        return self.config
 
