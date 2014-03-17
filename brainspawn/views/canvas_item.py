@@ -32,18 +32,18 @@ class CanvasItem(object):
         """
         export_pdf_item = gtk.MenuItem("Export to PDF...")
         export_pdf_item.connect("activate", self.on_export_pdf, self.canvas)
-        
-        customize_item = gtk.MenuItem("Customize...")
+
+        customize_item = gtk.MenuItem("Customize")
         customize_item.connect("activate", self.show_customize)
-        
+
         self._context_menu.append(export_pdf_item)
         self._context_menu.append(customize_item)
 
         self._context_menu.show_all()
-        
+
     def init_default_config(self, nengo_obj, capability):
         pass
-    
+
     def get_config_values(self):
         return {key : configuration.value for key, configuration in self.config.iteritems()}
 
@@ -52,6 +52,10 @@ class CanvasItem(object):
             for key, val in config.items():
                 #self.config[key].value = val
                 pass
+
+    @property
+    def title(self):
+        raise NotImplementedError
 
     def on_export_pdf(self, widget, canvas):
         self.main_controller.on_export_pdf(None, canvas, self.title)
@@ -67,4 +71,4 @@ class CanvasItem(object):
             self.customize_window.window.show()
         else:
             self.customize_window = CustomizeWindow(self)
-            
+
