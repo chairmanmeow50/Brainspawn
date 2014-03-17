@@ -91,6 +91,7 @@ class BasePlot(CanvasItem):
     def set_config_values(self, config):
         for key, val in config.items():
             #self.config[key].value = val
+            pass
 
     @property
     def title(self):
