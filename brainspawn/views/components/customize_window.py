@@ -23,9 +23,17 @@ class CustomizeWindow:
                 if (data_type == 'text'):
                     control = gtk.Entry()
                     control.set_text(self.options[option_name].value)
-                    control.connect("changed", self.apply_all)
-                
+                elif (data_type == 'combo'):
+                    control = Gtk.ComboBoxText.new_with_entry()
+                    combo_values = self.options[option_name].combo
+                    for combo_value in combo_values:
+                        control.append(combo_value, combo_value)
+                    control.set_entry_text_column(0)
+                    
+                    control.set_active(combo_values.index(self.options[option_name].value))
+                        
                 if (control):
+                    control.connect("changed", self.apply_all)
                     self.controls[option_name] = control
                     
                     hbox = Gtk.HBox(True, 10)
@@ -59,3 +67,8 @@ class CustomizeWindow:
                 return formatted_string
             except (KeyError, ValueError) as e:
                 return unformatted_string
+        elif (data_type == 'combo'):
+            text = self.controls[option_name].get_active_text()
+            self.controls[option_name].queue_draw()
+            return text
+        

@@ -67,6 +67,14 @@ class ValuePlot(Plot):
                                                                  value = self.config['DATA'].value,
                                                                  function = self.axes.set_ylabel)
         
+        self.config['xscale'] = self.make_config_tuple()._replace(
+                                                                 configurable = True,
+                                                                 display_name = "X Scale",
+                                                                 data_type = "combo",
+                                                                 value = 'linear',
+                                                                 function = self.axes.set_xscale,
+                                                                 combo = ['linear', 'log', 'symlog'])
+        
         return self.config
 
     def update(self, start_step, step_size, data):

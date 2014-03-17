@@ -80,8 +80,8 @@ class BasePlot(CanvasItem):
                                      value = capability.name)
         
     def make_config_tuple(self):
-        Config_Tuple = namedtuple('Configuration', ['configurable', 'display_name', 'data_type', 'value', 'function'])
-        return Config_Tuple._make([None, None, None, None, None])
+        Config_Tuple = namedtuple('Configuration', ['configurable', 'display_name', 'data_type', 'value', 'function', 'combo'])
+        return Config_Tuple._make([None, None, None, None, None, None])
         
     def get_config_values(self):
         return {key : configuration.value for key, configuration in self.config.iteritems()}
