@@ -399,13 +399,32 @@ class NetworkView(CanvasItem):
         """Returns a dictionary representing the
         current node positions
         """
-        pass #TODO
+        node_pos = { name: (pos[0], pos[1]) for name, pos in self._node_positions.items()}
+        layout_dict = {"node_positions" : node_pos}
+        return layout_dict
 
     def restore_layout(self, layout):
         """Restores node positions from layout
         dictionary
         """
-        pass #TODO
+        # Update node position
+        self._node_positions = layout["node_positions"]
+
+        # Update positions of attached edges + arrows
+        pos = self._node_positions
+        segs = [(pos[n1], pos[n2]) for n1, n2 in self.G.edges()]
+        arrows = self._calc_arrow_pos(segs)
+
+        # Updating matplotlib's collections will automatically update the view
+        self._node_collection.set_offsets(pos.values())
+        self._edge_collection.set_segments(segs)
+        self._arrow_collection.set_segments(arrows)
+
+        # Update label pos
+        self._update_label_pos(pos)
+
+        self.rebuild_kd_tree()
+        self.repaint()
 
 #---------- Helper functions --------
 
