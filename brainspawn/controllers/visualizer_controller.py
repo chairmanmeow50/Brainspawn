@@ -47,13 +47,13 @@ class VisualizerController(object):
                     supported_plots.append((vz, obj, cap))
         return supported_plots
 
-    def add_plot_for_obj(self, plt, obj, cap, config=None):
+    def add_plot_for_obj(self, plt, obj, cap, config=None, position=None, size=None):
         """ Callback for menu item
         """
         plot = plt(self, obj, cap, config)
         self.plots.append(plot)
         self.sim_manager.connect_to_obj(obj, cap, plot.update)
-        self.main_frame.show_plot(plot.canvas)
+        self.main_frame.show_plot(plot.canvas, False, position, size)
 
     def remove_plot_for_obj(self, plot, obj, cap):
         self.sim_manager.disconnect_from_obj(obj, cap, plot.update)
@@ -104,7 +104,7 @@ class VisualizerController(object):
             plot_type = plot_dict['plot_type']
             for plot_cls in self.registered:
                 if plot_type == plot_cls.__name__:
-                    self.add_plot_for_obj(plot_cls, target_obj, target_cap, plot_dict['config'])
+                    self.add_plot_for_obj(plot_cls, target_obj, target_cap, plot_dict['config'], plot_dict['position'], plot_dict['size'])
                     break
             else:
                 # loop exited without break
@@ -124,7 +124,9 @@ class VisualizerController(object):
             plot_dict['plot_type'] = plot.__class__.__name__
             plot_dict['target_obj'] = self.get_uid_for_nengo(plot.nengo_obj)
             plot_dict['target_cap'] = plot.capability.name
-            plot_dict['config'] = plot.store_layout()
+            plot_dict['position'] = self.main_frame.get_canvas_position(plot.canvas)
+            plot_dict['size'] = self.main_frame.get_canvas_size(plot.canvas)
+            plot_dict['config'] = plot.get_config_values()
             layout_dict['plots'].append(plot_dict)
         # Save network
         layout_dict['network_layout'] = self.network_view.store_layout()

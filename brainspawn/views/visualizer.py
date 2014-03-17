@@ -39,6 +39,7 @@ class MainFrame:
         self.resize_info = None
 
         self.all_canvas = []
+        self.resize_boxes = {}
 
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -154,21 +155,38 @@ class MainFrame:
     def menuitem_response(self, widget, string):
         print "%s" % string
 
-    def show_plot(self, canvas, center=False):
+    def show_plot(self, canvas, center=False, position=None, size=None):
+        """
+        center (boolean): center the plot, ignore position
+        position (tuple): x, y coords to position the plot
+        """
         resize_box = ResizeBox(canvas, self.canvas_layout)
         self.all_canvas.append(resize_box.get_canvas())
+        self.canvas_layout.put(resize_box, 0, 0)
+        self.resize_boxes[canvas] = resize_box
+        # Set position
         if (center):
             x = (self.window.get_allocated_width() - resize_box.get_width()) / 2
             y = (self.canvas_layout.get_allocated_height() - resize_box.get_height()) / 2
-            self.canvas_layout.put(resize_box, x, y)
-            resize_box._pos_x = x
-            resize_box._pos_y = y
+        elif position:
+            x, y = position
         else:
-            self.canvas_layout.put(resize_box, 0, 0)
+            x = 0
+            y = 0
+        resize_box.set_position(x, y)
+        # Set size
+        if size:
+            resize_box.set_size(*size)
 
     def remove_plot(self, canvas):
         self.all_canvas.remove(canvas)
         self.canvas_layout.remove(canvas.get_parent())
+
+    def get_canvas_position(self, canvas):
+        return (self.resize_boxes[canvas].pos_x, self.resize_boxes[canvas].pos_y)
+
+    def get_canvas_size(self, canvas):
+        return (self.resize_boxes[canvas].get_width(), self.resize_boxes[canvas].get_height())
 
     def toggle_panel(self, widget, panel):
         if (widget.get_active()):
