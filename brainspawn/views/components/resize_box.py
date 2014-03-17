@@ -1,6 +1,7 @@
 import gtk
 from gi.repository import Gtk
 import settings
+from views.network_view import NetworkView
 
 class ResizeBox(Gtk.EventBox):
 
@@ -8,12 +9,14 @@ class ResizeBox(Gtk.EventBox):
         super(ResizeBox, self).__init__()
         self._canvas = canvas
         self._canvas_layout = canvas_layout
-        self._press = None
-        self._resize_info = None
         self.pos_x = 0
         self.pos_y = 0
         self._is_resize = False
         self._highlight = False
+        
+        self._begin_drag_x = 0
+        self._begin_drag_y = 0
+        self._drag = False
 
         self.add(self._canvas)
         self.set_visible(True)
@@ -29,6 +32,42 @@ class ResizeBox(Gtk.EventBox):
         self.connect("button_release_event", self.button_release_handler)
         self.connect("motion_notify_event", self.motion_notify_handler)
         self.connect("size_allocate", self.size_allocate)
+
+    def button_press_handler(self, widget, event):
+        if (event.button == 1):
+            if not isinstance(self._canvas, NetworkView):
+                getattr(self.get_window(), 'raise')()
+            if (self.is_within_resize_bounds(int(event.x), int(event.x))):
+                self._is_resize = True
+                self._resize_begin_x, self._resize_begin_y = self._canvas_layout.get_pointer()
+            else:
+                self._drag = True
+                self._drag_begin_x = event.x
+                self._drag_begin_y = event.y
+            self._original_size = self._width, self._height
+
+    def button_release_handler(self, widget, event):
+        self._drag = False
+        if (self.is_resize()):
+            self._is_resize = False
+
+    def motion_notify_handler(self, widget, event):
+        if self.is_resize():
+            o_width, o_height = self._original_size
+            extra_offset_x = o_width - (self._resize_begin_x - self.pos_x)
+            extra_offset_y = o_height - (self._resize_begin_y - self.pos_y)
+            canvas_x, canvas_y = self._canvas_layout.get_pointer()
+            new_width = canvas_x - self.pos_x + extra_offset_x
+            new_height = canvas_y - self.pos_y + extra_offset_y
+            new_width = max(new_width, settings.RESIZE_MIN_WIDTH)
+            new_height = max(new_height, settings.RESIZE_MIN_HEIGHT)
+            self.set_size(new_width, new_height)
+        elif self._drag:
+            offset_x = event.x - self._drag_begin_x
+            offset_y = event.y - self._drag_begin_y
+            new_x = self.pos_x + int(offset_x)
+            new_y = self.pos_y + int(offset_y)
+            self.set_position(new_x, new_y)
 
     def size_allocate(self, widget, allocation):
         border_width = settings.RESIZE_BOX_WIDTH + settings.RESIZE_BOX_LINE_WIDTH
@@ -95,55 +134,6 @@ class ResizeBox(Gtk.EventBox):
 
     def is_resize(self):
         return self._is_resize
-
-    def button_press_handler(self, widget, event):
-        if (event.button == 1):
-            x0 = self._canvas_layout.child_get_property(self, "x")
-            y0 = self._canvas_layout.child_get_property(self, "y")
-            widget_x, widget_y = self._canvas_layout.get_pointer()
-            if (self.is_within_resize_bounds(widget_x - self.pos_x, widget_y - self.pos_y)):
-                self._is_resize = True
-            else:
-                self.hide()
-                self.show()
-            self._press = x0, y0, widget_x, widget_y
-            self._original_size = self._width, self._height
-
-    def button_release_handler(self, widget, event):
-        self._press = None
-        if (self.is_resize()):
-            self._is_resize = False
-
-    def motion_notify_handler(self, widget, event):
-        if self._press is None:
-            return
-
-        x0, y0, xpress, ypress = self._press
-        canvas_layout_x, canvas_layout_y = self._canvas_layout.get_pointer()
-        widget_x = canvas_layout_x - self.pos_x
-        widget_y = canvas_layout_y - self.pos_y
-
-        if self.is_resize():
-            unused_x, unused_y, clicked_x, clicked_y = self._press
-            o_width, o_height = self._original_size
-            extra_offset_x = o_width - (clicked_x - self.pos_x)
-            extra_offset_y = o_height - (clicked_y - self.pos_y)
-            new_width = canvas_layout_x - self.pos_x + extra_offset_x
-            new_height = canvas_layout_y - self.pos_y + extra_offset_y
-            new_width = max(new_width, settings.RESIZE_MIN_WIDTH)
-            new_height = max(new_height, settings.RESIZE_MIN_HEIGHT)
-            self.set_size(new_width, new_height)
-        else:
-            widget_x, widget_y = self._canvas_layout.get_pointer()
-            self._press = x0, y0, widget_x, widget_y
-            dx = widget_x - xpress
-            dy = widget_y - ypress
-            new_x = int(round(x0 + dx))
-            new_y = int(round(y0 + dy))
-            self.set_position(new_x, new_y)
-            self._press = new_x, new_y, widget_x, widget_y
-
-        event.request_motions()
 
     def set_position(self, new_x, new_y):
         self.pos_x = new_x
