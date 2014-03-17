@@ -25,6 +25,7 @@ class NetworkView(CanvasItem):
 
         self.canvas.connect("button_press_event", self.on_button_press)
         self.canvas.connect("motion_notify_event", self.on_mouse_motion)
+        self.canvas.connect("size_allocate", self.on_size_allocate)
 
         # Build graph
         self._node_radius = 10
@@ -149,9 +150,12 @@ class NetworkView(CanvasItem):
         self._node_collection = nx.draw_networkx_nodes(self.G, self._node_positions, ax=self.axes, node_color=self._node_colors, node_size=node_diam_sqr)
         self._edge_collection = nx.draw_networkx_edges(self.G, self._node_positions, ax=self.axes, arrows=False)
         self._arrow_collection = self._draw_arrows(self.G, self._node_positions, ax=self.axes)
-        self._label_collection = nx.draw_networkx_labels(self.G, self._node_positions, ax=self.axes)
+        self._label_collection = nx.draw_networkx_labels(self.G, self._node_positions, ax=self.axes, horizontalalignment='left')
 
         self.axes.set_axis_off()
+
+        # Update the label positions (shifted right, off of the nodes)
+        self._update_label_pos(self._node_positions)
 
         # Save the limits of the first draw, and restore them after each
         # additional repaint, to avoid autoresizing
@@ -204,6 +208,15 @@ class NetworkView(CanvasItem):
 
             arrow_pos.append(((xa,ya),(x2,y2)))
         return arrow_pos
+
+    def _update_label_pos(self, node_pos):
+        trans = self.axes.transData.transform
+        invtrans = self.axes.transData.inverted().transform
+
+        for node, pos in node_pos.items():
+            x, y = trans(pos)
+            x += self._node_radius * 1.5
+            self._label_collection[node].set_position(invtrans((x, y)))
 
     def repaint(self):
         self.canvas.queue_draw()
@@ -258,15 +271,19 @@ class NetworkView(CanvasItem):
         # Update node position
         new_pos = invtrans((x, y))
         self._node_positions[node_name] = new_pos
-        self._node_collection.set_offsets(self._node_positions.values())
 
         # Update positions of attached edges + arrows
         pos = self._node_positions
         segs = [(pos[n1], pos[n2]) for n1, n2 in self.G.edges()]
         arrows = self._calc_arrow_pos(segs)
+
+        # Updating matplotlib's collections will automatically update the view
+        self._node_collection.set_offsets(pos.values())
         self._edge_collection.set_segments(segs)
         self._arrow_collection.set_segments(arrows)
-        self._label_collection[node_name].set_position(new_pos)
+
+        # Update label pos
+        self._update_label_pos({node_name: new_pos})
 
         self.repaint()
         if rebuild_kd_tree:
@@ -277,7 +294,6 @@ class NetworkView(CanvasItem):
             node_name = self.node_at(event.x, event.y)
             if node_name:
                 self.node_grabbed = node_name
-                print "Grabbing:", self.node_grabbed, "at (%.0f, %.0f) " % (event.x, event.y)
                 return True
 
         return False
@@ -288,7 +304,6 @@ class NetworkView(CanvasItem):
         """
         if event.button == 1:
             if self.node_grabbed:
-                print "Released:", self.node_grabbed, "at (%.0f, %.0f) " % (event.x, event.y)
                 self.rebuild_kd_tree()
                 self.node_grabbed = None
                 return True
@@ -327,6 +342,9 @@ class NetworkView(CanvasItem):
             event.request_motions()
             return True
         return False
+
+    def on_size_allocate(self, widget, allocation):
+        self._update_label_pos(self._node_positions)
 
     def store_layout(self):
         """Returns a dictionary representing the
