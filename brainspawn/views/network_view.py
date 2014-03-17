@@ -50,6 +50,7 @@ class NetworkView(CanvasItem):
         self._selected_relative_positions = {}
         self._selected_grabbed = False
         self._selected_moved = False
+        self._single_node_moved = False
 
     def node_at(self, x, y):
         if not self.model or not self._kdtree:
@@ -359,7 +360,7 @@ class NetworkView(CanvasItem):
                         self._selected_moved = False
                     else:
                         self.clear_selected_nodes()
-                        self.add_selected_node(node_name)
+                        self._single_node_moved = False
                 # Finally, set sel_rel_pos
                 self._selected_relative_positions = self.get_relative_positions(self._selected_nodes)
                 return True
@@ -397,6 +398,8 @@ class NetworkView(CanvasItem):
                 self.rebuild_kd_tree()
                 if self._selected_grabbed and not self._selected_moved:
                     self.clear_selected_nodes()
+                    self.add_selected_node(self.node_grabbed)
+                if not self._selected_nodes and not self._single_node_moved:
                     self.add_selected_node(self.node_grabbed)
                 self.node_grabbed = None
                 return True
@@ -440,6 +443,7 @@ class NetworkView(CanvasItem):
                         event.x, event.y, rebuild_kd_tree=False)
                 self._selected_moved = True
             else:
+                self._single_node_moved = True
                 self.move_node(self.node_grabbed, event.x, event.y, rebuild_kd_tree=False)
             event.request_motions()
             return True
@@ -531,7 +535,7 @@ class NetworkView(CanvasItem):
                                               data_type = "text",
                                               value = "Network",
                                               function = self.axes.set_title)
-        
+
         return self.config
 
 #---------- Helper functions --------
