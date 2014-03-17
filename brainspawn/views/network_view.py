@@ -45,6 +45,11 @@ class NetworkView(CanvasItem):
         # Used for highlighting mouseover node
         self._last_highlighted = None
 
+        self._selected_nodes = []
+        self._selected_relative_positions = {}
+        self._selected_grabbed = False
+        self._selected_moved = False
+
     def node_at(self, x, y):
         if not self.model or not self._kdtree:
             return None
@@ -268,6 +273,36 @@ class NetworkView(CanvasItem):
         else:
             return (1,1,1, 1) # white
 
+    def screen_to_networkx_coords(self, coords):
+        trans = self.axes.transData.transform
+        invtrans = self.axes.transData.inverted().transform
+        return invtrans(coords)
+
+    def networkx_to_screen_coords(self, coords):
+        trans = self.axes.transData.transform
+        return trans(coords)
+
+    def get_relative_positions(self, node_set):
+        return {node: self._node_positions[node] for node in node_set}
+
+    def nx_pos_to_screen(self, pos):
+        w, h = self.canvas.get_width_height()
+        nx_x, nx_y = pos
+        # Invert the y coordinates so origin is bottom left (matches networkx coords)
+        nx_y = h - nx_y
+        return self.networkx_to_screen_coords((nx_x, nx_y))
+
+    def move_node_set(self, relative_positions, grabbed_node_pos, x, y, **kwargs):
+        """Moves a set of nodes
+        """
+
+        grabbed_x, grabbed_y = self.nx_pos_to_screen(grabbed_node_pos)
+        for node, pos in relative_positions.items():
+            rel_x, rel_y = self.nx_pos_to_screen(pos)
+            offset_x = rel_x - grabbed_x
+            offset_y = rel_y - grabbed_y
+            self.move_node(node, x + offset_x, y + offset_y, **kwargs)
+
     def move_node(self, node_name, x, y, rebuild_kd_tree=True):
         """ All coordinates, unless otherwise mentioned, are in screen coordinates
         """
@@ -275,11 +310,8 @@ class NetworkView(CanvasItem):
         # Invert the y coordinate so origin is bottom left (matches networkx coords)
         y = h - y
 
-        trans = self.axes.transData.transform
-        invtrans = self.axes.transData.inverted().transform
-
-        xmin, ymin = trans((self._xlim[0], self._ylim[0]))
-        xmax, ymax = trans((self._xlim[1], self._ylim[1]))
+        xmin, ymin = self.networkx_to_screen_coords((self._xlim[0], self._ylim[0]))
+        xmax, ymax = self.networkx_to_screen_coords((self._xlim[1], self._ylim[1]))
 
         correction_factor = 4
         xmin += self._node_radius + correction_factor
@@ -290,7 +322,7 @@ class NetworkView(CanvasItem):
         y = max(ymin, min(ymax, y))
 
         # Update node position
-        new_pos = invtrans((x, y))
+        new_pos = self.screen_to_networkx_coords((x, y))
         self._node_positions[node_name] = new_pos
 
         # Update positions of attached edges + arrows
@@ -315,9 +347,48 @@ class NetworkView(CanvasItem):
             node_name = self.node_at(event.x, event.y)
             if node_name:
                 self.node_grabbed = node_name
+                if event.state & gtk.gdk.SHIFT_MASK:
+                    if node_name in self._selected_nodes:
+                        self.remove_selected_node(node_name)
+                    else:
+                        self.add_selected_node(node_name)
+                else:
+                    if node_name in self._selected_nodes:
+                        self._selected_grabbed = True
+                        self._selected_moved = False
+                    else:
+                        self.clear_selected_nodes()
+                        self.add_selected_node(node_name)
+                # Finally, set sel_rel_pos
+                self._selected_relative_positions = self.get_relative_positions(self._selected_nodes)
+                return True
+
+            self.clear_selected_nodes()
+            return True
+        elif event.button == 2:
+            node_name = self.node_at(event.x, event.y)
+            if node_name not in self._selected_nodes:
+                self.clear_selected_nodes()
                 return True
 
         return False
+
+    def add_selected_node(self, node):
+        print 'adding', node
+        self._selected_nodes.append(node)
+        self._highlight_node(node)
+
+    def remove_selected_node(self, node):
+        print 'removing', node
+        self._selected_nodes.remove(node)
+        self._unhighlight_node(node)
+
+    def clear_selected_nodes(self):
+        print 'clearing', self._selected_nodes
+        for node in self._selected_nodes:
+            self._unhighlight_node(node)
+        self._selected_nodes = []
+        self._selected_relative_positions = {}
 
     def on_button_release(self, widget, event, canvas):
         """ Overrides parent's method so it can decide which context menu items
@@ -326,12 +397,18 @@ class NetworkView(CanvasItem):
         if event.button == 1:
             if self.node_grabbed:
                 self.rebuild_kd_tree()
+                if self._selected_grabbed and not self._selected_moved:
+                    self.clear_selected_nodes()
+                    self.add_selected_node(self.node_grabbed)
                 self.node_grabbed = None
                 return True
         if event.button == 3:
             node_name = self.node_at(event.x, event.y)
 
             self._context_menu.remove(self.plots_menu_item)
+
+            if self._selected_nodes:
+                return True
 
             if node_name:
                 obj = self.get_obj_from_name(node_name)
@@ -359,7 +436,13 @@ class NetworkView(CanvasItem):
 
     def on_mouse_motion(self, widget, event):
         if self.node_grabbed:
-            self.move_node(self.node_grabbed, event.x, event.y, rebuild_kd_tree=False)
+            if self.node_grabbed in self._selected_nodes:
+                grabbed_pos = self._selected_relative_positions[self.node_grabbed]
+                self.move_node_set(self._selected_relative_positions, grabbed_pos,
+                        event.x, event.y, rebuild_kd_tree=False)
+                self._selected_moved = True
+            else:
+                self.move_node(self.node_grabbed, event.x, event.y, rebuild_kd_tree=False)
             event.request_motions()
             return True
 
@@ -374,23 +457,40 @@ class NetworkView(CanvasItem):
 
         colors = self._node_collection.get_facecolors()
 
-        if curr:
+        if curr and curr not in self._selected_nodes:
             idx = self.G.nodes().index(curr)
             r, g, b, a = colors[idx]
             c = 1.4
             colors[idx] = min(1, r*c), min(1, g*c), min(1, b*c), a
 
-        if prev:
+        if prev and prev not in self._selected_nodes:
             idx = self.G.nodes().index(prev)
             colors[idx] = self.node_color(self.get_obj_from_name(prev))
 
-        if curr or prev:
+        if (curr and curr not in self._selected_nodes or
+                prev and prev not in self._selected_nodes):
             self._node_collection.set_facecolors(colors)
             self.repaint()
             self._last_highlighted = curr
             return True
 
         return False
+
+    def _highlight_node(self, node):
+        idx = self.G.nodes().index(node)
+        colors = self._node_collection.get_facecolors()
+        r, g, b, a = colors[idx]
+        c = 1.4
+        colors[idx] = min(1, r*c), min(1, g*c), min(1, b*c), a
+        self._node_collection.set_facecolors(colors)
+        self.repaint()
+
+    def _unhighlight_node(self, node):
+        idx = self.G.nodes().index(node)
+        colors = self._node_collection.get_facecolors()
+        colors[idx] = self.node_color(self.get_obj_from_name(node))
+        self._node_collection.set_facecolors(colors)
+        self.repaint()
 
     def on_size_allocate(self, widget, allocation):
         self._update_label_pos(self._node_positions)
