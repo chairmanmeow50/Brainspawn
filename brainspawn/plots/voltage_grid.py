@@ -83,4 +83,7 @@ class Voltage_Grid_Plot(Firing_Rate_Plot):
 
     def __init__(self, main_controller, obj, cap):
         super(Voltage_Grid_Plot, self).__init__(main_controller, obj, cap)
+        self.axes = self.figure.add_subplot(111) # take first from list
+        self.axes.patch.set_alpha(0.0)
+        self.axes.set_title(self.title)
 

@@ -101,7 +101,7 @@ class MainFrame:
             self.timer.start(1)
 
     def update_canvas(self):
-        map(lambda canvas:canvas.queue_draw(), self.all_canvas)
+        self.canvas_layout.queue_draw()
 
     #Controller code for controller_panel
     def format_slider_value(self, scale, value):

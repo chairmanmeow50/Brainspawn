@@ -55,8 +55,8 @@ class TutorialPlot(Plot):
 
         Args:
             start_step (int): The initial step of the given data.
-            step_size (int): The time, in simulated seconds, one step represents.
-            data (int): The data from the simulator to plot.
+            step_size (float): The time, in simulated seconds, one step represents.
+            data (numpy.ndarray): The data from the simulator to plot.
         """
         # We don't need to do anything here yet,
         pass

@@ -1,9 +1,10 @@
 """ Abstract base class for plots.
 """
 
+import gtk
 from abc import ABCMeta, abstractmethod
-from views.plot_view import PlotView
 from collections import OrderedDict
+from views.canvas_item import CanvasItem
 
 REGISTERED_PLOTS = {}
 
@@ -13,7 +14,7 @@ def registered_plot(cls):
     REGISTERED_PLOTS[cls.__name__] = cls
     return cls
 
-class Plot(object):
+class Plot(CanvasItem):
     """Plot base class.
     In order to add plots to Brainspawn, you will want to
     inherit from this class.
@@ -24,9 +25,10 @@ class Plot(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, main_controller, nengo_obj, capability):
+        super(Plot, self).__init__(main_controller)
         """ Plot constructor.
         Initializes default config values for all plots,
-        Sets up the plot view and axes.
+        Sets up the plot view.
 
         Args:
             main_controller (VisualizerController): The top-level controller
@@ -35,15 +37,21 @@ class Plot(object):
             capability (Capability): The capability of the object that this graph
             is visualizing.
         """
-        self.main_controller = main_controller
         self.nengo_obj = nengo_obj
         self.capability = capability
         self.config = {}
         self.init_default_config(nengo_obj, capability)
 
-        self.view = PlotView(self)
-        self.axes = self.view.figure.add_subplot(111) # take first from list
-        self.axes.set_title(self.title)
+        self._add_to_context_menu()
+
+    def _add_to_context_menu(self):
+        """Context menu setup
+        """
+        remove_item = gtk.MenuItem("Remove")
+        remove_item.connect("activate", self.remove_plot, self.canvas)
+        self._context_menu.append(remove_item)
+
+        self._context_menu.show_all()
 
     def init_default_config(self, nengo_obj, capability):
         """Sets default config values for all plots
@@ -108,8 +116,8 @@ class Plot(object):
 
         Args:
             start_step (int): The initial step of the given data.
-            step_size (int): The time, in simulated seconds, one step represents.
-            data (int): The data from the simulator to plot.
+            step_size (float): The time, in simulated seconds, one step represents.
+            data (numpy.ndarray): The data from the simulator to plot.
         """
         pass
     
@@ -121,13 +129,4 @@ class Plot(object):
 
     def remove_plot(self, widget, canvas):
         self.main_controller.remove_plot_for_obj(self, self.nengo_obj, self.capability)
-
-    def on_export_pdf(self, widget, canvas):
-        self.main_controller.on_export_pdf(None, canvas, self.title)
-
-    def button_press(self, widget, event, canvas):
-        if event.button == 3:
-            self.view.context_menu.popup(None, None, None, None, event.button, event.time)
-            return True
-        return False
 

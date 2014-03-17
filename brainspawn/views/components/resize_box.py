@@ -1,8 +1,6 @@
 import gtk
 from gi.repository import Gtk
 import settings
-import math
-import cairo
 
 class ResizeBox(Gtk.EventBox):
 
@@ -24,6 +22,7 @@ class ResizeBox(Gtk.EventBox):
         self.set_size_request(self.get_width(), self.get_width())
         self._canvas.set_visible(True)
 
+        self.add_events(gtk.gdk.POINTER_MOTION_HINT_MASK)
         self.connect("enter_notify_event", self.enter_notify_handler)
         self.connect("leave_notify_event", self.leave_notify_handler)
         self.connect("button_press_event", self.button_press_handler)
@@ -60,10 +59,6 @@ class ResizeBox(Gtk.EventBox):
             self.queue_draw()
 
     def do_draw(self, ctx):
-        ctx.set_source_rgba(1, 1, 1, 1)
-        ctx.rectangle(0, 0, self._width, self._height)
-        ctx.fill()
-
         if (self._highlight):
             # selection box
             ctx.new_path()
@@ -133,14 +128,15 @@ class ResizeBox(Gtk.EventBox):
             self._is_resize = False
 
     def motion_notify_handler(self, widget, event):
-        if self._press is None: return
+        if self._press is None:
+            return
 
         x0, y0, xpress, ypress = self._press
         canvas_layout_x, canvas_layout_y = self._canvas_layout.get_pointer()
-
         widget_x = canvas_layout_x - self._pos_x
         widget_y = canvas_layout_y - self._pos_y
-        if (self.is_resize()):
+
+        if self.is_resize():
             unused_x, unused_y, clicked_x, clicked_y = self._press
             o_width, o_height = self._original_size
             extra_offset_x = o_width - (clicked_x - self._pos_x)
@@ -151,7 +147,6 @@ class ResizeBox(Gtk.EventBox):
             self._height = max(self._height, settings.RESIZE_MIN_HEIGHT)
             self.set_size_request(self._width, self._height)
             self._canvas.figure.tight_layout()
-
         else:
             widget_x, widget_y = self._canvas_layout.get_pointer()
             self._press = x0, y0, widget_x, widget_y
@@ -164,3 +159,4 @@ class ResizeBox(Gtk.EventBox):
             self._canvas_layout.move(self, self._pos_x, self._pos_y)
             self._press = new_x, new_y, widget_x, widget_y
 
+        event.request_motions()

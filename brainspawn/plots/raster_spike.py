@@ -37,6 +37,9 @@ class Raster_Spike_Plot(Plot):
     def __init__(self, main_controller, obj, cap):
         super(Raster_Spike_Plot, self).__init__(main_controller, obj, cap)
 
+        self.axes = self.figure.add_subplot(111) # take first from list
+        self.axes.patch.set_alpha(0.0)
+        self.axes.set_title(self.title)
         self.axes.set_xlim([0, 1])
         self.axes.set_ylim([0, 1])
 

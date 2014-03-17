@@ -13,10 +13,10 @@ from controllers.visualizer_controller import VisualizerController
 
 def main():
     sim_manager = SimManager()
-    if (len(sys.argv) > 1):
-        arg1 = sys.argv[1]
-        if (arg1.endswith(".py")):
-            controller = VisualizerController(sim_manager, arg1)
+    if len(sys.argv) > 1:
+        model_file = sys.argv[1]
+        if model_file.endswith(".py"):
+            controller = VisualizerController(sim_manager, model_file)
     else:
         controller = VisualizerController(sim_manager)
 
