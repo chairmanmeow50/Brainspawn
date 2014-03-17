@@ -253,7 +253,7 @@ class NetworkView(CanvasItem):
         return False
 
     def _call_through(self, widget, event, vz, obj, cap):
-        self.main_controller.add_plot_for_obj(widget, vz, obj, cap)
+        self.main_controller.add_plot_for_obj(vz, obj, cap)
 
     def on_mouse_motion(self, widget, event):
         if self.node_grabbed:

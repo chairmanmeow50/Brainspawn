@@ -47,9 +47,10 @@ class VisualizerController(object):
                     supported_plots.append((vz, obj, cap))
         return supported_plots
 
-    def add_plot_for_obj(self, menu_item, plt, obj, cap):
+    def add_plot_for_obj(self, plt, obj, cap, config=None):
         """ Callback for menu item
         """
+        # TODO - pass config to plot
         plot = plt(self, obj, cap)
         self.plots.append(plot)
         self.sim_manager.connect_to_obj(obj, cap, plot.update)
@@ -82,6 +83,10 @@ class VisualizerController(object):
         self.load_model_from_filename(filename)
 
     def restore_layout_dict(self, dct):
+        """Restores layout from dict
+        Throws:
+            ValueError - dct could not be loaded
+        """
         layout_dict = dct['layout']
 
         # Restore model file
@@ -89,26 +94,53 @@ class VisualizerController(object):
 
         # Restore plots
         for plot_dict in layout_dict['plots']:
-            pass # - TODO
+            target_obj = self.get_nengo_for_uid(plot_dict['target_obj'])
+            target_cap_name = plot_dict['target_cap']
+            target_cap = None
+            for cap in self.sim_manager.get_caps_for_obj(target_obj):
+                if cap.name == target_cap_name:
+                    target_cap = cap
+            if not target_cap:
+                raise ValueError("No capability for nengo object: " + target_obj + " with name: " + target_cap_name)
+            plot_type = plot_dict['plot_type']
+            for plot_cls in self.registered:
+                if plot_type == plot_cls.__name__:
+                    self.add_plot_for_obj(plot_cls, target_obj, target_cap, plot_dict['config'])
+                    break
+            else:
+                # loop exited without break
+                raise ValueError("No plot:" + plot_type + "for nengo object: " + target_obj + " with name: " + target_cap_name)
 
         # Restore network
         self.network_view.restore_layout(layout_dict['network_layout'])
 
     def get_layout_dict(self):
         layout_dict = {}
-
         # Save model file
         layout_dict['model'] = self._loaded_model_file
-
         # Save plots
         layout_dict['plots'] = []
         for plot in self.plots:
-            layout_dict['plots'].append(plot.store_layout())
-
+            plot_dict = {}
+            plot_dict['plot_type'] = plot.__class__.__name__
+            plot_dict['target_obj'] = self.get_uid_for_nengo(plot.nengo_obj)
+            plot_dict['target_cap'] = plot.capability.name
+            plot_dict['config'] = plot.store_layout()
+            layout_dict['plots'].append(plot_dict)
         # Save network
         layout_dict['network_layout'] = self.network_view.store_layout()
-
         return {'layout': layout_dict}
+
+    def get_uid_for_nengo(self, nengo_obj):
+        """Gets a consistent uid for the given nengo object
+        """
+        # Let's just use the network view's method right now, since that seems to be working great
+        return self.network_view.get_name_from_obj(nengo_obj)
+
+    def get_nengo_for_uid(self, uid):
+        """Gets a nengo object for a given uid
+        """
+        return self.network_view.get_obj_from_name(uid)
 
     def load_model_from_filename(self, filename):
         mod_name, file_ext = os.path.splitext(os.path.basename(filename))

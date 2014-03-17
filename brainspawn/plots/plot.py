@@ -130,7 +130,6 @@ class Plot(CanvasItem):
     def store_layout(self):
         """ Returns a dict storing the layout of the plot
         """
-        pass
 
     def remove_plot(self, widget, canvas):
         self.main_controller.remove_plot_for_obj(self, self.nengo_obj, self.capability)
