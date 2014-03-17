@@ -18,7 +18,6 @@ class NetworkView(CanvasItem):
     """
     def __init__(self, controller, model=None, **kwargs):
         super(NetworkView, self).__init__(controller)
-        self._model = model
         self.axes = self.figure.add_subplot(111)
 
         self.plots_menu_item = gtk.MenuItem("Plots")
@@ -51,6 +50,10 @@ class NetworkView(CanvasItem):
         self._selected_grabbed = False
         self._selected_moved = False
         self._single_node_moved = False
+
+    @property
+    def title(self):
+        return 'Network View - ' + self.model.label
 
     def node_at(self, x, y):
         if not self.model or not self._kdtree:
@@ -422,7 +425,7 @@ class NetworkView(CanvasItem):
                     # submenu item not getting activate signal unless the submenu is
                     # also clicked. b-p-e works but has the extra event arg, discarded
                     # by the call-through
-                    item.connect("button-press-event", self._call_through, vz, obj, cap)
+                    item.connect("button-release-event", self._call_through, vz, obj, cap)
                     submenu.append(item)
 
                 self.plots_menu_item.set_submenu(submenu)
