@@ -94,7 +94,13 @@ class CustomizeWindow:
         self.window.show_all()
         
         self.window.connect("destroy", self.destroy_handler)
+        self.window.connect("show", self.show_handler)
         self.not_destroyed = True
+        
+    def show_handler(self, widget):
+        for option_name in self.options:
+            if (self.options[option_name].configurable):
+                self.revert_data[option_name] = self.options[option_name].value
         
     def destroy_handler(self, widget):
         self.not_destroyed = False
