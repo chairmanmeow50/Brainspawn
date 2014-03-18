@@ -180,11 +180,12 @@ class VisualizerController(object):
                 with open(layout_file, 'rb') as f:
                     self.restore_layout_dict(json.load(f))
             except Exception as e:
-                print e
                 # If the layout file isn't there, don't bug user...
                 if type(e) is not IOError:
+                    print e
                     self.show_err_dialog("Error loading layout for model", "Could not load layout from " + str(layout_file))
                     self.load_model_from_filename(filename, load_layout=False)
+                    self.network_view.init_default_config()
 
     def show_err_dialog(self, message, secondary):
         dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.INFO,
