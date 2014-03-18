@@ -38,7 +38,7 @@ class ResizeBox(Gtk.EventBox):
         if (event.button == 1):
             if not isinstance(self._plot, NetworkView):
                 getattr(self.get_window(), 'raise')()
-            if (self.is_within_resize_bounds(int(event.x), int(event.x))):
+            if (self.is_within_resize_bounds(int(event.x), int(event.y))):
                 self._is_resize = True
                 self._resize_begin_x, self._resize_begin_y = self._canvas_layout.get_pointer()
             else:
@@ -66,8 +66,8 @@ class ResizeBox(Gtk.EventBox):
         elif self._drag:
             offset_x = event.x - self._drag_begin_x
             offset_y = event.y - self._drag_begin_y
-            new_x = self.pos_x + int(offset_x)
-            new_y = self.pos_y + int(offset_y)
+            new_x = int(round(self.pos_x + offset_x))
+            new_y = int(round(self.pos_y + offset_y))
             self.set_position(new_x, new_y)
 
     def size_allocate(self, widget, allocation):
