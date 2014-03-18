@@ -541,7 +541,9 @@ class NetworkView(CanvasItem):
         self.apply_config()
 
         # Update node position
-        self._node_positions = layout["node_positions"]
+        self._node_positions = OrderedDict()
+        for node in self.G.nodes():
+            self._node_positions[node] = layout["node_positions"][node]
 
         # Update positions of attached edges + arrows
         pos = self._node_positions
