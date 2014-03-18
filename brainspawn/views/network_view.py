@@ -18,6 +18,7 @@ class NetworkView(CanvasItem):
     """
     def __init__(self, controller, model=None, **kwargs):
         super(NetworkView, self).__init__(controller)
+        self.init_default_config(None, None)
         self.axes = self.figure.add_subplot(111)
 
         self.plots_menu_item = gtk.MenuItem("Plots")
@@ -181,7 +182,9 @@ class NetworkView(CanvasItem):
         self._node_collection = nx.draw_networkx_nodes(self.G, self._node_positions, ax=self.axes, node_color=self._node_colors, node_size=node_diam_sqr)
         self._edge_collection = nx.draw_networkx_edges(self.G, self._node_positions, ax=self.axes, arrows=False)
         self._arrow_collection = self._draw_arrows(self.G, self._node_positions, ax=self.axes)
-        self._label_collection = nx.draw_networkx_labels(self.G, self._node_positions, ax=self.axes, horizontalalignment='left')
+        if self.config["show_labels"].value:
+            print "Drawing labels"
+            self._label_collection = nx.draw_networkx_labels(self.G, self._node_positions, ax=self.axes, horizontalalignment='left')
 
         self.axes.set_axis_off()
 
@@ -545,14 +548,23 @@ class NetworkView(CanvasItem):
         self.rebuild_kd_tree()
         self.repaint()
 
-    def get_options_dict(self):
-        self.config['title'] = Configuration(
-                                              configurable = True,
-                                              display_name = "Title",
-                                              data_type = "text",
-                                              value = "Network",
-                                              function = self.axes.set_title)
+    def show_labels(self, visible):
+        for mpl_text in self._label_collection.values():
+            mpl_text.set_visible(visible)
 
+    def init_default_config(self, nengo_obj, capability):
+        """ Sets default config values for the network view
+        """
+        super(NetworkView, self).init_default_config(nengo_obj, capability)
+
+        self.config['show_labels'] = Configuration(
+            configurable = True,
+            display_name = "Show labels",
+            data_type = "boolean",
+            value = True,
+            function = self.show_labels)
+
+    def get_options_dict(self):
         return self.config
 
 #---------- Helper functions --------
