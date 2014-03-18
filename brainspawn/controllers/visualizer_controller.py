@@ -8,6 +8,7 @@ import imp
 import gtk
 import cairo
 import json
+import traceback
 from gi.repository import Gtk
 
 from views.visualizer import MainFrame
@@ -182,7 +183,7 @@ class VisualizerController(object):
             except Exception as e:
                 # If the layout file isn't there, don't bug user...
                 if type(e) is not IOError:
-                    print e
+                    traceback.print_exc(e)
                     self.show_err_dialog("Error loading layout for model", "Could not load layout from " + str(layout_file))
                     self.load_model_from_filename(filename, load_layout=False)
                     self.network_view.init_default_config()
