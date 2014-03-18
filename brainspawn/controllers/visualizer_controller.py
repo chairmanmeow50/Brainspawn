@@ -34,7 +34,7 @@ class VisualizerController(object):
         self.main_frame = MainFrame(self.sim_manager, self)
 
         if (model_file_name):
-            self.load_model_from_filename(model_file_name)
+            self.load_model_from_filename(model_file_name, load_layout=True)
 
     def plots_for_object(self, obj):
         """ Returns a list of plots available for this object
@@ -61,6 +61,12 @@ class VisualizerController(object):
         self.plots.remove(plot)
         self.main_frame.remove_plot(plot)
 
+    def on_quit(self):
+        if self._loaded_model_file:
+            filename = os.path.splitext(self._loaded_model_file)[0] + '.bpwn'
+            with open(filename, 'wb') as f:
+                json.dump(self.get_layout_dict(), f)
+
     def on_save_layout(self, widget):
         name = self.main_frame.window.get_title()
         filename = self.file_save(name + ".bpwn")
@@ -74,15 +80,15 @@ class VisualizerController(object):
         if not filename:
             return
         with open(filename, 'rb') as f:
-            self.restore_layout_dict(json.load(f))
+            self.restore_layout_dict(json.load(f), load_model=True)
 
     def on_open_model(self, widget):
         filename = self.file_open(ext="py", ext_name="Python files")
         if not filename:
             return
-        self.load_model_from_filename(filename)
+        self.load_model_from_filename(filename, load_layout=True)
 
-    def restore_layout_dict(self, dct):
+    def restore_layout_dict(self, dct, load_model=False):
         """Restores layout from dict
         Throws:
             ValueError - dct could not be loaded
@@ -90,7 +96,8 @@ class VisualizerController(object):
         layout_dict = dct['layout']
 
         # Restore model file
-        self.load_model_from_filename(layout_dict['model'])
+        if load_model:
+            self.load_model_from_filename(layout_dict['model'], load_layout=False)
 
         # Restore plots
         for plot_dict in layout_dict['plots']:
@@ -151,7 +158,7 @@ class VisualizerController(object):
         """
         return self.network_view.get_obj_from_name(uid)
 
-    def load_model_from_filename(self, filename):
+    def load_model_from_filename(self, filename, load_layout=False):
         mod_name, file_ext = os.path.splitext(os.path.basename(filename))
         try:
             module = imp.load_source(mod_name, filename)
@@ -170,6 +177,16 @@ class VisualizerController(object):
 
             dialog.run()
             dialog.destroy()
+
+        if load_layout:
+            try:
+                filename = os.path.splitext(self._loaded_model_file)[0] + '.bpwn'
+                if not filename:
+                    return
+                with open(filename, 'rb') as f:
+                    self.restore_layout_dict(json.load(f))
+            except IOError as e:
+                pass # no default layout file, don't bother
 
     def load_model(self, model):
         copy_plots = self.plots[:]

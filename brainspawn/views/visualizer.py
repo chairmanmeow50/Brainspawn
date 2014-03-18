@@ -44,7 +44,7 @@ class MainFrame:
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_default_size(800, 600)
         self.window.set_title("Nengo Visualizer")
-        self.window.connect("delete_event", lambda w,e: gtk.main_quit())
+        self.window.connect("delete_event", self.on_quit)
 
         self.input_panel = Input_Panel(self)
         self.controller_panel = Controller_Panel(self)
@@ -77,6 +77,10 @@ class MainFrame:
         self.window.show_all()
 
         self.controller_panel.toggle_play(False)
+
+    def on_quit(self, widget, event):
+        self.controller.on_quit()
+        gtk.main_quit()
 
     def hscale_change(self, range, scroll, value):
         if value < self.sim_manager.min_step or value > self.sim_manager.last_sim_step:
