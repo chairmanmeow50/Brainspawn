@@ -170,7 +170,7 @@ class VisualizerController(object):
                 self.main_frame.controller_panel.enable_controls()
         except (AttributeError, ImportError, IOError, SyntaxError) as e:
             print e
-            dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.INFO,
+            dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.ERROR,
                 Gtk.ButtonsType.OK, "Error loading model")
             dialog.format_secondary_text(
                 "Could not load model from " + str(filename))
