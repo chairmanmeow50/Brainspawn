@@ -33,9 +33,14 @@ class Firing_Rate_Plot(Plot):
             for j in xrange(0, self.rows, 1):
                 if (data[-1][i*self.rows + j]):
                     self.rect_array_color[i][j] = 4
-                else:
-                    if (self.rect_array_color[i][j] >= 1):
-                        self.rect_array_color[i][j] -= 1
+                elif (len(data) >= 2 and data[-2][i*self.rows + j]):
+                    self.rect_array_color[i][j] = 3
+                elif (len(data) >= 3 and data[-3][i*self.rows + j]):
+                    self.rect_array_color[i][j] = 2
+                elif (len(data) >= 4 and data[-4][i*self.rows + j]):
+                    self.rect_array_color[i][j] = 1
+                elif (len(data) >= 5 and data[-5][i*self.rows + j]):
+                    self.rect_array_color[i][j] = 0
 
                 color = self.get_color(self.rect_array_color[i][j])
                 self.rect_array[i][j].set_facecolor(color)
