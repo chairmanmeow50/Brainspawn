@@ -14,6 +14,7 @@ class Menu_Bar(gtk.MenuBar):
         main_frame.window.add_accel_group(accel)
 
         open_menu_item = gtk.MenuItem("Open Model...")
+        open_menu_item.add_accelerator("activate", accel, ord('O'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
         open_menu_item.connect("activate", controller.on_open_model)
         open_menu_item.show()
         file_submenu.append(open_menu_item)
@@ -22,17 +23,6 @@ class Menu_Bar(gtk.MenuBar):
         export_pdf_menu_item.connect('activate', controller.on_export_pdf, main_frame.window)
         export_pdf_menu_item.show()
         file_submenu.append(export_pdf_menu_item)
-
-        save_menu_item = gtk.MenuItem("Save Layout...")
-        save_menu_item.add_accelerator("activate", accel, ord('S'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-        save_menu_item.connect("activate", controller.on_save_layout)
-        save_menu_item.show()
-        file_submenu.append(save_menu_item)
-
-        open_layout_menu_item = gtk.MenuItem("Restore Layout...")
-        open_layout_menu_item.connect("activate", controller.on_restore_layout)
-        open_layout_menu_item.show()
-        file_submenu.append(open_layout_menu_item)
 
         file_menu.show()
 

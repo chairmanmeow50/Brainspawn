@@ -170,23 +170,29 @@ class VisualizerController(object):
                 self.main_frame.controller_panel.enable_controls()
         except (AttributeError, ImportError, IOError, SyntaxError) as e:
             print e
-            dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.ERROR,
-                Gtk.ButtonsType.OK, "Error loading model")
-            dialog.format_secondary_text(
-                "Could not load model from " + str(filename))
-
-            dialog.run()
-            dialog.destroy()
+            self.show_err_dialog("Error loading model", "Could not load model from " + str(filename))
 
         if load_layout:
             try:
-                filename = os.path.splitext(self._loaded_model_file)[0] + '.bpwn'
-                if not filename:
+                layout_file = os.path.splitext(self._loaded_model_file)[0] + '.bpwn'
+                if not layout_file:
                     return
-                with open(filename, 'rb') as f:
+                with open(layout_file, 'rb') as f:
                     self.restore_layout_dict(json.load(f))
-            except IOError as e:
-                pass # no default layout file, don't bother
+            except Exception as e:
+                print e
+                # If the layout file isn't there, don't bug user...
+                if type(e) is not IOError:
+                    self.show_err_dialog("Error loading layout for model", "Could not load layout from " + str(layout_file))
+                    self.load_model_from_filename(filename, load_layout=False)
+
+    def show_err_dialog(self, message, secondary):
+        dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.INFO,
+            Gtk.ButtonsType.OK, message)
+        dialog.format_secondary_text(secondary)
+        dialog.run()
+        dialog.destroy()
+
 
     def load_model(self, model):
         copy_plots = self.plots[:]
