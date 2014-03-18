@@ -84,8 +84,8 @@ class BasePlot(CanvasItem):
         try:
             config_values_dict = self.get_config_values()
             title = self.config['title'].value.format(**config_values_dict)
-        except KeyError as e:
-            title = self.plot_name()
+        except (KeyError, ValueError) as e:
+            title = self.config['title'].value
         return title
 
     @property

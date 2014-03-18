@@ -48,9 +48,9 @@ class CustomizeWindow:
                     elif (data_type == 'slider'):
                         slider_adjustment = Gtk.Adjustment()
                         control = Gtk.HScale(adjustment = slider_adjustment)
-                        (min, max) = self.options[option_name].bounds
-                        slider_adjustment.set_lower(min)
-                        slider_adjustment.set_upper(max)
+                        bound_min, bound_max = self.options[option_name].bounds
+                        slider_adjustment.set_lower(bound_min)
+                        slider_adjustment.set_upper(bound_max)
                         slider_adjustment.set_value(self.options[option_name].value)
                         self.controls[option_name] = control
                         slider_adjustment.connect("value_changed", self.apply_all)

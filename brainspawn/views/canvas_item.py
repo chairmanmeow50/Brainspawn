@@ -19,6 +19,7 @@ class CanvasItem(object):
         self.figure = Figure()
         self.figure.patch.set_alpha(0.0)
         self.canvas = FigureCanvas(self.figure)
+        
         self.customize_window = None
         self.config = OrderedDict()
 
@@ -63,8 +64,8 @@ class CanvasItem(object):
                     else:
                         new_val = self.config[option_name].value
                         
-                    function(new_val)
                     self.config[option_name].value = new_val
+                    function(new_val)
         
         self.canvas.queue_draw()
 
