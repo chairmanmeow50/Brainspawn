@@ -112,6 +112,12 @@ class NetworkView(CanvasItem):
         self._ylim = None
         self.axes.clear()
 
+        self._selected_nodes = []
+        self._selected_relative_positions = {}
+        self._selected_grabbed = False
+        self._selected_moved = False
+        self._single_node_moved = False
+
         if model is None:
             return
 
@@ -488,7 +494,7 @@ class NetworkView(CanvasItem):
 
         edges = self._node_collection.get_linewidths()
         new_edges = [edges[idx%len(edges)] for idx, node in enumerate(self.G.nodes())]
-        new_edges[node_idx] += 1
+        new_edges[node_idx] = 2
         self._node_collection.set_linewidths(new_edges)
 
         edgecolors = self._node_collection.get_edgecolors()
@@ -503,7 +509,7 @@ class NetworkView(CanvasItem):
 
         edges = self._node_collection.get_linewidths()
         new_edges = [edges[idx%len(edges)] for idx, node in enumerate(self.G.nodes())]
-        new_edges[node_idx] -= 1
+        new_edges[node_idx] = 1
         self._node_collection.set_linewidths(new_edges)
 
         edgecolors = self._node_collection.get_edgecolors()
