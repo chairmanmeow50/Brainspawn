@@ -113,6 +113,7 @@ class MainFrame:
             self.timer.stop()
             self.playing = False
             self.controller_panel.toggle_play(self.playing)
+            self.update_canvas()
         else:
             self.timer.start(1)
             self.playing = True
