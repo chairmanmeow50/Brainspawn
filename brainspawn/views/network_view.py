@@ -377,8 +377,8 @@ class NetworkView(CanvasItem):
                 self._selected_relative_positions = self.get_relative_positions(self._selected_nodes)
                 return True
 
-            self.clear_selected_nodes()
-            return False
+            if not event.state & gtk.gdk.SHIFT_MASK:
+                self.clear_selected_nodes()
         elif event.button == 3:
             node_name = self.node_at(event.x, event.y)
             if node_name not in self._selected_nodes:
