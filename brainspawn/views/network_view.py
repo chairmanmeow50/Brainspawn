@@ -190,8 +190,7 @@ class NetworkView(CanvasItem):
         self._node_collection = nx.draw_networkx_nodes(self.G, self._node_positions, ax=self.axes, node_color=self._node_colors, node_size=node_diam_sqr)
         self._edge_collection = nx.draw_networkx_edges(self.G, self._node_positions, ax=self.axes, arrows=False)
         self._arrow_collection = self._draw_arrows(self.G, self._node_positions, ax=self.axes)
-        if self.config["show_labels"].value:
-            self._label_collection = nx.draw_networkx_labels(self.G, self._node_positions, ax=self.axes, horizontalalignment='left')
+        self._label_collection = nx.draw_networkx_labels(self.G, self._node_positions, ax=self.axes, horizontalalignment='left')
 
         self.axes.set_axis_off()
 
