@@ -111,7 +111,10 @@ class VisualizerController(object):
                 raise ValueError("No plot:" + plot_type + "for nengo object: " + target_obj + " with name: " + target_cap_name)
 
         # Restore network
-        self.network_view.restore_layout(layout_dict['network_layout'])
+        net_dict = layout_dict['network']
+        self.main_frame.set_item_position(self.network_view, net_dict['position'])
+        self.main_frame.set_item_size(self.network_view, net_dict['size'])
+        self.network_view.restore_layout(net_dict['network_layout'])
 
     def get_layout_dict(self):
         layout_dict = {}
@@ -124,12 +127,16 @@ class VisualizerController(object):
             plot_dict['plot_type'] = plot.__class__.__name__
             plot_dict['target_obj'] = self.get_uid_for_nengo(plot.nengo_obj)
             plot_dict['target_cap'] = plot.capability.name
-            plot_dict['position'] = self.main_frame.get_canvas_position(plot.canvas)
-            plot_dict['size'] = self.main_frame.get_canvas_size(plot.canvas)
+            plot_dict['position'] = self.main_frame.get_item_position(plot)
+            plot_dict['size'] = self.main_frame.get_item_size(plot)
             plot_dict['config'] = plot.get_config_values()
             layout_dict['plots'].append(plot_dict)
         # Save network
-        layout_dict['network_layout'] = self.network_view.store_layout()
+        net_dict = {}
+        net_dict['position'] = self.main_frame.get_item_position(self.network_view)
+        net_dict['size'] = self.main_frame.get_item_size(self.network_view)
+        net_dict['network_layout'] = self.network_view.store_layout()
+        layout_dict['network'] = net_dict
         return {'layout': layout_dict}
 
     def get_uid_for_nengo(self, nengo_obj):
