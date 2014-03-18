@@ -526,14 +526,18 @@ class NetworkView(CanvasItem):
         """Returns a dictionary representing the
         current node positions
         """
-        node_pos = { name: (pos[0], pos[1]) for name, pos in self._node_positions.items()}
-        layout_dict = {"node_positions" : node_pos}
-        return layout_dict
+        layout = OrderedDict()
+        layout["node_positions"] = { name: (pos[0], pos[1]) for name, pos in self._node_positions.items()}
+        layout["show_labels"] = self.config["show_labels"].value
+        return layout
 
     def restore_layout(self, layout):
         """Restores node positions from layout
         dictionary
         """
+        self.config["show_labels"].value = layout["show_labels"]
+        self.apply_config()
+
         # Update node position
         self._node_positions = layout["node_positions"]
 
