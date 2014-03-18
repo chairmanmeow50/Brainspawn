@@ -112,6 +112,12 @@ class NetworkView(CanvasItem):
         self._ylim = None
         self.axes.clear()
 
+        self._selected_nodes = []
+        self._selected_relative_positions = {}
+        self._selected_grabbed = False
+        self._selected_moved = False
+        self._single_node_moved = False
+
         if model is None:
             return
 
@@ -183,7 +189,6 @@ class NetworkView(CanvasItem):
         self._edge_collection = nx.draw_networkx_edges(self.G, self._node_positions, ax=self.axes, arrows=False)
         self._arrow_collection = self._draw_arrows(self.G, self._node_positions, ax=self.axes)
         if self.config["show_labels"].value:
-            print "Drawing labels"
             self._label_collection = nx.draw_networkx_labels(self.G, self._node_positions, ax=self.axes, horizontalalignment='left')
 
         self.axes.set_axis_off()
@@ -489,7 +494,7 @@ class NetworkView(CanvasItem):
 
         edges = self._node_collection.get_linewidths()
         new_edges = [edges[idx%len(edges)] for idx, node in enumerate(self.G.nodes())]
-        new_edges[node_idx] += 1
+        new_edges[node_idx] = 2
         self._node_collection.set_linewidths(new_edges)
 
         edgecolors = self._node_collection.get_edgecolors()
@@ -504,7 +509,7 @@ class NetworkView(CanvasItem):
 
         edges = self._node_collection.get_linewidths()
         new_edges = [edges[idx%len(edges)] for idx, node in enumerate(self.G.nodes())]
-        new_edges[node_idx] -= 1
+        new_edges[node_idx] = 1
         self._node_collection.set_linewidths(new_edges)
 
         edgecolors = self._node_collection.get_edgecolors()

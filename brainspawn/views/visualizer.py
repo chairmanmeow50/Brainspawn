@@ -38,7 +38,6 @@ class MainFrame:
         self.resize = False
         self.resize_info = None
 
-        self.all_canvas = []
         self.resize_boxes = {}
 
         # create a new window
@@ -162,7 +161,6 @@ class MainFrame:
         position (tuple): x, y coords to position the plot
         """
         resize_box = ResizeBox(plot, self.canvas_layout)
-        self.all_canvas.append(resize_box.get_canvas())
         self.canvas_layout.put(resize_box, 0, 0)
         self.resize_boxes[plot] = resize_box
         # Set position
@@ -178,18 +176,26 @@ class MainFrame:
         # Set size
         if size:
             resize_box.set_size(*size)
-            
+
         plot.apply_config()
 
     def remove_plot(self, plot):
-        self.all_canvas.remove(plot.canvas)
-        self.canvas_layout.remove(plot.canvas.get_parent())
+        self.canvas_layout.remove(self.resize_boxes[plot])
+        del self.resize_boxes[plot]
 
-    def get_canvas_position(self, canvas):
-        return (self.resize_boxes[canvas].pos_x, self.resize_boxes[canvas].pos_y)
+    def get_item_position(self, item):
+        return (self.resize_boxes[item].pos_x, self.resize_boxes[item].pos_y)
 
-    def get_canvas_size(self, canvas):
-        return (self.resize_boxes[canvas].get_width(), self.resize_boxes[canvas].get_height())
+    def get_item_size(self, item):
+        return (self.resize_boxes[item].get_width(), self.resize_boxes[item].get_height())
+
+    def set_item_position(self, item, position):
+        x, y = position
+        self.resize_boxes[item].set_position(x, y)
+
+    def set_item_size(self, item, size):
+        w, h = size
+        self.resize_boxes[item].set_size(w, h)
 
     def toggle_panel(self, widget, panel):
         if (widget.get_active()):
