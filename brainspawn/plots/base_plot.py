@@ -24,7 +24,7 @@ class BasePlot(CanvasItem):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, main_controller, nengo_obj, capability, config=None):
+    def __init__(self, main_controller, nengo_obj, capability):
         super(BasePlot, self).__init__(main_controller)
         """ Plot constructor.
         Initializes default config values for all plots,
@@ -39,9 +39,6 @@ class BasePlot(CanvasItem):
         """
         self.nengo_obj = nengo_obj
         self.capability = capability
-        
-        self.init_default_config(nengo_obj, capability)
-        self.set_config_values(config)
 
     def _build_context_menu(self):
         """Context menu setup
@@ -54,7 +51,7 @@ class BasePlot(CanvasItem):
 
         self._context_menu.show_all()
 
-    def init_default_config(self, nengo_obj, capability):
+    def init_default_config(self):
         """Sets default config values for all plots
         The values contained in this dictionary are used to configure
         the plot.
@@ -63,12 +60,13 @@ class BasePlot(CanvasItem):
         we set 'TARGET' and 'DATA' to default values of the
         target object, and represented data, respectively.
         """
+        super(BasePlot, self).init_default_config()
 
-        if not nengo_obj or not capability:
+        if not self.nengo_obj or not self.capability:
             return
         
-        self.config['TARGET'] = Configuration(configurable = False, value = nengo_obj.label)
-        self.config['DATA'] = Configuration(configurable = False, value = capability.name.title())
+        self.config['TARGET'] = Configuration(configurable = False, value = self.nengo_obj.label)
+        self.config['DATA'] = Configuration(configurable = False, value = self.capability.name.title())
 
     @property
     def title(self):
@@ -126,7 +124,3 @@ class BasePlot(CanvasItem):
 
     def remove_plot(self, widget, canvas):
         self.main_controller.remove_plot_for_obj(self, self.nengo_obj, self.capability)
-        
-    def get_options_dict(self):
-        return self.config
-

@@ -18,7 +18,7 @@ class NetworkView(CanvasItem):
     """
     def __init__(self, controller, model=None, **kwargs):
         super(NetworkView, self).__init__(controller)
-        self.init_default_config(None, None)
+        self.init_default_config()
         self.axes = self.figure.add_subplot(111)
 
         self.plots_menu_item = gtk.MenuItem("Plots")
@@ -557,20 +557,17 @@ class NetworkView(CanvasItem):
         for mpl_text in self._label_collection.values():
             mpl_text.set_visible(visible)
 
-    def init_default_config(self, nengo_obj, capability):
+    def init_default_config(self):
         """ Sets default config values for the network view
         """
-        super(NetworkView, self).init_default_config(nengo_obj, capability)
-
+        super(NetworkView, self).init_default_config()
+        
         self.config['show_labels'] = Configuration(
             configurable = True,
             display_name = "Show labels",
             data_type = "boolean",
             value = True,
             function = self.show_labels)
-
-    def get_options_dict(self):
-        return self.config
 
 #---------- Helper functions --------
 

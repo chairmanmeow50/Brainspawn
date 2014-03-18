@@ -40,8 +40,11 @@ class CanvasItem(object):
 
         self._context_menu.show_all()
 
-    def init_default_config(self, nengo_obj, capability):
+    def init_default_config(self):
         pass
+    
+    def get_options_dict(self):
+        return self.config
 
     def get_config_values(self):
         return {key : configuration.value for key, configuration in self.config.iteritems()}
@@ -49,8 +52,7 @@ class CanvasItem(object):
     def set_config_values(self, config):
         if (config):
             for key, val in config.items():
-                #self.config[key].value = val
-                pass
+                self.config[key].value = val
             
     def apply_config(self, revert_data=None, get_function=None):
         for option_name in self.get_options_dict():

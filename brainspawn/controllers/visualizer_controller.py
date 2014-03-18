@@ -50,7 +50,8 @@ class VisualizerController(object):
     def add_plot_for_obj(self, plt, obj, cap, config=None, position=None, size=None):
         """ Callback for menu item
         """
-        plot = plt(self, obj, cap, config)
+        plot = plt(self, obj, cap)
+        plot.set_config_values(config)
         self.plots.append(plot)
         self.sim_manager.connect_to_obj(obj, cap, plot.update)
         self.main_frame.show_plot(plot, False, position, size)

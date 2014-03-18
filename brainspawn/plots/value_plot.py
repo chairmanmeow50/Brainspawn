@@ -21,9 +21,8 @@ class ValuePlot(Plot):
 
         Note the call to super constructor.
         """
-        super(ValuePlot, self).__init__(main_controller, nengo_obj, capability, config)
+        super(ValuePlot, self).__init__(main_controller, nengo_obj, capability)
 
-        self.init_default_config(nengo_obj, capability)
         self.axes.set_xlim([0, 1])
 
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
@@ -50,7 +49,9 @@ class ValuePlot(Plot):
         """
         return cap.name in ['voltages', 'output']
 
-    def get_options_dict(self):
+    def init_default_config(self):
+        super(ValuePlot, self).init_default_config()
+        
         self.config['xlabel'] = Configuration(
                                               configurable = True,
                                               display_name = "X Label",
@@ -94,8 +95,6 @@ class ValuePlot(Plot):
                                                      value = 0,
                                                      function = self.axes.patch.set_alpha,
                                                      bounds = [0, 1])
-        
-        return self.config
 
     def update(self, start_step, step_size, data):
         """ Callback function passed to observer nodes.

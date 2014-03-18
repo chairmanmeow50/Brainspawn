@@ -6,8 +6,8 @@ import numpy as np
 @registered_plot
 class Spectrogram(Plot):
 
-    def __init__(self, main_controller, obj, cap, config=None):
-        super(Spectrogram, self).__init__(main_controller, obj, cap, config)
+    def __init__(self, main_controller, obj, cap):
+        super(Spectrogram, self).__init__(main_controller, obj, cap)
 
         self.axes = self.figure.add_subplot(111)
         self.axes.patch.set_alpha(0.0)

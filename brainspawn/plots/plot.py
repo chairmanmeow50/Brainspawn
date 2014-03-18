@@ -16,8 +16,8 @@ class Plot(BasePlot):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, main_controller, nengo_obj, capability, config=None):
-        super(Plot, self).__init__(main_controller, nengo_obj, capability, config)
+    def __init__(self, main_controller, nengo_obj, capability):
+        super(Plot, self).__init__(main_controller, nengo_obj, capability)
         """ Plot constructor.
         Initializes default config values for all plots,
         Sets up the plot view.
@@ -33,9 +33,10 @@ class Plot(BasePlot):
 
         self.axes = self.figure.add_subplot(111)
         self.axes.patch.set_alpha(0.0)
-        self.axes.set_title(self.title)
+        
+        self.init_default_config()
 
-    def init_default_config(self, nengo_obj, capability):
+    def init_default_config(self):
         """Sets default config values for all plots
         The values contained in this dictionary are used to configure
         the plot.
@@ -44,9 +45,7 @@ class Plot(BasePlot):
         we set 'TARGET' and 'DATA' to default values of the
         target object, and represented data, respectively.
         """
-        super(Plot, self).init_default_config(nengo_obj, capability)
-        if not nengo_obj or not capability:
-            return
+        super(Plot, self).init_default_config()
 
         self.config['title'] = Configuration(
                                       configurable = True,
