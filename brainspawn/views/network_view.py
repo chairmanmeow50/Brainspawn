@@ -170,7 +170,9 @@ class NetworkView(CanvasItem):
 
         # build the graph layout
         pos = nx.graphviz_layout(self.G, prog="neato")
-        self._node_positions = OrderedDict(pos)
+        self._node_positions = OrderedDict()
+        for node in self.G.nodes():
+            self._node_positions[node] = pos[node]
 
         # Draw graph
         self.full_repaint()
