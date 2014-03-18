@@ -4,6 +4,8 @@ from gi.repository import Gtk
 class CustomizeWindow:
     def __init__(self, plot, **kwargs):
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.set_border_width(10)
+        self.window.set_resizable(False)
         self.plot = plot
         self.window.set_title("Customize")
         
@@ -62,9 +64,10 @@ class CustomizeWindow:
                         if (data_type != 'color' and data_type != 'slider'):
                             self.controls[option_name] = control
                         
-                        hbox = Gtk.HBox(True, 10)
-                        hbox.pack_start(text_label, True, True, 10)
-                        hbox.pack_start(control, True, True, 10)
+                        hbox = Gtk.HBox(True, 5)
+                        text_label.set_alignment(1, 0.5)
+                        hbox.pack_start(text_label, True, True, 5)
+                        hbox.pack_start(control, True, True, 5)
                         
                         self.vbox.pack_start(hbox, True, False, 10)
 
@@ -80,7 +83,7 @@ class CustomizeWindow:
         button_hbox.set_homogeneous(True)
         
         alignment = Gtk.Alignment()
-        alignment.set(0.5, 0.9, 0, 0)
+        alignment.set(0.5, 1, 0, 0)
         alignment.add(button_hbox)
         
         button_hbox.pack_end(ok_button, False, False)
