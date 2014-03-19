@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Brainspawn 1.0.0 documentation" href="index.html" />
     <link rel="up" title="brainspawn.views.components package" href="brainspawn.views.components.html" />
-    <link rel="next" title="brainspawn.views.plot_view module" href="brainspawn.views.plot_view.html" />
+    <link rel="next" title="brainspawn.views.canvas_item module" href="brainspawn.views.canvas_item.html" />
     <link rel="prev" title="brainspawn.views.components.menu_bar module" href="brainspawn.views.components.menu_bar.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="brainspawn.views.plot_view.html" title="brainspawn.views.plot_view module"
+          <a href="brainspawn.views.canvas_item.html" title="brainspawn.views.canvas_item module"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="brainspawn.views.components.menu_bar.html" title="brainspawn.views.components.menu_bar module"
@@ -59,11 +59,11 @@
 <span id="brainspawn-views-components-resize-box-module"></span><h1>brainspawn.views.components.resize_box module<a class="headerlink" href="#module-brainspawn.views.components.resize_box" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="brainspawn.views.components.resize_box.ResizeBox">
-<em class="property">class </em><tt class="descclassname">brainspawn.views.components.resize_box.</tt><tt class="descname">ResizeBox</tt><big>(</big><em>canvas</em>, <em>canvas_layout</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/components/resize_box.html#ResizeBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.components.resize_box.ResizeBox" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">brainspawn.views.components.resize_box.</tt><tt class="descname">ResizeBox</tt><big>(</big><em>plot</em>, <em>canvas_layout</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/components/resize_box.html#ResizeBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.components.resize_box.ResizeBox" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">gi.repository.Gtk.EventBox</span></tt></p>
 <dl class="method">
 <dt id="brainspawn.views.components.resize_box.ResizeBox.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>canvas</em>, <em>canvas_layout</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/components/resize_box.html#ResizeBox.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.components.resize_box.ResizeBox.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>plot</em>, <em>canvas_layout</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/components/resize_box.html#ResizeBox.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.components.resize_box.ResizeBox.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -127,13 +127,23 @@
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="brainspawn.views.components.resize_box.ResizeBox.set_position">
+<tt class="descname">set_position</tt><big>(</big><em>new_x</em>, <em>new_y</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/components/resize_box.html#ResizeBox.set_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.components.resize_box.ResizeBox.set_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.components.resize_box.ResizeBox.set_size">
+<tt class="descname">set_size</tt><big>(</big><em>new_width</em>, <em>new_height</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/components/resize_box.html#ResizeBox.set_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.components.resize_box.ResizeBox.set_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="brainspawn.views.components.resize_box.ResizeBox.size_allocate">
 <tt class="descname">size_allocate</tt><big>(</big><em>widget</em>, <em>allocation</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/components/resize_box.html#ResizeBox.size_allocate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.components.resize_box.ResizeBox.size_allocate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="brainspawn.views.components.resize_box.ResizeBox.__gtype__">
-<tt class="descname">__gtype__</tt><em class="property"> = &lt;GType brainspawn+views+components+resize_box+ResizeBox (181552336)&gt;</em><a class="headerlink" href="#brainspawn.views.components.resize_box.ResizeBox.__gtype__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__gtype__</tt><em class="property"> = &lt;GType brainspawn+views+components+resize_box+ResizeBox (184742992)&gt;</em><a class="headerlink" href="#brainspawn.views.components.resize_box.ResizeBox.__gtype__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -150,8 +160,8 @@
   <p class="topless"><a href="brainspawn.views.components.menu_bar.html"
                         title="previous chapter">brainspawn.views.components.menu_bar module</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="brainspawn.views.plot_view.html"
-                        title="next chapter">brainspawn.views.plot_view module</a></p>
+  <p class="topless"><a href="brainspawn.views.canvas_item.html"
+                        title="next chapter">brainspawn.views.canvas_item module</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/brainspawn.views.components.resize_box.txt"
@@ -184,7 +194,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="brainspawn.views.plot_view.html" title="brainspawn.views.plot_view module"
+          <a href="brainspawn.views.canvas_item.html" title="brainspawn.views.canvas_item module"
              >next</a> |</li>
         <li class="right" >
           <a href="brainspawn.views.components.menu_bar.html" title="brainspawn.views.components.menu_bar module"
@@ -196,7 +206,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

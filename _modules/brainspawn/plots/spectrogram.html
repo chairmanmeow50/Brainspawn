@@ -47,12 +47,10 @@
           <div class="body">
             
   <h1>Source code for brainspawn.plots.spectrogram</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">plots.base_plot</span> <span class="kn">import</span> <span class="n">registered_plot</span>
+<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
 <span class="kn">import</span> <span class="nn">matplotlib.cm</span> <span class="kn">as</span> <span class="nn">cm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">Plot</span><span class="p">,</span> <span class="n">registered_plot</span>
-
-<span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="kn">as</span> <span class="nn">mpatches</span>
-<span class="kn">import</span> <span class="nn">matplotlib.lines</span> <span class="kn">as</span> <span class="nn">mlines</span>
 
 <span class="nd">@registered_plot</span>
 <div class="viewcode-block" id="Spectrogram"><a class="viewcode-back" href="../../../brainspawn.plots.spectrogram.html#brainspawn.plots.spectrogram.Spectrogram">[docs]</a><span class="k">class</span> <span class="nc">Spectrogram</span><span class="p">(</span><span class="n">Plot</span><span class="p">):</span>
@@ -60,10 +58,13 @@
 <div class="viewcode-block" id="Spectrogram.__init__"><a class="viewcode-back" href="../../../brainspawn.plots.spectrogram.html#brainspawn.plots.spectrogram.Spectrogram.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Spectrogram</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;Time (s)&#39;</span><span class="p">)</span>
-        <span class="c">#self.axes.xaxis.set_label_coords(0.5, -0.07)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
-        <span class="c">#self.axes.yaxis.set_label_coords(-0.10, 0.5)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&quot;Time (s)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_image</span> <span class="o">=</span> <span class="bp">None</span>
 </div>
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="Spectrogram.plot_name"><a class="viewcode-back" href="../../../brainspawn.plots.spectrogram.html#brainspawn.plots.spectrogram.Spectrogram.plot_name">[docs]</a>    <span class="k">def</span> <span class="nf">plot_name</span><span class="p">():</span>
@@ -71,14 +72,20 @@
 </div>
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="Spectrogram.supports_cap"><a class="viewcode-back" href="../../../brainspawn.plots.spectrogram.html#brainspawn.plots.spectrogram.Spectrogram.supports_cap">[docs]</a>    <span class="k">def</span> <span class="nf">supports_cap</span><span class="p">(</span><span class="n">cap</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">cap</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;spikes&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">cap</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;spikes&quot;</span><span class="p">]</span>
 </div>
 <div class="viewcode-block" id="Spectrogram.update"><a class="viewcode-back" href="../../../brainspawn.plots.spectrogram.html#brainspawn.plots.spectrogram.Spectrogram.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_step</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="c"># TODO - start_step</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">specgram</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">Fs</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">step_size</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">gist_heat</span><span class="p">)</span>
-</pre></div></div></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_image</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_image</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">start_step</span> <span class="o">*</span> <span class="n">step_size</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">start_step</span> <span class="o">+</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">step_size</span>
+        <span class="n">Pxx</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">specgram</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">Fs</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">step_size</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">gist_heat</span><span class="p">,</span> <span class="n">xextent</span><span class="o">=</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">start_time</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">end_time</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span></div></div>
+</pre></div>
 
           </div>
         </div>
@@ -117,7 +124,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

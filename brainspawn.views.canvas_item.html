@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.views.canvas_item module &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="index.html" />
+    <link rel="up" title="brainspawn.views package" href="brainspawn.views.html" />
+    <link rel="next" title="brainspawn.views.network_view module" href="brainspawn.views.network_view.html" />
+    <link rel="prev" title="brainspawn.views.components.resize_box module" href="brainspawn.views.components.resize_box.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.views.network_view.html" title="brainspawn.views.network_view module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.views.components.resize_box.html" title="brainspawn.views.components.resize_box module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.views.html" accesskey="U">brainspawn.views package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-brainspawn.views.canvas_item">
+<span id="brainspawn-views-canvas-item-module"></span><h1>brainspawn.views.canvas_item module<a class="headerlink" href="#module-brainspawn.views.canvas_item" title="Permalink to this headline">¶</a></h1>
+<p>Abstract base class for items we put on the canvas</p>
+<dl class="class">
+<dt id="brainspawn.views.canvas_item.CanvasItem">
+<em class="property">class </em><tt class="descclassname">brainspawn.views.canvas_item.</tt><tt class="descname">CanvasItem</tt><big>(</big><em>main_controller</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Canvas Item
+Has figure, canvas</p>
+<dl class="method">
+<dt id="brainspawn.views.canvas_item.CanvasItem.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>main_controller</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.canvas_item.CanvasItem.apply_config">
+<tt class="descname">apply_config</tt><big>(</big><em>revert_data=None</em>, <em>get_function=None</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem.apply_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem.apply_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.canvas_item.CanvasItem.get_config_values">
+<tt class="descname">get_config_values</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem.get_config_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem.get_config_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.canvas_item.CanvasItem.get_options_dict">
+<tt class="descname">get_options_dict</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem.get_options_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem.get_options_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.canvas_item.CanvasItem.init_default_config">
+<tt class="descname">init_default_config</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem.init_default_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem.init_default_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.canvas_item.CanvasItem.on_button_release">
+<tt class="descname">on_button_release</tt><big>(</big><em>widget</em>, <em>event</em>, <em>canvas</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem.on_button_release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem.on_button_release" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.canvas_item.CanvasItem.on_export_pdf">
+<tt class="descname">on_export_pdf</tt><big>(</big><em>widget</em>, <em>canvas</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem.on_export_pdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem.on_export_pdf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.canvas_item.CanvasItem.set_config_values">
+<tt class="descname">set_config_values</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem.set_config_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem.set_config_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.canvas_item.CanvasItem.show_customize">
+<tt class="descname">show_customize</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem.show_customize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem.show_customize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="brainspawn.views.canvas_item.CanvasItem.title">
+<tt class="descname">title</tt><a class="reference internal" href="_modules/brainspawn/views/canvas_item.html#CanvasItem.title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.canvas_item.CanvasItem.title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="brainspawn.views.components.resize_box.html"
+                        title="previous chapter">brainspawn.views.components.resize_box module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="brainspawn.views.network_view.html"
+                        title="next chapter">brainspawn.views.network_view module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/brainspawn.views.canvas_item.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.views.network_view.html" title="brainspawn.views.network_view module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.views.components.resize_box.html" title="brainspawn.views.components.resize_box module"
+             >previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.views.html" >brainspawn.views package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

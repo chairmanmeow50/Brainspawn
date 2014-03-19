@@ -47,18 +47,14 @@
           <div class="body">
             
   <h1>Source code for brainspawn.plots.dogeplot</h1><div class="highlight"><pre>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">plots.value_plot</span> <span class="kn">import</span> <span class="n">ValuePlot</span>
-<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">registered_plot</span>
+<span class="kn">from</span> <span class="nn">plots.base_plot</span> <span class="kn">import</span> <span class="n">registered_plot</span>
 
 <span class="nd">@registered_plot</span>
 <div class="viewcode-block" id="DogePlot"><a class="viewcode-back" href="../../../brainspawn.plots.dogeplot.html#brainspawn.plots.dogeplot.DogePlot">[docs]</a><span class="k">class</span> <span class="nc">DogePlot</span><span class="p">(</span><span class="n">ValuePlot</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;DogePlot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DogePlot.name"><a class="viewcode-back" href="../../../brainspawn.plots.dogeplot.html#brainspawn.plots.dogeplot.DogePlot.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s">&quot;Doge Plot&quot;</span>
-</div>
 <div class="viewcode-block" id="DogePlot.__init__"><a class="viewcode-back" href="../../../brainspawn.plots.dogeplot.html#brainspawn.plots.dogeplot.DogePlot.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">DogePlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="p">[]</span>
@@ -69,15 +65,14 @@
 </div>
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="DogePlot.plot_name"><a class="viewcode-back" href="../../../brainspawn.plots.dogeplot.html#brainspawn.plots.dogeplot.DogePlot.plot_name">[docs]</a>    <span class="k">def</span> <span class="nf">plot_name</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s">&quot;so science&quot;</span>
-
+        <span class="k">return</span> <span class="s">&quot;Doge&quot;</span>
 </div>
 <div class="viewcode-block" id="DogePlot.update"><a class="viewcode-back" href="../../../brainspawn.plots.dogeplot.html#brainspawn.plots.dogeplot.DogePlot.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_step</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">DogePlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">start_step</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">275</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
-                <span class="n">txt</span><span class="o">.</span><span class="n">set_x</span><span class="p">((</span><span class="n">txt</span><span class="o">.</span><span class="n">get_position</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">100000</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="o">/</span><span class="mi">100000</span> <span class="o">%</span> <span class="mi">1</span> <span class="p">)</span>
-</pre></div></div></div>
+                <span class="n">txt</span><span class="o">.</span><span class="n">set_x</span><span class="p">((</span><span class="n">txt</span><span class="o">.</span><span class="n">get_position</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">100000</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="o">/</span><span class="mi">100000</span> <span class="o">%</span> <span class="mi">1</span> <span class="p">)</span></div></div>
+</pre></div>
 
           </div>
         </div>
@@ -116,7 +111,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

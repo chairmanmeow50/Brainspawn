@@ -87,13 +87,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">resize</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resize_info</span> <span class="o">=</span> <span class="bp">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">all_canvas</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_boxes</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c"># create a new window</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">Window</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">WINDOW_TOPLEVEL</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">set_default_size</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">&quot;Nengo Visualizer&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;delete_event&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">,</span><span class="n">e</span><span class="p">:</span> <span class="n">gtk</span><span class="o">.</span><span class="n">main_quit</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;delete_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_quit</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">input_panel</span> <span class="o">=</span> <span class="n">Input_Panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span> <span class="o">=</span> <span class="n">Controller_Panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -127,6 +127,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">toggle_play</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
 </div>
+<div class="viewcode-block" id="MainFrame.on_quit"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.on_quit">[docs]</a>    <span class="k">def</span> <span class="nf">on_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">on_quit</span><span class="p">()</span>
+        <span class="n">gtk</span><span class="o">.</span><span class="n">main_quit</span><span class="p">()</span>
+</div>
 <div class="viewcode-block" id="MainFrame.hscale_change"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.hscale_change">[docs]</a>    <span class="k">def</span> <span class="nf">hscale_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">scroll</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">min_step</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">last_sim_step</span><span class="p">:</span>
             <span class="k">return</span>
@@ -150,7 +154,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="MainFrame.update_canvas"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.update_canvas">[docs]</a>    <span class="k">def</span> <span class="nf">update_canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">canvas</span><span class="p">:</span><span class="n">canvas</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_canvas</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
 
     <span class="c">#Controller code for controller_panel</span></div>
 <div class="viewcode-block" id="MainFrame.format_slider_value"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.format_slider_value">[docs]</a>    <span class="k">def</span> <span class="nf">format_slider_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -161,6 +165,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="bp">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">toggle_play</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">playing</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_canvas</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="bp">True</span>
@@ -190,7 +195,7 @@
 <div class="viewcode-block" id="MainFrame.jump_to_end"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.jump_to_end">[docs]</a>    <span class="k">def</span> <span class="nf">jump_to_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">jump_to</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">last_sim_step</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="MainFrame.button_press"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.button_press">[docs]</a>    <span class="k">def</span> <span class="nf">button_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="MainFrame.on_button_release"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.on_button_release">[docs]</a>    <span class="k">def</span> <span class="nf">on_button_release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">gtk</span><span class="o">.</span><span class="n">gdk</span><span class="o">.</span><span class="n">BUTTON_PRESS</span><span class="p">:</span>
             <span class="n">widget</span><span class="o">.</span><span class="n">popup</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
             <span class="c"># Tell calling code that we have handled this event the buck</span>
@@ -203,21 +208,47 @@
 <div class="viewcode-block" id="MainFrame.menuitem_response"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.menuitem_response">[docs]</a>    <span class="k">def</span> <span class="nf">menuitem_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
         <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">string</span>
 </div>
-<div class="viewcode-block" id="MainFrame.show_plot"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">canvas</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-        <span class="n">resize_box</span> <span class="o">=</span> <span class="n">ResizeBox</span><span class="p">(</span><span class="n">canvas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">all_canvas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resize_box</span><span class="o">.</span><span class="n">get_canvas</span><span class="p">())</span>
+<div class="viewcode-block" id="MainFrame.show_plot"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        center (boolean): center the plot, ignore position</span>
+<span class="sd">        position (tuple): x, y coords to position the plot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resize_box</span> <span class="o">=</span> <span class="n">ResizeBox</span><span class="p">(</span><span class="n">plot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">resize_box</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_boxes</span><span class="p">[</span><span class="n">plot</span><span class="p">]</span> <span class="o">=</span> <span class="n">resize_box</span>
+        <span class="c"># Set position</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">center</span><span class="p">):</span>
             <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">()</span> <span class="o">-</span> <span class="n">resize_box</span><span class="o">.</span><span class="n">get_width</span><span class="p">())</span> <span class="o">/</span> <span class="mi">2</span>
             <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">get_allocated_height</span><span class="p">()</span> <span class="o">-</span> <span class="n">resize_box</span><span class="o">.</span><span class="n">get_height</span><span class="p">())</span> <span class="o">/</span> <span class="mi">2</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">resize_box</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-            <span class="n">resize_box</span><span class="o">.</span><span class="n">_pos_x</span> <span class="o">=</span> <span class="n">x</span>
-            <span class="n">resize_box</span><span class="o">.</span><span class="n">_pos_y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="k">elif</span> <span class="n">position</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">position</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">resize_box</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">resize_box</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="c"># Set size</span>
+        <span class="k">if</span> <span class="n">size</span><span class="p">:</span>
+            <span class="n">resize_box</span><span class="o">.</span><span class="n">set_size</span><span class="p">(</span><span class="o">*</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="n">plot</span><span class="o">.</span><span class="n">apply_config</span><span class="p">()</span>
 </div>
-<div class="viewcode-block" id="MainFrame.remove_plot"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.remove_plot">[docs]</a>    <span class="k">def</span> <span class="nf">remove_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">canvas</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">all_canvas</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">canvas</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_parent</span><span class="p">())</span>
+<div class="viewcode-block" id="MainFrame.remove_plot"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.remove_plot">[docs]</a>    <span class="k">def</span> <span class="nf">remove_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas_layout</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resize_boxes</span><span class="p">[</span><span class="n">plot</span><span class="p">])</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">resize_boxes</span><span class="p">[</span><span class="n">plot</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="MainFrame.get_item_position"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.get_item_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_item_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resize_boxes</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">pos_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resize_boxes</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">pos_y</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MainFrame.get_item_size"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.get_item_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_item_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resize_boxes</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">get_width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">resize_boxes</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">get_height</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="MainFrame.set_item_position"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.set_item_position">[docs]</a>    <span class="k">def</span> <span class="nf">set_item_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_boxes</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MainFrame.set_item_size"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.set_item_size">[docs]</a>    <span class="k">def</span> <span class="nf">set_item_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_boxes</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">set_size</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="MainFrame.toggle_panel"><a class="viewcode-back" href="../../../brainspawn.views.visualizer.html#brainspawn.views.visualizer.MainFrame.toggle_panel">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">panel</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">get_active</span><span class="p">()):</span>
@@ -265,7 +296,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

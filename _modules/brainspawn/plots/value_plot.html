@@ -48,14 +48,16 @@
             
   <h1>Source code for brainspawn.plots.value_plot</h1><div class="highlight"><pre>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">Plot</span><span class="p">,</span> <span class="n">registered_plot</span>
+<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+<span class="kn">from</span> <span class="nn">plots.base_plot</span> <span class="kn">import</span> <span class="n">registered_plot</span>
+<span class="kn">from</span> <span class="nn">plots.configuration</span> <span class="kn">import</span> <span class="n">Configuration</span>
 
 <span class="nd">@registered_plot</span>
 <div class="viewcode-block" id="ValuePlot"><a class="viewcode-back" href="../../../brainspawn.plots.value_plot.html#brainspawn.plots.value_plot.ValuePlot">[docs]</a><span class="k">class</span> <span class="nc">ValuePlot</span><span class="p">(</span><span class="n">Plot</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Graph for plotting values over time.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ValuePlot.__init__"><a class="viewcode-back" href="../../../brainspawn.plots.value_plot.html#brainspawn.plots.value_plot.ValuePlot.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_controller</span><span class="p">,</span> <span class="n">nengo_obj</span><span class="p">,</span> <span class="n">capability</span><span class="p">):</span>
+<div class="viewcode-block" id="ValuePlot.__init__"><a class="viewcode-back" href="../../../brainspawn.plots.value_plot.html#brainspawn.plots.value_plot.ValuePlot.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_controller</span><span class="p">,</span> <span class="n">nengo_obj</span><span class="p">,</span> <span class="n">capability</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up the plot, and axis labels.</span>
 
@@ -70,10 +72,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ValuePlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">main_controller</span><span class="p">,</span> <span class="n">nengo_obj</span><span class="p">,</span> <span class="n">capability</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;DATA&#39;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)))</span>
 </div>
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="ValuePlot.plot_name"><a class="viewcode-back" href="../../../brainspawn.plots.value_plot.html#brainspawn.plots.value_plot.ValuePlot.plot_name">[docs]</a>    <span class="k">def</span> <span class="nf">plot_name</span><span class="p">():</span>
@@ -83,7 +84,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            string. The plot name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s">&quot;Value Plot&quot;</span>
+        <span class="k">return</span> <span class="s">&quot;Value&quot;</span>
 </div>
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="ValuePlot.supports_cap"><a class="viewcode-back" href="../../../brainspawn.plots.value_plot.html#brainspawn.plots.value_plot.ValuePlot.supports_cap">[docs]</a>    <span class="k">def</span> <span class="nf">supports_cap</span><span class="p">(</span><span class="n">cap</span><span class="p">):</span>
@@ -96,6 +97,53 @@
 <span class="sd">            bool. True if this plot supports the given capability.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">cap</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;voltages&#39;</span><span class="p">,</span> <span class="s">&#39;output&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="ValuePlot.init_default_config"><a class="viewcode-back" href="../../../brainspawn.plots.value_plot.html#brainspawn.plots.value_plot.ValuePlot.init_default_config">[docs]</a>    <span class="k">def</span> <span class="nf">init_default_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ValuePlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">init_default_config</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;xlabel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span>
+                                              <span class="n">configurable</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                              <span class="n">display_name</span> <span class="o">=</span> <span class="s">&quot;X Label&quot;</span><span class="p">,</span>
+                                              <span class="n">data_type</span> <span class="o">=</span> <span class="s">&quot;text&quot;</span><span class="p">,</span>
+                                              <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;Time (s)&#39;</span><span class="p">,</span>
+                                              <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;ylabel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span>
+                                              <span class="n">configurable</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                              <span class="n">display_name</span> <span class="o">=</span> <span class="s">&quot;Y Label&quot;</span><span class="p">,</span>
+                                              <span class="n">data_type</span> <span class="o">=</span> <span class="s">&quot;text&quot;</span><span class="p">,</span>
+                                              <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;DATA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                              <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;yscale&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span>
+                                              <span class="n">configurable</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                              <span class="n">display_name</span> <span class="o">=</span> <span class="s">&quot;Y Scale&quot;</span><span class="p">,</span>
+                                              <span class="n">data_type</span> <span class="o">=</span> <span class="s">&quot;combo&quot;</span><span class="p">,</span>
+                                              <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;linear&#39;</span><span class="p">,</span>
+                                              <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">,</span>
+                                              <span class="n">combo</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;linear&#39;</span><span class="p">,</span> <span class="s">&#39;log&#39;</span><span class="p">,</span> <span class="s">&#39;symlog&#39;</span><span class="p">])</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;frame&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span>
+                                             <span class="n">configurable</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                             <span class="n">display_name</span> <span class="o">=</span> <span class="s">&quot;Frame&quot;</span><span class="p">,</span>
+                                             <span class="n">data_type</span> <span class="o">=</span> <span class="s">&quot;boolean&quot;</span><span class="p">,</span>
+                                             <span class="n">value</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                             <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_frame_on</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;axes_bg_color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span>
+                                                     <span class="n">configurable</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                                     <span class="n">display_name</span> <span class="o">=</span> <span class="s">&quot;Axis Background Color&quot;</span><span class="p">,</span>
+                                                     <span class="n">data_type</span> <span class="o">=</span> <span class="s">&quot;color&quot;</span><span class="p">,</span>
+                                                     <span class="n">value</span> <span class="o">=</span> <span class="s">&quot;#FFFFFF&quot;</span><span class="p">,</span>
+                                                     <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;bg_alpha&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span>
+                                                     <span class="n">configurable</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                                     <span class="n">display_name</span> <span class="o">=</span> <span class="s">&quot;Background Alpha&quot;</span><span class="p">,</span>
+                                                     <span class="n">data_type</span> <span class="o">=</span> <span class="s">&quot;slider&quot;</span><span class="p">,</span>
+                                                     <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                                     <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">,</span>
+                                                     <span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 </div>
 <div class="viewcode-block" id="ValuePlot.update"><a class="viewcode-back" href="../../../brainspawn.plots.value_plot.html#brainspawn.plots.value_plot.ValuePlot.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_step</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Callback function passed to observer nodes.</span>
@@ -162,7 +210,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

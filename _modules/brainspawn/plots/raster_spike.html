@@ -47,48 +47,51 @@
           <div class="body">
             
   <h1>Source code for brainspawn.plots.raster_spike</h1><div class="highlight"><pre>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
-<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">Plot</span><span class="p">,</span> <span class="n">registered_plot</span>
-<span class="kn">import</span> <span class="nn">__future__</span>
+<span class="kn">from</span> <span class="nn">plots.base_plot</span> <span class="kn">import</span> <span class="n">registered_plot</span>
+<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+<span class="kn">import</span> <span class="nn">settings</span>
 
-<span class="c">#@registered_plot</span>
-<div class="viewcode-block" id="Raster_Spike_Plot"><a class="viewcode-back" href="../../../brainspawn.plots.raster_spike.html#brainspawn.plots.raster_spike.Raster_Spike_Plot">[docs]</a><span class="k">class</span> <span class="nc">Raster_Spike_Plot</span><span class="p">(</span><span class="n">Plot</span><span class="p">):</span>
+<span class="nd">@registered_plot</span>
+<div class="viewcode-block" id="RasterSpike"><a class="viewcode-back" href="../../../brainspawn.plots.raster_spike.html#brainspawn.plots.raster_spike.RasterSpike">[docs]</a><span class="k">class</span> <span class="nc">RasterSpike</span><span class="p">(</span><span class="n">Plot</span><span class="p">):</span>
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="Raster_Spike_Plot.plot_name"><a class="viewcode-back" href="../../../brainspawn.plots.raster_spike.html#brainspawn.plots.raster_spike.Raster_Spike_Plot.plot_name">[docs]</a>    <span class="k">def</span> <span class="nf">plot_name</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s">&quot;Raster Spike Plot&quot;</span>
+    <span class="n">WINDOW_SIZE</span> <span class="o">=</span> <span class="mi">100</span>
+
+<div class="viewcode-block" id="RasterSpike.__init__"><a class="viewcode-back" href="../../../brainspawn.plots.raster_spike.html#brainspawn.plots.raster_spike.RasterSpike.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RasterSpike</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&quot;Neurons&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&quot;Time (s)&quot;</span><span class="p">)</span>
+        <span class="c">#TODO: The 1.0 here shouldn&#39;t be hardcoded, as with all plots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_end_time</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">WINDOW_SIZE</span> <span class="o">/</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_WINDOW_SIZE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_end_time</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_image</span> <span class="o">=</span> <span class="bp">None</span>
 </div>
     <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="Raster_Spike_Plot.supports_cap"><a class="viewcode-back" href="../../../brainspawn.plots.raster_spike.html#brainspawn.plots.raster_spike.Raster_Spike_Plot.supports_cap">[docs]</a>    <span class="k">def</span> <span class="nf">supports_cap</span><span class="p">(</span><span class="n">cap</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">cap</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;spikes&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="RasterSpike.plot_name"><a class="viewcode-back" href="../../../brainspawn.plots.raster_spike.html#brainspawn.plots.raster_spike.RasterSpike.plot_name">[docs]</a>    <span class="k">def</span> <span class="nf">plot_name</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s">&quot;Raster Spike&quot;</span>
 </div>
-<div class="viewcode-block" id="Raster_Spike_Plot.update"><a class="viewcode-back" href="../../../brainspawn.plots.raster_spike.html#brainspawn.plots.raster_spike.Raster_Spike_Plot.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_step</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">spikes</span><span class="p">):</span>
-        <span class="n">start_time</span> <span class="o">=</span> <span class="n">start_step</span><span class="o">*</span><span class="n">step_size</span>
-        <span class="n">end_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">start_step</span> <span class="o">+</span> <span class="n">spikes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="n">step_size</span>
-        <span class="n">trange</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="n">spikes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-
-        <span class="n">color_cycle</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s">&#39;axes.color_cycle&#39;</span><span class="p">]</span>
-        <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">color_cycle</span><span class="p">[</span><span class="n">ix</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_cycle</span><span class="p">)]</span>
-                       <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">spikes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
-
-        <span class="n">spikes</span> <span class="o">=</span> <span class="p">[</span><span class="n">trange</span><span class="p">[</span><span class="n">spikes</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-                  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">spikes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
-        <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spikes</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="n">spikes</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,):</span>
-                <span class="n">spikes</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">eventplot</span><span class="p">(</span><span class="n">spikes</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spikes</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spikes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">)</span>  <span class="c"># eventplot plots different for len==1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="RasterSpike.supports_cap"><a class="viewcode-back" href="../../../brainspawn.plots.raster_spike.html#brainspawn.plots.raster_spike.RasterSpike.supports_cap">[docs]</a>    <span class="k">def</span> <span class="nf">supports_cap</span><span class="p">(</span><span class="n">cap</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">cap</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;spikes&quot;</span><span class="p">]</span>
 </div>
-<div class="viewcode-block" id="Raster_Spike_Plot.__init__"><a class="viewcode-back" href="../../../brainspawn.plots.raster_spike.html#brainspawn.plots.raster_spike.Raster_Spike_Plot.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Raster_Spike_Plot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-</pre></div></div></div>
+<div class="viewcode-block" id="RasterSpike.update"><a class="viewcode-back" href="../../../brainspawn.plots.raster_spike.html#brainspawn.plots.raster_spike.RasterSpike.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_step</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">spikes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_image</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_image</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spikes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">spikes_view</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">WINDOW_SIZE</span><span class="p">:]</span>
+        <span class="n">end_step</span> <span class="o">=</span> <span class="n">start_step</span> <span class="o">+</span> <span class="n">spikes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_step</span> <span class="o">-</span> <span class="n">spikes_view</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">step_size</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">end_step</span> <span class="o">*</span> <span class="n">step_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>  <span class="c"># interpolation=&quot;none&quot; is not supported on cairo</span>
+                <span class="n">spikes_view</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s">&quot;binary&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&quot;auto&quot;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&quot;lower&quot;</span><span class="p">,</span>
+                <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">spikes_view</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">start_time</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">end_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_end_time</span><span class="p">)])</span></div></div>
+</pre></div>
 
           </div>
         </div>
@@ -127,7 +130,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

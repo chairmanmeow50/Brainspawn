@@ -48,9 +48,9 @@
             
   <h1>Source code for brainspawn.simulator.sim_manager</h1><div class="highlight"><pre>
 <span class="kn">import</span> <span class="nn">nengo</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">adaptor</span> <span class="kn">import</span> <span class="n">Adaptor</span><span class="p">,</span> <span class="n">max_buffer_elements</span>
+<span class="kn">from</span> <span class="nn">adaptor</span> <span class="kn">import</span> <span class="n">Adaptor</span>
 <span class="kn">from</span> <span class="nn">capabilities.cap_factory</span> <span class="kn">import</span> <span class="n">CapFactory</span>
+<span class="kn">import</span> <span class="nn">settings</span>
 
 <div class="viewcode-block" id="SimManager"><a class="viewcode-back" href="../../../brainspawn.simulator.sim_manager.html#brainspawn.simulator.sim_manager.SimManager">[docs]</a><span class="k">class</span> <span class="nc">SimManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -63,7 +63,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">last_sim_step</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adaptors</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_buffer_elements</span> <span class="o">=</span> <span class="n">max_buffer_elements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_buffer_elements</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_BUFFER_ELEMENTS</span>
 </div>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -194,7 +194,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

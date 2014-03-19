@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.plots.base_plot &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for brainspawn.plots.base_plot</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Abstract base class for plots.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">gtk</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">views.canvas_item</span> <span class="kn">import</span> <span class="n">CanvasItem</span>
+<span class="kn">from</span> <span class="nn">plots.configuration</span> <span class="kn">import</span> <span class="n">Configuration</span>
+
+<span class="n">REGISTERED_PLOTS</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="registered_plot"><a class="viewcode-back" href="../../../brainspawn.plots.base_plot.html#brainspawn.plots.base_plot.registered_plot">[docs]</a><span class="k">def</span> <span class="nf">registered_plot</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decorator for plot implementations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">REGISTERED_PLOTS</span><span class="p">[</span><span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">cls</span>
+    <span class="k">return</span> <span class="n">cls</span>
+</div>
+<div class="viewcode-block" id="BasePlot"><a class="viewcode-back" href="../../../brainspawn.plots.base_plot.html#brainspawn.plots.base_plot.BasePlot">[docs]</a><span class="k">class</span> <span class="nc">BasePlot</span><span class="p">(</span><span class="n">CanvasItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot base class.</span>
+<span class="sd">    In order to add plots to Brainspawn, you will want to</span>
+<span class="sd">    inherit from this class.</span>
+
+<span class="sd">    Note that subclasses must call the base class constructor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="BasePlot.__init__"><a class="viewcode-back" href="../../../brainspawn.plots.base_plot.html#brainspawn.plots.base_plot.BasePlot.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_controller</span><span class="p">,</span> <span class="n">nengo_obj</span><span class="p">,</span> <span class="n">capability</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">main_controller</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot; Plot constructor.</span>
+<span class="sd">        Initializes default config values for all plots,</span>
+<span class="sd">        Sets up the plot view.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            main_controller (VisualizerController): The top-level controller</span>
+<span class="sd">            of the visualizer.</span>
+<span class="sd">            nengo_obj (Nengo): The nengo object this plot is visualizing.</span>
+<span class="sd">            capability (Capability): The capability of the object that this graph</span>
+<span class="sd">            is visualizing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nengo_obj</span> <span class="o">=</span> <span class="n">nengo_obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capability</span> <span class="o">=</span> <span class="n">capability</span>
+</div>
+    <span class="k">def</span> <span class="nf">_build_context_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Context menu setup</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_build_context_menu</span><span class="p">()</span>
+        <span class="n">remove_item</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">MenuItem</span><span class="p">(</span><span class="s">&quot;Remove&quot;</span><span class="p">)</span>
+        <span class="n">remove_item</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;activate&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_plot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_context_menu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">remove_item</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_context_menu</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BasePlot.init_default_config"><a class="viewcode-back" href="../../../brainspawn.plots.base_plot.html#brainspawn.plots.base_plot.BasePlot.init_default_config">[docs]</a>    <span class="k">def</span> <span class="nf">init_default_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets default config values for all plots</span>
+<span class="sd">        The values contained in this dictionary are used to configure</span>
+<span class="sd">        the plot.</span>
+
+<span class="sd">        For convenience in title string formatting,</span>
+<span class="sd">        we set &#39;TARGET&#39; and &#39;DATA&#39; to default values of the</span>
+<span class="sd">        target object, and represented data, respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">init_default_config</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">nengo_obj</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">capability</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;TARGET&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">configurable</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nengo_obj</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;DATA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">configurable</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">capability</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BasePlot.title"><a class="viewcode-back" href="../../../brainspawn.plots.base_plot.html#brainspawn.plots.base_plot.BasePlot.title">[docs]</a>    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return a title for the current graph.</span>
+<span class="sd">        Format the string using self.config as the format dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string. A string to use as the title of the current graph.</span>
+
+<span class="sd">        Note the availability of TARGET and DATA for use in the title</span>
+<span class="sd">        format string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">config_values_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_config_values</span><span class="p">()</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;title&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">config_values_dict</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;title&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">title</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BasePlot.dimensions"><a class="viewcode-back" href="../../../brainspawn.plots.base_plot.html#brainspawn.plots.base_plot.BasePlot.dimensions">[docs]</a>    <span class="k">def</span> <span class="nf">dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the dimensions of the object this graph is representing.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int. The ouput dimensions we are plotting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">capability</span><span class="o">.</span><span class="n">get_out_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nengo_obj</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BasePlot.plot_name"><a class="viewcode-back" href="../../../brainspawn.plots.base_plot.html#brainspawn.plots.base_plot.BasePlot.plot_name">[docs]</a>    <span class="k">def</span> <span class="nf">plot_name</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot; What we call the plot.</span>
+<span class="sd">        (Used when choosing plot from dropdown menu)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;Not implemented&quot;</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BasePlot.supports_cap"><a class="viewcode-back" href="../../../brainspawn.plots.base_plot.html#brainspawn.plots.base_plot.BasePlot.supports_cap">[docs]</a>    <span class="k">def</span> <span class="nf">supports_cap</span><span class="p">(</span><span class="n">capability</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return true if this plot supports the given capability.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            capability (Capablility): The capability to check for plotability.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;Not implemented&quot;</span><span class="p">)</span>
+</div>
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BasePlot.update"><a class="viewcode-back" href="../../../brainspawn.plots.base_plot.html#brainspawn.plots.base_plot.BasePlot.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_step</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Callback function passed to observer nodes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start_step (int): The initial step of the given data.</span>
+<span class="sd">            step_size (float): The time, in simulated seconds, one step represents.</span>
+<span class="sd">            data (numpy.ndarray): The data from the simulator to plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="BasePlot.remove_plot"><a class="viewcode-back" href="../../../brainspawn.plots.base_plot.html#brainspawn.plots.base_plot.BasePlot.remove_plot">[docs]</a>    <span class="k">def</span> <span class="nf">remove_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">canvas</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_controller</span><span class="o">.</span><span class="n">remove_plot_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nengo_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">capability</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

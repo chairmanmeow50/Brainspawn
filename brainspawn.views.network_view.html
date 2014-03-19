@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>brainspawn.views.network_view module &mdash; Brainspawn 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Brainspawn 1.0.0 documentation" href="index.html" />
+    <link rel="up" title="brainspawn.views package" href="brainspawn.views.html" />
+    <link rel="next" title="brainspawn.views.visualizer module" href="brainspawn.views.visualizer.html" />
+    <link rel="prev" title="brainspawn.views.canvas_item module" href="brainspawn.views.canvas_item.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.views.visualizer.html" title="brainspawn.views.visualizer module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.views.canvas_item.html" title="brainspawn.views.canvas_item module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.views.html" accesskey="U">brainspawn.views package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-brainspawn.views.network_view">
+<span id="brainspawn-views-network-view-module"></span><h1>brainspawn.views.network_view module<a class="headerlink" href="#module-brainspawn.views.network_view" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="brainspawn.views.network_view.NetworkView">
+<em class="property">class </em><tt class="descclassname">brainspawn.views.network_view.</tt><tt class="descname">NetworkView</tt><big>(</big><em>controller</em>, <em>model=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">views.canvas_item.CanvasItem</span></tt></p>
+<p>Visualization of a model&#8217;s network</p>
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>controller</em>, <em>model=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.add_selected_node">
+<tt class="descname">add_selected_node</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.add_selected_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.add_selected_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.clear_selected_nodes">
+<tt class="descname">clear_selected_nodes</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.clear_selected_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.clear_selected_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.full_repaint">
+<tt class="descname">full_repaint</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.full_repaint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.full_repaint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears and draws the network view.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.get_name_from_obj">
+<tt class="descname">get_name_from_obj</tt><big>(</big><em>nengo_obj</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.get_name_from_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.get_name_from_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps the given object to the name of the graph node representing it</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.get_obj_from_name">
+<tt class="descname">get_obj_from_name</tt><big>(</big><em>node_name</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.get_obj_from_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.get_obj_from_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps the given graph node name to the object it represents</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.get_relative_positions">
+<tt class="descname">get_relative_positions</tt><big>(</big><em>node_set</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.get_relative_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.get_relative_positions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.init_default_config">
+<tt class="descname">init_default_config</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.init_default_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.init_default_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets default config values for the network view</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.load_model">
+<tt class="descname">load_model</tt><big>(</big><em>model</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.load_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.move_node">
+<tt class="descname">move_node</tt><big>(</big><em>node_name</em>, <em>x</em>, <em>y</em>, <em>rebuild_kd_tree=True</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.move_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.move_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>All coordinates, unless otherwise mentioned, are in screen coordinates</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.move_node_set">
+<tt class="descname">move_node_set</tt><big>(</big><em>relative_positions</em>, <em>grabbed_node_pos</em>, <em>x</em>, <em>y</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.move_node_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.move_node_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves a set of nodes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.networkx_to_screen_coords">
+<tt class="descname">networkx_to_screen_coords</tt><big>(</big><em>coords</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.networkx_to_screen_coords"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.networkx_to_screen_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.node_at">
+<tt class="descname">node_at</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.node_at"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.node_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.node_color">
+<tt class="descname">node_color</tt><big>(</big><em>nengo_obj</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.node_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.node_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides a mapping between graph nodes and their desired colour.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.nx_pos_to_screen">
+<tt class="descname">nx_pos_to_screen</tt><big>(</big><em>pos</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.nx_pos_to_screen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.nx_pos_to_screen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.on_button_press">
+<tt class="descname">on_button_press</tt><big>(</big><em>widget</em>, <em>event</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.on_button_press"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.on_button_press" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.on_button_release">
+<tt class="descname">on_button_release</tt><big>(</big><em>widget</em>, <em>event</em>, <em>canvas</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.on_button_release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.on_button_release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides parent&#8217;s method so it can decide which context menu items
+to add, in order to offer adding graphs based on clicked nengo object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.on_mouse_motion">
+<tt class="descname">on_mouse_motion</tt><big>(</big><em>widget</em>, <em>event</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.on_mouse_motion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.on_mouse_motion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.on_size_allocate">
+<tt class="descname">on_size_allocate</tt><big>(</big><em>widget</em>, <em>allocation</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.on_size_allocate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.on_size_allocate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.rebuild_kd_tree">
+<tt class="descname">rebuild_kd_tree</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.rebuild_kd_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.rebuild_kd_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recalculates the K-D tree used to find graph nodes. Since it&#8217;s in
+display coordinates, it must be recalculated every time the figure&#8217;s
+size changes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.remove_selected_node">
+<tt class="descname">remove_selected_node</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.remove_selected_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.remove_selected_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.repaint">
+<tt class="descname">repaint</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.repaint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.repaint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.restore_layout">
+<tt class="descname">restore_layout</tt><big>(</big><em>layout</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.restore_layout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.restore_layout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restores node positions from layout
+dictionary</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.screen_to_networkx_coords">
+<tt class="descname">screen_to_networkx_coords</tt><big>(</big><em>coords</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.screen_to_networkx_coords"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.screen_to_networkx_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.show_labels">
+<tt class="descname">show_labels</tt><big>(</big><em>visible</em><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.show_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.show_labels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.views.network_view.NetworkView.store_layout">
+<tt class="descname">store_layout</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.store_layout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.store_layout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary representing the
+current node positions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="brainspawn.views.network_view.NetworkView.title">
+<tt class="descname">title</tt><a class="reference internal" href="_modules/brainspawn/views/network_view.html#NetworkView.title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.views.network_view.NetworkView.title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="brainspawn.views.canvas_item.html"
+                        title="previous chapter">brainspawn.views.canvas_item module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="brainspawn.views.visualizer.html"
+                        title="next chapter">brainspawn.views.visualizer module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/brainspawn.views.network_view.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.views.visualizer.html" title="brainspawn.views.visualizer module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="brainspawn.views.canvas_item.html" title="brainspawn.views.canvas_item module"
+             >previous</a> |</li>
+        <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="brainspawn.views.html" >brainspawn.views package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

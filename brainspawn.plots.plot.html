@@ -26,7 +26,7 @@
     <link rel="top" title="Brainspawn 1.0.0 documentation" href="index.html" />
     <link rel="up" title="brainspawn.plots package" href="brainspawn.plots.html" />
     <link rel="next" title="brainspawn.plots.raster_spike module" href="brainspawn.plots.raster_spike.html" />
-    <link rel="prev" title="brainspawn.plots.network_view module" href="brainspawn.plots.network_view.html" /> 
+    <link rel="prev" title="brainspawn.plots.firing_rate module" href="brainspawn.plots.firing_rate.html" /> 
   </head>
   <body>
     <div class="related">
@@ -42,7 +42,7 @@
           <a href="brainspawn.plots.raster_spike.html" title="brainspawn.plots.raster_spike module"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="brainspawn.plots.network_view.html" title="brainspawn.plots.network_view module"
+          <a href="brainspawn.plots.firing_rate.html" title="brainspawn.plots.firing_rate module"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
           <li><a href="brainspawn.plots.html" accesskey="U">brainspawn.plots package</a> &raquo;</li> 
@@ -60,8 +60,8 @@
 <dl class="class">
 <dt id="brainspawn.plots.plot.Plot">
 <em class="property">class </em><tt class="descclassname">brainspawn.plots.plot.</tt><tt class="descname">Plot</tt><big>(</big><em>main_controller</em>, <em>nengo_obj</em>, <em>capability</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>Plot base class.
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">plots.base_plot.BasePlot</span></tt></p>
+<p>Plot class.
 In order to add plots to Brainspawn, you will want to
 inherit from this class.</p>
 <p>Note that subclasses must call the base class constructor.</p>
@@ -74,27 +74,11 @@ inherit from this class.</p>
 <dl class="method">
 <dt id="brainspawn.plots.plot.Plot.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>main_controller</em>, <em>nengo_obj</em>, <em>capability</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot constructor.
-Initializes default config values for all plots,
-Sets up the plot view and axes.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>main_controller (VisualizerController): The top-level controller
-of the visualizer.
-nengo_obj (Nengo): The nengo object this plot is visualizing.
-capability (Capability): The capability of the object that this graph
-is visualizing.</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="brainspawn.plots.plot.Plot.button_press">
-<tt class="descname">button_press</tt><big>(</big><em>widget</em>, <em>event</em>, <em>canvas</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.button_press"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.button_press" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="brainspawn.plots.plot.Plot.init_default_config">
-<tt class="descname">init_default_config</tt><big>(</big><em>nengo_obj</em>, <em>capability</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.init_default_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.init_default_config" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">init_default_config</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.init_default_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.init_default_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets default config values for all plots
 The values contained in this dictionary are used to configure
 the plot.</p>
@@ -104,73 +88,10 @@ target object, and represented data, respectively.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="brainspawn.plots.plot.Plot.on_export_pdf">
-<tt class="descname">on_export_pdf</tt><big>(</big><em>widget</em>, <em>canvas</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.on_export_pdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.on_export_pdf" title="Permalink to this definition">¶</a></dt>
+<dt id="brainspawn.plots.plot.Plot.set_title">
+<tt class="descname">set_title</tt><big>(</big><em>title</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.set_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.set_title" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="staticmethod">
-<dt id="brainspawn.plots.plot.Plot.plot_name">
-<em class="property">static </em><tt class="descname">plot_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.plot_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.plot_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>What we call the plot.
-(Used when choosing plot from dropdown menu)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="brainspawn.plots.plot.Plot.remove_plot">
-<tt class="descname">remove_plot</tt><big>(</big><em>widget</em>, <em>canvas</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.remove_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.remove_plot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="staticmethod">
-<dt id="brainspawn.plots.plot.Plot.supports_cap">
-<em class="property">static </em><tt class="descname">supports_cap</tt><big>(</big><em>capability</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.supports_cap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.supports_cap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return true if this plot supports the given capability.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>capability (Capablility): The capability to check for plotability.</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="brainspawn.plots.plot.Plot.update">
-<tt class="descname">update</tt><big>(</big><em>start_step</em>, <em>step_size</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callback function passed to observer nodes.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>start_step (int): The initial step of the given data.
-step_size (float): The time, in simulated seconds, one step represents.
-data (numpy.ndarray): The data from the simulator to plot.</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="brainspawn.plots.plot.Plot.dimensions">
-<tt class="descname">dimensions</tt><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.dimensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.dimensions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the dimensions of the object this graph is representing.</p>
-<dl class="docutils">
-<dt>Returns:</dt>
-<dd>int. The ouput dimensions we are plotting.</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="brainspawn.plots.plot.Plot.title">
-<tt class="descname">title</tt><a class="reference internal" href="_modules/brainspawn/plots/plot.html#Plot.title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.Plot.title" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a title for the current graph.
-Format the string using self.config as the format dictionary.</p>
-<dl class="docutils">
-<dt>Returns:</dt>
-<dd>string. A string to use as the title of the current graph.</dd>
-</dl>
-<p>Note the availability of TARGET and DATA for use in the title
-format string.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="brainspawn.plots.plot.registered_plot">
-<tt class="descclassname">brainspawn.plots.plot.</tt><tt class="descname">registered_plot</tt><big>(</big><em>cls</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/plot.html#registered_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.plot.registered_plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decorator for plot implementations.</p>
 </dd></dl>
 
 </div>
@@ -182,8 +103,8 @@ format string.</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="brainspawn.plots.network_view.html"
-                        title="previous chapter">brainspawn.plots.network_view module</a></p>
+  <p class="topless"><a href="brainspawn.plots.firing_rate.html"
+                        title="previous chapter">brainspawn.plots.firing_rate module</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="brainspawn.plots.raster_spike.html"
                         title="next chapter">brainspawn.plots.raster_spike module</a></p>
@@ -222,7 +143,7 @@ format string.</p>
           <a href="brainspawn.plots.raster_spike.html" title="brainspawn.plots.raster_spike module"
              >next</a> |</li>
         <li class="right" >
-          <a href="brainspawn.plots.network_view.html" title="brainspawn.plots.network_view module"
+          <a href="brainspawn.plots.firing_rate.html" title="brainspawn.plots.firing_rate module"
              >previous</a> |</li>
         <li><a href="index.html">Brainspawn 1.0.0 documentation</a> &raquo;</li>
           <li><a href="brainspawn.plots.html" >brainspawn.plots package</a> &raquo;</li> 
@@ -230,7 +151,7 @@ format string.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

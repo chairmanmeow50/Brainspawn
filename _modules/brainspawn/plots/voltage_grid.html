@@ -49,7 +49,8 @@
   <h1>Source code for brainspawn.plots.voltage_grid</h1><div class="highlight"><pre>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
-<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">Plot</span><span class="p">,</span> <span class="n">registered_plot</span>
+<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+<span class="kn">from</span> <span class="nn">plots.base_plot</span> <span class="kn">import</span> <span class="n">registered_plot</span>
 <span class="kn">from</span> <span class="nn">plots.firing_rate</span> <span class="kn">import</span> <span class="n">Firing_Rate_Plot</span>
 <span class="kn">import</span> <span class="nn">__future__</span>
 <span class="kn">import</span> <span class="nn">random</span>
@@ -130,8 +131,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">rect_array</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="Voltage_Grid_Plot.__init__"><a class="viewcode-back" href="../../../brainspawn.plots.voltage_grid.html#brainspawn.plots.voltage_grid.Voltage_Grid_Plot.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Voltage_Grid_Plot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">)</span>
+<div class="viewcode-block" id="Voltage_Grid_Plot.__init__"><a class="viewcode-back" href="../../../brainspawn.plots.voltage_grid.html#brainspawn.plots.voltage_grid.Voltage_Grid_Plot.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Voltage_Grid_Plot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">main_controller</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span> <span class="c"># take first from list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
 </pre></div></div></div>
 
           </div>
@@ -171,7 +175,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

@@ -58,12 +58,12 @@
 <span id="brainspawn-plots-value-plot-module"></span><h1>brainspawn.plots.value_plot module<a class="headerlink" href="#module-brainspawn.plots.value_plot" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="brainspawn.plots.value_plot.ValuePlot">
-<em class="property">class </em><tt class="descclassname">brainspawn.plots.value_plot.</tt><tt class="descname">ValuePlot</tt><big>(</big><em>main_controller</em>, <em>nengo_obj</em>, <em>capability</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/value_plot.html#ValuePlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.value_plot.ValuePlot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">brainspawn.plots.value_plot.</tt><tt class="descname">ValuePlot</tt><big>(</big><em>main_controller</em>, <em>nengo_obj</em>, <em>capability</em>, <em>config=None</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/value_plot.html#ValuePlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.value_plot.ValuePlot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">plots.plot.Plot</span></tt></p>
 <p>Graph for plotting values over time.</p>
 <dl class="method">
 <dt id="brainspawn.plots.value_plot.ValuePlot.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>main_controller</em>, <em>nengo_obj</em>, <em>capability</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/value_plot.html#ValuePlot.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.value_plot.ValuePlot.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>main_controller</em>, <em>nengo_obj</em>, <em>capability</em>, <em>config=None</em><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/value_plot.html#ValuePlot.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.value_plot.ValuePlot.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up the plot, and axis labels.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -75,6 +75,11 @@ is visualizing.</dd>
 </dl>
 <p>Note the call to super constructor.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="brainspawn.plots.value_plot.ValuePlot.init_default_config">
+<tt class="descname">init_default_config</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/brainspawn/plots/value_plot.html#ValuePlot.init_default_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainspawn.plots.value_plot.ValuePlot.init_default_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="staticmethod">
 <dt id="brainspawn.plots.value_plot.ValuePlot.plot_name">
@@ -171,7 +176,7 @@ data (int): The data from the simulator to plot.</dd>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

@@ -6,9 +6,10 @@ Submodules
 
 .. toctree::
 
+   brainspawn.plots.base_plot
+   brainspawn.plots.configuration
    brainspawn.plots.dogeplot
    brainspawn.plots.firing_rate
-   brainspawn.plots.network_view
    brainspawn.plots.plot
    brainspawn.plots.raster_spike
    brainspawn.plots.spectrogram

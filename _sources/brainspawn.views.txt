@@ -13,7 +13,8 @@ Submodules
 
 .. toctree::
 
-   brainspawn.views.plot_view
+   brainspawn.views.canvas_item
+   brainspawn.views.network_view
    brainspawn.views.visualizer
 
 Module contents

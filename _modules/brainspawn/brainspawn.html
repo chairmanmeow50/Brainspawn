@@ -62,10 +62,10 @@
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../brainspawn.brainspawn.html#brainspawn.brainspawn.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">sim_manager</span> <span class="o">=</span> <span class="n">SimManager</span><span class="p">()</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="n">arg1</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">arg1</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;.py&quot;</span><span class="p">)):</span>
-            <span class="n">controller</span> <span class="o">=</span> <span class="n">VisualizerController</span><span class="p">(</span><span class="n">sim_manager</span><span class="p">,</span> <span class="n">arg1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">model_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">model_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;.py&quot;</span><span class="p">):</span>
+            <span class="n">controller</span> <span class="o">=</span> <span class="n">VisualizerController</span><span class="p">(</span><span class="n">sim_manager</span><span class="p">,</span> <span class="n">model_file</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">controller</span> <span class="o">=</span> <span class="n">VisualizerController</span><span class="p">(</span><span class="n">sim_manager</span><span class="p">)</span>
 
@@ -112,7 +112,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

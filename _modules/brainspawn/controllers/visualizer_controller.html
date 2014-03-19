@@ -56,11 +56,13 @@
 <span class="kn">import</span> <span class="nn">imp</span>
 <span class="kn">import</span> <span class="nn">gtk</span>
 <span class="kn">import</span> <span class="nn">cairo</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="kn">import</span> <span class="n">Gtk</span>
 
 <span class="kn">from</span> <span class="nn">views.visualizer</span> <span class="kn">import</span> <span class="n">MainFrame</span>
-<span class="kn">from</span> <span class="nn">plots.network_view</span> <span class="kn">import</span> <span class="n">NetworkView</span>
-<span class="kn">from</span> <span class="nn">plots.plot</span> <span class="kn">import</span> <span class="n">REGISTERED_PLOTS</span>
+<span class="kn">from</span> <span class="nn">views.network_view</span> <span class="kn">import</span> <span class="n">NetworkView</span>
+<span class="kn">from</span> <span class="nn">plots.base_plot</span> <span class="kn">import</span> <span class="n">REGISTERED_PLOTS</span>
 
 <div class="viewcode-block" id="VisualizerController"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController">[docs]</a><span class="k">class</span> <span class="nc">VisualizerController</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -75,16 +77,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">registered</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_plots</span><span class="p">()</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_has_network</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_model_file</span> <span class="o">=</span> <span class="bp">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span> <span class="o">=</span> <span class="n">MainFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="p">(</span><span class="n">model_file_name</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">load_model_from_filename</span><span class="p">(</span><span class="n">model_file_name</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="VisualizerController.init_view"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.init_view">[docs]</a>    <span class="k">def</span> <span class="nf">init_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_model_from_filename</span><span class="p">(</span><span class="n">model_file_name</span><span class="p">,</span> <span class="n">load_layout</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="VisualizerController.plots_for_object"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.plots_for_object">[docs]</a>    <span class="k">def</span> <span class="nf">plots_for_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a list of plots available for this object</span>
@@ -97,43 +97,154 @@
                     <span class="n">supported_plots</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">vz</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">supported_plots</span>
 </div>
-<div class="viewcode-block" id="VisualizerController.add_plot_for_obj"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.add_plot_for_obj">[docs]</a>    <span class="k">def</span> <span class="nf">add_plot_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">menu_item</span><span class="p">,</span> <span class="n">plt</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">):</span>
+<div class="viewcode-block" id="VisualizerController.add_plot_for_obj"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.add_plot_for_obj">[docs]</a>    <span class="k">def</span> <span class="nf">add_plot_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plt</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Callback for menu item</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plot</span> <span class="o">=</span> <span class="n">plt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">)</span>
+        <span class="n">plot</span><span class="o">.</span><span class="n">set_config_values</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plot</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">connect_to_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">,</span> <span class="n">plot</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">show_plot</span><span class="p">(</span><span class="n">plot</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">canvas</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">show_plot</span><span class="p">(</span><span class="n">plot</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="VisualizerController.remove_plot_for_obj"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.remove_plot_for_obj">[docs]</a>    <span class="k">def</span> <span class="nf">remove_plot_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">disconnect_from_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cap</span><span class="p">,</span> <span class="n">plot</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">plot</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">remove_plot</span><span class="p">(</span><span class="n">plot</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">canvas</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">remove_plot</span><span class="p">(</span><span class="n">plot</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VisualizerController.on_quit"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.on_quit">[docs]</a>    <span class="k">def</span> <span class="nf">on_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_model_file</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loaded_model_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;.bpwn&#39;</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_layout_dict</span><span class="p">(),</span> <span class="n">f</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VisualizerController.on_save_layout"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.on_save_layout">[docs]</a>    <span class="k">def</span> <span class="nf">on_save_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">get_title</span><span class="p">()</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_save</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;.bpwn&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_layout_dict</span><span class="p">(),</span> <span class="n">f</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VisualizerController.on_restore_layout"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.on_restore_layout">[docs]</a>    <span class="k">def</span> <span class="nf">on_restore_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_open</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s">&quot;bpwn&quot;</span><span class="p">,</span> <span class="n">ext_name</span><span class="o">=</span><span class="s">&quot;Layout files&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restore_layout_dict</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">load_model</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="VisualizerController.on_open_model"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.on_open_model">[docs]</a>    <span class="k">def</span> <span class="nf">on_open_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_open</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s">&quot;py&quot;</span><span class="p">,</span> <span class="n">ext_name</span><span class="o">=</span><span class="s">&quot;Python files&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_model_from_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        </div>
-<div class="viewcode-block" id="VisualizerController.load_model_from_filename"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.load_model_from_filename">[docs]</a>    <span class="k">def</span> <span class="nf">load_model_from_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_model_from_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">load_layout</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VisualizerController.restore_layout_dict"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.restore_layout_dict">[docs]</a>    <span class="k">def</span> <span class="nf">restore_layout_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">load_model</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Restores layout from dict</span>
+<span class="sd">        Throws:</span>
+<span class="sd">            ValueError - dct could not be loaded</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">layout_dict</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;layout&#39;</span><span class="p">]</span>
+
+        <span class="c"># Restore model file</span>
+        <span class="k">if</span> <span class="n">load_model</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_model_from_filename</span><span class="p">(</span><span class="n">layout_dict</span><span class="p">[</span><span class="s">&#39;model&#39;</span><span class="p">],</span> <span class="n">load_layout</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="c"># Restore plots</span>
+        <span class="k">for</span> <span class="n">plot_dict</span> <span class="ow">in</span> <span class="n">layout_dict</span><span class="p">[</span><span class="s">&#39;plots&#39;</span><span class="p">]:</span>
+            <span class="n">target_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nengo_for_uid</span><span class="p">(</span><span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;target_obj&#39;</span><span class="p">])</span>
+            <span class="n">target_cap_name</span> <span class="o">=</span> <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;target_cap&#39;</span><span class="p">]</span>
+            <span class="n">target_cap</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">for</span> <span class="n">cap</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_manager</span><span class="o">.</span><span class="n">get_caps_for_obj</span><span class="p">(</span><span class="n">target_obj</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">cap</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">target_cap_name</span><span class="p">:</span>
+                    <span class="n">target_cap</span> <span class="o">=</span> <span class="n">cap</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">target_cap</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;No capability for nengo object: &quot;</span> <span class="o">+</span> <span class="n">target_obj</span> <span class="o">+</span> <span class="s">&quot; with name: &quot;</span> <span class="o">+</span> <span class="n">target_cap_name</span><span class="p">)</span>
+            <span class="n">plot_type</span> <span class="o">=</span> <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;plot_type&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">plot_cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="n">plot_cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_plot_for_obj</span><span class="p">(</span><span class="n">plot_cls</span><span class="p">,</span> <span class="n">target_obj</span><span class="p">,</span> <span class="n">target_cap</span><span class="p">,</span> <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;config&#39;</span><span class="p">],</span> <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">],</span> <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;size&#39;</span><span class="p">])</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># loop exited without break</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;No plot:&quot;</span> <span class="o">+</span> <span class="n">plot_type</span> <span class="o">+</span> <span class="s">&quot;for nengo object: &quot;</span> <span class="o">+</span> <span class="n">target_obj</span> <span class="o">+</span> <span class="s">&quot; with name: &quot;</span> <span class="o">+</span> <span class="n">target_cap_name</span><span class="p">)</span>
+
+        <span class="c"># Restore network</span>
+        <span class="n">net_dict</span> <span class="o">=</span> <span class="n">layout_dict</span><span class="p">[</span><span class="s">&#39;network&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">set_item_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="p">,</span> <span class="n">net_dict</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">set_item_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="p">,</span> <span class="n">net_dict</span><span class="p">[</span><span class="s">&#39;size&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="o">.</span><span class="n">restore_layout</span><span class="p">(</span><span class="n">net_dict</span><span class="p">[</span><span class="s">&#39;network_layout&#39;</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="VisualizerController.get_layout_dict"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.get_layout_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_layout_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">layout_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c"># Save model file</span>
+        <span class="n">layout_dict</span><span class="p">[</span><span class="s">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_model_file</span>
+        <span class="c"># Save plots</span>
+        <span class="n">layout_dict</span><span class="p">[</span><span class="s">&#39;plots&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">:</span>
+            <span class="n">plot_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;plot_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+            <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;target_obj&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uid_for_nengo</span><span class="p">(</span><span class="n">plot</span><span class="o">.</span><span class="n">nengo_obj</span><span class="p">)</span>
+            <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;target_cap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">capability</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">get_item_position</span><span class="p">(</span><span class="n">plot</span><span class="p">)</span>
+            <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">get_item_size</span><span class="p">(</span><span class="n">plot</span><span class="p">)</span>
+            <span class="n">plot_dict</span><span class="p">[</span><span class="s">&#39;config&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">get_config_values</span><span class="p">()</span>
+            <span class="n">layout_dict</span><span class="p">[</span><span class="s">&#39;plots&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plot_dict</span><span class="p">)</span>
+        <span class="c"># Save network</span>
+        <span class="n">net_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">net_dict</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">get_item_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="p">)</span>
+        <span class="n">net_dict</span><span class="p">[</span><span class="s">&#39;size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">get_item_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="p">)</span>
+        <span class="n">net_dict</span><span class="p">[</span><span class="s">&#39;network_layout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="o">.</span><span class="n">store_layout</span><span class="p">()</span>
+        <span class="n">layout_dict</span><span class="p">[</span><span class="s">&#39;network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net_dict</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;layout&#39;</span><span class="p">:</span> <span class="n">layout_dict</span><span class="p">}</span>
+</div>
+<div class="viewcode-block" id="VisualizerController.get_uid_for_nengo"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.get_uid_for_nengo">[docs]</a>    <span class="k">def</span> <span class="nf">get_uid_for_nengo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nengo_obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets a consistent uid for the given nengo object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Let&#39;s just use the network view&#39;s method right now, since that seems to be working great</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="o">.</span><span class="n">get_name_from_obj</span><span class="p">(</span><span class="n">nengo_obj</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VisualizerController.get_nengo_for_uid"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.get_nengo_for_uid">[docs]</a>    <span class="k">def</span> <span class="nf">get_nengo_for_uid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets a nengo object for a given uid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="o">.</span><span class="n">get_obj_from_name</span><span class="p">(</span><span class="n">uid</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VisualizerController.load_model_from_filename"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.load_model_from_filename">[docs]</a>    <span class="k">def</span> <span class="nf">load_model_from_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">load_layout</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="n">mod_name</span><span class="p">,</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">module</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">load_source</span><span class="p">(</span><span class="n">mod_name</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_model_file</span> <span class="o">=</span> <span class="n">filename</span>
             <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_network</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">canvas</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_has_network</span> <span class="o">=</span> <span class="bp">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">controller_panel</span><span class="o">.</span><span class="n">enable_controls</span><span class="p">()</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">,</span> <span class="ne">SyntaxError</span><span class="p">):</span>
-            <span class="n">dialog</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">window</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageType</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
-                <span class="n">Gtk</span><span class="o">.</span><span class="n">ButtonsType</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="s">&quot;Error loading model&quot;</span><span class="p">)</span>
-            <span class="n">dialog</span><span class="o">.</span><span class="n">format_secondary_text</span><span class="p">(</span>
-                <span class="s">&quot;Could not load model from &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
-            
-            <span class="n">dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-            <span class="n">dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
-            </div>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">,</span> <span class="ne">SyntaxError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">e</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_err_dialog</span><span class="p">(</span><span class="s">&quot;Error loading model&quot;</span><span class="p">,</span> <span class="s">&quot;Could not load model from &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">load_layout</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">layout_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loaded_model_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;.bpwn&#39;</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">layout_file</span><span class="p">:</span>
+                    <span class="k">return</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">layout_file</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">restore_layout_dict</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c"># If the layout file isn&#39;t there, don&#39;t bug user...</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="ne">IOError</span><span class="p">:</span>
+                    <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">show_err_dialog</span><span class="p">(</span><span class="s">&quot;Error loading layout for model&quot;</span><span class="p">,</span> <span class="s">&quot;Could not load layout from &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">layout_file</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">load_model_from_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">load_layout</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">network_view</span><span class="o">.</span><span class="n">init_default_config</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VisualizerController.show_err_dialog"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.show_err_dialog">[docs]</a>    <span class="k">def</span> <span class="nf">show_err_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">secondary</span><span class="p">):</span>
+        <span class="n">dialog</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span><span class="o">.</span><span class="n">window</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageType</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+            <span class="n">Gtk</span><span class="o">.</span><span class="n">ButtonsType</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">format_secondary_text</span><span class="p">(</span><span class="n">secondary</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+
+</div>
 <div class="viewcode-block" id="VisualizerController.load_model"><a class="viewcode-back" href="../../../brainspawn.controllers.visualizer_controller.html#brainspawn.controllers.visualizer_controller.VisualizerController.load_model">[docs]</a>    <span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
         <span class="n">copy_plots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[:]</span>
         <span class="k">for</span> <span class="n">plt</span> <span class="ow">in</span> <span class="n">copy_plots</span><span class="p">:</span>
@@ -254,7 +365,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

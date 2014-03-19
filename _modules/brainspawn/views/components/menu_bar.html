@@ -59,7 +59,11 @@
         <span class="n">file_submenu</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">Menu</span><span class="p">()</span>
         <span class="n">file_menu</span><span class="o">.</span><span class="n">set_submenu</span><span class="p">(</span><span class="n">file_submenu</span><span class="p">)</span>
 
+        <span class="n">accel</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">AccelGroup</span><span class="p">()</span>
+        <span class="n">main_frame</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">add_accel_group</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+
         <span class="n">open_menu_item</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">MenuItem</span><span class="p">(</span><span class="s">&quot;Open Model...&quot;</span><span class="p">)</span>
+        <span class="n">open_menu_item</span><span class="o">.</span><span class="n">add_accelerator</span><span class="p">(</span><span class="s">&quot;activate&quot;</span><span class="p">,</span> <span class="n">accel</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s">&#39;O&#39;</span><span class="p">),</span> <span class="n">gtk</span><span class="o">.</span><span class="n">gdk</span><span class="o">.</span><span class="n">CONTROL_MASK</span><span class="p">,</span> <span class="n">gtk</span><span class="o">.</span><span class="n">ACCEL_VISIBLE</span><span class="p">)</span>
         <span class="n">open_menu_item</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;activate&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">.</span><span class="n">on_open_model</span><span class="p">)</span>
         <span class="n">open_menu_item</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
         <span class="n">file_submenu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">open_menu_item</span><span class="p">)</span>
@@ -111,7 +115,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Andrew Tinits, Grant Davis, Mike Chong, Tony Ren.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>
