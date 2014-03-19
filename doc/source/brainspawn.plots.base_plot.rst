@@ -1,7 +1,7 @@
-brainspawn.views.plot_view module
+brainspawn.plots.base_plot module
 =================================
 
-.. automodule:: brainspawn.views.plot_view
+.. automodule:: brainspawn.plots.base_plot
     :members:
     :undoc-members:
     :show-inheritance:

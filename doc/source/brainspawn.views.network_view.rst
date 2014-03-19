@@ -1,7 +1,7 @@
-brainspawn.plots.network_view module
+brainspawn.views.network_view module
 ====================================
 
-.. automodule:: brainspawn.plots.network_view
+.. automodule:: brainspawn.views.network_view
     :members:
     :undoc-members:
     :show-inheritance:

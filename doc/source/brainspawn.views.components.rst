@@ -7,6 +7,7 @@ Submodules
 .. toctree::
 
    brainspawn.views.components.controller_panel
+   brainspawn.views.components.customize_window
    brainspawn.views.components.input_panel
    brainspawn.views.components.menu_bar
    brainspawn.views.components.resize_box
