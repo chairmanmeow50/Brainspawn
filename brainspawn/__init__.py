@@ -1,5 +1,2 @@
-#
-
-NAME = 'brainspawn'
-__version__ = '0.1'
-
+NAME = "brainspawn"
+__version__ = "1.1"
