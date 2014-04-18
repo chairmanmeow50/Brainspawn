@@ -15,7 +15,7 @@ class Spectrogram(Plot):
         self.axes.set_title(self.title)
         self.axes.set_ylabel("Frequency (Hz)")
         self.axes.set_xlabel("Time (s)")
-        self.axes.set_xlim([0, 1])
+        self.axes.set_xlim([0, settings.PLOT_DEFAULT_X_WIDTH])
         self._image = None
 
     @staticmethod

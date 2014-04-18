@@ -24,7 +24,7 @@ class ValuePlot(Plot):
         """
         super(ValuePlot, self).__init__(main_controller, nengo_obj, capability)
 
-        self.axes.set_xlim([0, 1])
+        self.axes.set_xlim([0, settings.PLOT_DEFAULT_X_WIDTH])
 
         self.lines = self.axes.plot([], np.empty((0, self.dimensions)))
 
