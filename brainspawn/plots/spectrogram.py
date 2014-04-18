@@ -2,6 +2,7 @@ from plots.base_plot import registered_plot
 from plots.plot import Plot
 import matplotlib.cm as cm
 import numpy as np
+import settings
 
 @registered_plot
 class Spectrogram(Plot):
@@ -35,4 +36,5 @@ class Spectrogram(Plot):
         end_time = (start_step + data.shape[0]) * step_size
         Pxx, freqs, bins, self._image = self.axes.specgram(
                 np.average(data, 1), Fs=1.0/step_size, cmap=cm.gist_heat, xextent=(start_time, end_time))
-        self.axes.set_xlim([start_time, max(end_time, 1)])
+    
+        self.set_default_xlim(end_time, settings.PLOT_DEFAULT_X_WIDTH)

@@ -5,6 +5,7 @@ import gtk
 from abc import ABCMeta, abstractmethod
 from plots.base_plot import BasePlot
 from plots.configuration import Configuration
+import settings
 
 class Plot(BasePlot):
     """Plot class.
@@ -56,3 +57,9 @@ class Plot(BasePlot):
 
     def set_title(self, title):
         self.axes.set_title(self.title)
+        
+    def set_default_xlim(self, end_time, x_width):
+        if end_time > x_width:
+            self.axes.set_xlim([end_time - x_width, end_time])
+        else:
+            self.axes.set_xlim([0, x_width])

@@ -2,6 +2,7 @@ import numpy as np
 from plots.plot import Plot
 from plots.base_plot import registered_plot
 from plots.configuration import Configuration
+import settings
 
 @registered_plot
 class ValuePlot(Plot):
@@ -118,8 +119,5 @@ class ValuePlot(Plot):
         self.axes.relim()
         self.axes.autoscale_view(tight=True)
 
-        if end_time > 1 and len(t) > 1:
-            self.axes.set_xlim([t[0], t[-1]])
-        else:
-            self.axes.set_xlim([0, 1])
+        self.set_default_xlim(end_time, settings.PLOT_DEFAULT_X_WIDTH)
 

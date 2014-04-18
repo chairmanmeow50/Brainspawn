@@ -41,4 +41,5 @@ class RasterSpike(Plot):
         self._image = self.axes.imshow(  # interpolation="none" is not supported on cairo
                 spikes_view.T, cmap="binary", aspect="auto", interpolation="nearest", origin="lower",
                 extent=(start_time, end_time, 0, spikes_view.shape[1]))
-        self.axes.set_xlim([start_time, max(end_time, self._initial_end_time)])
+        
+        self.set_default_xlim(max(end_time, self._initial_end_time), self._initial_end_time)
