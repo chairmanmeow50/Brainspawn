@@ -15,8 +15,8 @@ class ResizeBox(Gtk.EventBox):
         self._is_resize = False
         self._highlight = False
         
-        self._begin_drag_x = 0
-        self._begin_drag_y = 0
+        self._drag_begin_x = 0
+        self._drag_begin_y = 0
         self._drag = False
 
         self.add(self._canvas)
@@ -43,6 +43,7 @@ class ResizeBox(Gtk.EventBox):
                 self._resize_begin_x, self._resize_begin_y = self._canvas_layout.get_pointer()
             else:
                 self._drag = True
+                self._prev_canvas_x, self._prev_canvas_y = self._canvas_layout.get_pointer()
                 self._drag_begin_x = event.x
                 self._drag_begin_y = event.y
             self._original_size = self._width, self._height
@@ -64,11 +65,14 @@ class ResizeBox(Gtk.EventBox):
             new_height = max(new_height, settings.RESIZE_MIN_HEIGHT)
             self.set_size(new_width, new_height)
         elif self._drag:
-            offset_x = event.x - self._drag_begin_x
-            offset_y = event.y - self._drag_begin_y
+            canvas_x, canvas_y = self._canvas_layout.get_pointer()
+            offset_x = canvas_x - self._prev_canvas_x
+            offset_y = canvas_y - self._prev_canvas_y
             new_x = int(round(self.pos_x + offset_x))
             new_y = int(round(self.pos_y + offset_y))
             self.set_position(new_x, new_y)
+            self._prev_canvas_x = canvas_x
+            self._prev_canvas_y = canvas_y
 
     def size_allocate(self, widget, allocation):
         border_width = settings.RESIZE_BOX_WIDTH + settings.RESIZE_BOX_LINE_WIDTH
