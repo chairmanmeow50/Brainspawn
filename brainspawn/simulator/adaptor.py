@@ -31,6 +31,9 @@ class OutputFn(collections.Callable):
     """
 
     def __init__(self, sim_manager, dimensions):
+        """ Sets up simulator manager
+        Creates buffers for data
+        """
         self.sim_manager = sim_manager
         self.dimensions = dimensions
         self.buffer = None
@@ -54,10 +57,17 @@ class OutputFn(collections.Callable):
             self.update_all()
 
     def update_all(self):
+        """ Calls the update function for all
+        subscribed functions in self.subscribed_fns
+        """
         for fn in self.subscribed_fns:
             self.update(fn)
 
     def update(self, fn):
+        """ Updates with data in a specific range,
+        starting at the beginning of the buffer to the current simulation
+        step
+        """
         if (self.buffer and self.buffer_start_step is not None):
             start_step = max(self.buffer_start_step, 
                              self.sim_manager.current_step - \
@@ -69,6 +79,9 @@ class OutputFn(collections.Callable):
             fn(start_step, self.sim_manager.dt, data)
 
     def reset(self):
+        """ Resets data buffers, and calls update once
+        with empty data buffers
+        """
         if self.buffer:
             self.buffer.reset()
             self.buffer_start_step = None
@@ -101,6 +114,8 @@ class Buffer(object):
     """
 
     def __init__(self, dimensions):
+        """ Initializes buffer
+        """
         self.max_size = settings.MAX_BUFFER_ELEMENTS
         self.data = np.empty([self.max_size*2,dimensions])
         self.window_start = 0
@@ -124,6 +139,8 @@ class Buffer(object):
         return self.data[self.window_start:self.size]
 
     def reset(self):
+        """ Resets window start and size
+        """
         self.window_start = 0
         self.size = 0
 
@@ -137,6 +154,9 @@ class Adaptor(object):
     """
 
     def __init__(self, sim_manager, obj):
+        """ Initializes adapter, adds all supported capabilities
+        connects to simulator manager
+        """
         self.caps = []
         self.out_fns = {}
         self.obj = obj
@@ -198,10 +218,14 @@ class Adaptor(object):
         self.out_fns[cap].unsubscribe(fn)
 
     def update_all(self):
+        """ Calls update_all on all OutputFn objects
+        """
         for cap, out_fn in self.out_fns.items():
             out_fn.update_all()
 
     def reset(self):
+        """ Calls reset on all OutputFn objects
+        """
         for cap, out_fn in self.out_fns.items():
             out_fn.reset()
 
