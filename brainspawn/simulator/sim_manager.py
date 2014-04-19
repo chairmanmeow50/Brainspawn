@@ -9,6 +9,8 @@ class SimManager(object):
     """
 
     def __init__(self):
+        """ Initialize simulator
+        """
         self.dt = 0.0
         self.min_step = 0
         self.last_sim_step = 0
@@ -18,10 +20,15 @@ class SimManager(object):
 
     @property
     def current_step(self):
+        """ Returns current simulation step
+        """
         return self._current_step
 
     @current_step.setter
     def current_step(self, value):
+        """ Method used to set current simulation time step
+        Used to scrub through time range with slider
+        """
         self._current_step = value
         self.update_all()
 
@@ -95,6 +102,8 @@ class SimManager(object):
         self._current_step += 1
 
     def update_all(self):
+        """ Calls update_all for all adaptor objects
+        """
         for obj, adaptor in self.adaptors.items():
             adaptor.update_all()
 
