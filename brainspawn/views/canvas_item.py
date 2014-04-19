@@ -3,9 +3,11 @@
 
 import gtk
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
+from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as \
+    FigureCanvas
 from collections import OrderedDict
 from views.components.customize_window import CustomizeWindow
+import settings
 
 class CanvasItem(object):
     """Canvas Item
@@ -25,7 +27,8 @@ class CanvasItem(object):
 
         self._context_menu = gtk.Menu()
         self._build_context_menu()
-        self.canvas.connect("button_release_event", self.on_button_release, self.canvas)
+        self.canvas.connect("button_release_event", self.on_button_release, 
+                            self.canvas)
 
     def _build_context_menu(self):
         """Context menu setup
@@ -47,7 +50,8 @@ class CanvasItem(object):
         return self.config
 
     def get_config_values(self):
-        return {key : configuration.value for key, configuration in self.config.iteritems()}
+        return {key : configuration.value for key, configuration in \
+                self.config.iteritems()}
 
     def set_config_values(self, config):
         if (config):
@@ -79,8 +83,9 @@ class CanvasItem(object):
         self.main_controller.on_export_pdf(None, canvas, self.title)
 
     def on_button_release(self, widget, event, canvas):
-        if event.button == 3:
-            self._context_menu.popup(None, None, None, None, event.button, event.time)
+        if event.button == settings.EVENT_BUTTON_RIGHT_CLICK:
+            self._context_menu.popup(None, None, None, None, event.button, \
+                                     event.time)
             return True
         return False
 

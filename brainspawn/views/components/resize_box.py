@@ -40,10 +40,12 @@ class ResizeBox(Gtk.EventBox):
                 getattr(self.get_window(), 'raise')()
             if (self.is_within_resize_bounds(int(event.x), int(event.y))):
                 self._is_resize = True
-                self._resize_begin_x, self._resize_begin_y = self._canvas_layout.get_pointer()
+                self._resize_begin_x, self._resize_begin_y = \
+                    self._canvas_layout.get_pointer()
             else:
                 self._drag = True
-                self._prev_canvas_x, self._prev_canvas_y = self._canvas_layout.get_pointer()
+                self._prev_canvas_x, self._prev_canvas_y = \
+                    self._canvas_layout.get_pointer()
                 self._drag_begin_x = event.x
                 self._drag_begin_y = event.y
             self._original_size = self._width, self._height
@@ -75,7 +77,8 @@ class ResizeBox(Gtk.EventBox):
             self._prev_canvas_y = canvas_y
 
     def size_allocate(self, widget, allocation):
-        border_width = settings.RESIZE_BOX_WIDTH + settings.RESIZE_BOX_LINE_WIDTH
+        border_width = settings.RESIZE_BOX_WIDTH + \
+            settings.RESIZE_BOX_LINE_WIDTH
         allocation.x = border_width
         allocation.y = border_width
         allocation.width = allocation.width - border_width * 2
@@ -115,9 +118,12 @@ class ResizeBox(Gtk.EventBox):
             # resize box
             ctx.new_path()
             ctx.set_line_width(settings.RESIZE_BOX_LINE_WIDTH)
-            bottom_right_x = self.get_width() - settings.RESIZE_BOX_WIDTH - settings.RESIZE_BOX_LINE_WIDTH / 2
-            bottom_right_y = self.get_height() - settings.RESIZE_BOX_HEIGHT - settings.RESIZE_BOX_LINE_WIDTH / 2
-            ctx.rectangle(bottom_right_x, bottom_right_y, settings.RESIZE_BOX_WIDTH, settings.RESIZE_BOX_HEIGHT)
+            bottom_right_x = self.get_width() - \
+                settings.RESIZE_BOX_WIDTH - settings.RESIZE_BOX_LINE_WIDTH / 2
+            bottom_right_y = self.get_height() - \
+                settings.RESIZE_BOX_HEIGHT - settings.RESIZE_BOX_LINE_WIDTH / 2
+            ctx.rectangle(bottom_right_x, bottom_right_y, 
+                          settings.RESIZE_BOX_WIDTH, settings.RESIZE_BOX_HEIGHT)
             ctx.set_source_rgba(0, 0, 0, 1)
             ctx.set_dash([], 0)
             ctx.stroke()
@@ -129,10 +135,16 @@ class ResizeBox(Gtk.EventBox):
         self.queue_draw()
 
     def is_within_resize_bounds(self, x, y):
-        x_min = self.get_width() - settings.RESIZE_BOX_WIDTH - settings.RESIZE_BOX_LINE_WIDTH / 2
-        y_min = self.get_height() - settings.RESIZE_BOX_HEIGHT - settings.RESIZE_BOX_LINE_WIDTH / 2
-        x_max = x_min + settings.RESIZE_BOX_WIDTH + settings.RESIZE_BOX_LINE_WIDTH / 2
-        y_max = y_min + settings.RESIZE_BOX_HEIGHT + settings.RESIZE_BOX_LINE_WIDTH / 2
+        x_min = self.get_width() - \
+            settings.RESIZE_BOX_WIDTH - \
+            settings.RESIZE_BOX_LINE_WIDTH / 2
+        y_min = self.get_height() - \
+            settings.RESIZE_BOX_HEIGHT - \
+            settings.RESIZE_BOX_LINE_WIDTH / 2
+        x_max = x_min + settings.RESIZE_BOX_WIDTH + \
+            settings.RESIZE_BOX_LINE_WIDTH / 2
+        y_max = y_min + settings.RESIZE_BOX_HEIGHT + \
+            settings.RESIZE_BOX_LINE_WIDTH / 2
         if (x >= x_min and x <= x_max and y >= y_min and y <= y_max):
             return True
         return False

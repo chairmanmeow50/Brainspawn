@@ -1,10 +1,11 @@
 import gtk
 from gi.repository import Gtk
+import settings
 
 class CustomizeWindow:
     def __init__(self, plot, **kwargs):
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window.set_border_width(10)
+        self.window.set_border_width(settings.CUSTOMIZE_WINDOW_BORDER_WIDTH)
         self.window.set_resizable(False)
         self.plot = plot
         self.window.set_title("Customize")
@@ -20,8 +21,10 @@ class CustomizeWindow:
             for option_name in self.options:
                 if (self.options[option_name].configurable):
                     data_type = self.options[option_name].data_type
-                    text_label = gtk.Label(self.options[option_name].display_name)
-                    self.revert_data[option_name] = self.options[option_name].value
+                    text_label = \
+                        gtk.Label(self.options[option_name].display_name)
+                    self.revert_data[option_name] = \
+                        self.options[option_name].value
                     
                     if (data_type == 'text'):
                         control = gtk.Entry()
@@ -33,7 +36,8 @@ class CustomizeWindow:
                             control.append(combo_value, combo_value)
                         control.set_entry_text_column(0)
                         
-                        control.set_active(combo_values.index(self.options[option_name].value))
+                        control.set_active(combo_values.index(\
+                                           self.options[option_name].value))
                     elif (data_type == 'boolean'):
                         control = Gtk.CheckButton()
                         control.set_active(self.options[option_name].value)
@@ -41,8 +45,11 @@ class CustomizeWindow:
                         control = Gtk.Button("Color chooser...")
                         
                         color_selection_dialog = Gtk.ColorSelectionDialog()
-                        control.connect("clicked", self.show_color_selection_dialog, color_selection_dialog)
-                        color_selection = color_selection_dialog.get_color_selection()
+                        control.connect("clicked", 
+                                        self.show_color_selection_dialog, 
+                                        color_selection_dialog)
+                        color_selection = \
+                            color_selection_dialog.get_color_selection()
                         self.controls[option_name] = color_selection
                         color_selection.connect("color_changed", self.apply_all)
                     elif (data_type == 'slider'):
@@ -51,9 +58,11 @@ class CustomizeWindow:
                         bound_min, bound_max = self.options[option_name].bounds
                         slider_adjustment.set_lower(bound_min)
                         slider_adjustment.set_upper(bound_max)
-                        slider_adjustment.set_value(self.options[option_name].value)
+                        slider_adjustment.set_value(\
+                                            self.options[option_name].value)
                         self.controls[option_name] = control
-                        slider_adjustment.connect("value_changed", self.apply_all)
+                        slider_adjustment.connect("value_changed", 
+                                                  self.apply_all)
                                 
                     if (control):
                         if (data_type == 'text' or data_type == 'combo'):
@@ -73,11 +82,13 @@ class CustomizeWindow:
 
         ok_button = gtk.Button(label="Ok")
         ok_button.connect("clicked", self.ok_clicked)
-        ok_button.set_size_request(80, 20)
+        ok_button.set_size_request(settings.CUSTOMIZE_WINDOW_BUTTON_WIDTH, 
+                                   settings.CUSTOMIZE_WINDOW_BUTTON_HEIGHT)
         
         revert_button = gtk.Button(label="Revert")
         revert_button.connect("clicked", self.revert_all)
-        revert_button.set_size_request(80, 20)
+        revert_button.set_size_request(settings.CUSTOMIZE_WINDOW_BUTTON_WIDTH, 
+                                       settings.CUSTOMIZE_WINDOW_BUTTON_HEIGHT)
         
         button_hbox = Gtk.Box(Gtk.Orientation.HORIZONTAL, 20)
         button_hbox.set_homogeneous(True)
@@ -118,7 +129,8 @@ class CustomizeWindow:
         response = dialog.run()
         if (response != Gtk.ResponseType.OK):
             color_selection = dialog.get_color_selection()
-            color_selection.set_current_color(color_selection.get_previous_color())
+            color_selection.set_current_color(\
+                                        color_selection.get_previous_color())
         dialog.hide()
     
     def apply_all(self, widget):
@@ -130,7 +142,8 @@ class CustomizeWindow:
         if (data_type == 'text'):
             self.controls[option_name].set_text(revert_val)
         elif (data_type == 'combo'):
-            revert_val_index = self.options[option_name].combo.index(revert_val)
+            revert_val_index = \
+                self.options[option_name].combo.index(revert_val)
             self.controls[option_name].set_active(revert_val_index)
         elif (data_type == 'boolean'):
             self.controls[option_name].set_active(revert_val)
@@ -157,6 +170,8 @@ class CustomizeWindow:
             return self.controls[option_name].get_active()
         elif (data_type == 'color'):
             rgba = self.controls[option_name].get_current_color()
-            return (rgba.red/65535.0, rgba.green/65535.0, rgba.blue/65535.0)
+            return (rgba.red/settings.MAX_UNSIGNED_SHORT_FLOAT, 
+                    rgba.green/settings.MAX_UNSIGNED_SHORT_FLOAT, 
+                    rgba.blue/settings.MAX_UNSIGNED_SHORT_FLOAT)
         elif (data_type == 'slider'):
             return self.controls[option_name].get_value()

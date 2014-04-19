@@ -15,6 +15,7 @@ from views.components.resize_box import ResizeBox
 import simulator.sim_manager
 
 from matplotlib.backends.backend_gtk3 import TimerGTK3
+import settings
 
 
 # Fix for a method that is not properly introspected
@@ -42,7 +43,8 @@ class MainFrame:
 
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window.set_default_size(800, 600)
+        self.window.set_default_size(settings.VISUALIZER_WIDTH, 
+                                     settings.VISUALIZER_HEIGHT)
         self.window.set_title("Nengo Visualizer")
         self.window.connect("delete_event", self.on_quit)
 
@@ -52,16 +54,19 @@ class MainFrame:
 
         self.layout_event_box = gtk.EventBox()
         self.canvas_layout = gtk.Layout()
-        self.layout_event_box.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#ffffff"))
-        self.layout_event_box.connect("button_release_event", controller.on_layout_button_release)
+        self.layout_event_box.modify_bg(gtk.STATE_NORMAL, 
+                                        gtk.gdk.color_parse("#ffffff"))
+        self.layout_event_box.connect("button_release_event", 
+                                      controller.on_layout_button_release)
 
         # Used to control framerate for redrawing graph components
-        self.sim_rate = 6 # rate at which we call sim.step()
-        self.framerate = 2
+        # rate at which we call sim.step()
+        self.sim_rate = settings.SIMULATOR_DEFAULT_SIM_RATE 
+        self.framerate = settings.SIMULATOR_FRAME_RATE
         self.next_gcomponent_redraw = 0
 
         # pretend new_timer is a static method
-        self.timer = TimerGTK3(interval=1)
+        self.timer = TimerGTK3(interval=settings.VISUALIZER_TIMER_INTERVAL)
         self.timer.add_callback(self.step)
         self.timer.single_shot = True
 
@@ -83,7 +88,8 @@ class MainFrame:
         gtk.main_quit()
 
     def hscale_change(self, range, scroll, value):
-        if value < self.sim_manager.min_step or value > self.sim_manager.last_sim_step:
+        if value < self.sim_manager.min_step or \
+           value > self.sim_manager.last_sim_step:
             return
         self.sim_manager.current_step = value
         self.update_canvas()
@@ -93,8 +99,10 @@ class MainFrame:
         if (self.playing == True):
             self.sim_manager.step()
 
-            self.controller_panel.update_slider(self.sim_manager.min_step, self.sim_manager.last_sim_step,
-                                                self.sim_manager.current_step, self.sim_manager.dt)
+            self.controller_panel.update_slider(self.sim_manager.min_step, 
+                                                self.sim_manager.last_sim_step,
+                                                self.sim_manager.current_step, 
+                                                self.sim_manager.dt)
 
             if (self.next_gcomponent_redraw == 0):
                 self.update_canvas()
@@ -102,7 +110,7 @@ class MainFrame:
             else:
                 self.next_gcomponent_redraw -= 1
 
-            self.timer.start(1)
+            self.timer.start(settings.VISUALIZER_TIMER_INTERVAL)
 
     def update_canvas(self):
         self.canvas_layout.queue_draw()
@@ -169,8 +177,10 @@ class MainFrame:
         self.resize_boxes[plot] = resize_box
         # Set position
         if (center):
-            x = (self.window.get_allocated_width() - resize_box.get_width()) / 2
-            y = (self.canvas_layout.get_allocated_height() - resize_box.get_height()) / 2
+            x = (self.window.get_allocated_width() - 
+                 resize_box.get_width()) / 2
+            y = (self.canvas_layout.get_allocated_height() - 
+                 resize_box.get_height()) / 2
         elif position:
             x, y = position
         else:
@@ -191,7 +201,8 @@ class MainFrame:
         return (self.resize_boxes[item].pos_x, self.resize_boxes[item].pos_y)
 
     def get_item_size(self, item):
-        return (self.resize_boxes[item].get_width(), self.resize_boxes[item].get_height())
+        return (self.resize_boxes[item].get_width(), 
+                self.resize_boxes[item].get_height())
 
     def set_item_position(self, item, position):
         x, y = position

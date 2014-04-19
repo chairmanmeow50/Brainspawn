@@ -14,13 +14,15 @@ class Menu_Bar(gtk.MenuBar):
         main_frame.window.add_accel_group(accel)
 
         open_menu_item = gtk.MenuItem("Open Model...")
-        open_menu_item.add_accelerator("activate", accel, ord('O'), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+        open_menu_item.add_accelerator("activate", accel, ord('O'), 
+                                       gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
         open_menu_item.connect("activate", controller.on_open_model)
         open_menu_item.show()
         file_submenu.append(open_menu_item)
 
         export_pdf_menu_item = gtk.MenuItem("Export to PDF...")
-        export_pdf_menu_item.connect('activate', controller.on_export_pdf, main_frame.window)
+        export_pdf_menu_item.connect('activate', controller.on_export_pdf, 
+                                     main_frame.window)
         export_pdf_menu_item.show()
         file_submenu.append(export_pdf_menu_item)
 

@@ -4,6 +4,7 @@ Created on Jul 18, 2013
 @author: vagrant
 '''
 import gtk
+import settings
 
 class Controller_Panel(gtk.HBox):
     '''
@@ -17,14 +18,17 @@ class Controller_Panel(gtk.HBox):
         '''
         
         super(Controller_Panel, self).__init__(False, 10)
-        self.set_size_request(300, 50)
+        self.set_size_request(settings.CONTROLLER_PANEL_WIDTH, 
+                              settings.CONTROLLER_PANEL_HEIGHT)
         
-        self.play_button = self.create_button(gtk.STOCK_MEDIA_PLAY, "clicked", main_frame.play_pause_button)
+        self.play_button = self.create_button(gtk.STOCK_MEDIA_PLAY, "clicked", 
+                                              main_frame.play_pause_button)
         self.play_button.show()
         self.play_button.set_sensitive(False)
         self.pack_start(self.play_button, False, False, 10)
         
-        self.pause_button = self.create_button(gtk.STOCK_MEDIA_PAUSE, "clicked", main_frame.play_pause_button)
+        self.pause_button = self.create_button(gtk.STOCK_MEDIA_PAUSE, "clicked", 
+                                               main_frame.play_pause_button)
         self.pause_button.set_sensitive(False)
         self.pack_start(self.pause_button, False, False, 10)
 
@@ -33,7 +37,9 @@ class Controller_Panel(gtk.HBox):
         self.start_label.show()
         self.pack_start(self.start_label, False, True, 0)
         
-        self.jump_front_button = self.create_button(gtk.STOCK_MEDIA_PREVIOUS, "clicked", main_frame.jump_to_front)
+        self.jump_front_button = \
+            self.create_button(gtk.STOCK_MEDIA_PREVIOUS, \
+                               "clicked", main_frame.jump_to_front)
         self.jump_front_button.show()
         self.jump_front_button.set_sensitive(False)
         self.pack_start(self.jump_front_button, False, False, 10)
@@ -49,7 +55,9 @@ class Controller_Panel(gtk.HBox):
         self.hscale.connect("change-value", main_frame.hscale_change)
         self.hscale.connect("format-value", main_frame.format_slider_value)
         
-        self.jump_end_button = self.create_button(gtk.STOCK_MEDIA_NEXT, "clicked", main_frame.jump_to_end)
+        self.jump_end_button = \
+            self.create_button(gtk.STOCK_MEDIA_NEXT, 
+                               "clicked", main_frame.jump_to_end)
         self.jump_end_button.show()
         self.jump_end_button.set_sensitive(False)
         self.pack_start(self.jump_end_button, False, False, 10)
@@ -59,7 +67,9 @@ class Controller_Panel(gtk.HBox):
         self.end_label.show()
         self.pack_start(self.end_label, False, True, 0)
         
-        self.reset_button = self.create_button(gtk.STOCK_UNDO, "clicked", main_frame.reset_button)
+        self.reset_button = self.create_button(gtk.STOCK_UNDO, 
+                                               "clicked", 
+                                               main_frame.reset_button)
         self.reset_button.show()
         self.reset_button.set_sensitive(False)
         self.pack_start(self.reset_button, False, False, 10)

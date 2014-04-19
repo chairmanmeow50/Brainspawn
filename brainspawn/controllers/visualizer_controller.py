@@ -1,6 +1,6 @@
 #
 """
-Main Controller for the app
+Main controller for visualizer
 """
 
 import os
@@ -9,6 +9,7 @@ import gtk
 import cairo
 import json
 import traceback
+import settings
 from gi.repository import Gtk
 
 from views.visualizer import MainFrame
@@ -23,7 +24,7 @@ class VisualizerController(object):
     def __init__(self, sim_manager, model_file_name=None):
         self.sim_manager = sim_manager
         self.network_view = NetworkView(self)
-        self.dt = 0.001
+        self.dt = settings.SIMULATOR_DEFAULT_DELTA_TIME
 
         self.registered = []
         self.plots = []
@@ -32,6 +33,7 @@ class VisualizerController(object):
         self._has_network = False
         self._loaded_model_file = None
 
+        # instantiates main visualizer frame
         self.main_frame = MainFrame(self.sim_manager, self)
 
         if (model_file_name):
@@ -48,7 +50,8 @@ class VisualizerController(object):
                     supported_plots.append((vz, obj, cap))
         return supported_plots
 
-    def add_plot_for_obj(self, plt, obj, cap, config=None, position=None, size=None):
+    def add_plot_for_obj(self, plt, obj, cap, config=None, position=None, 
+                         size=None):
         """ Callback for menu item
         """
         plot = plt(self, obj, cap)
@@ -64,27 +67,14 @@ class VisualizerController(object):
 
     def on_quit(self):
         if self._loaded_model_file:
-            filename = os.path.splitext(self._loaded_model_file)[0] + '.bpwn'
+            filename = os.path.splitext(self._loaded_model_file)[0] + \
+                settings.LAYOUT_FILE_EXTENSION
             with open(filename, 'wb') as f:
                 json.dump(self.get_layout_dict(), f)
 
-    def on_save_layout(self, widget):
-        name = self.main_frame.window.get_title()
-        filename = self.file_save(name + ".bpwn")
-        if not filename:
-            return
-        with open(filename, 'wb') as f:
-            json.dump(self.get_layout_dict(), f)
-
-    def on_restore_layout(self, widget):
-        filename = self.file_open(ext="bpwn", ext_name="Layout files")
-        if not filename:
-            return
-        with open(filename, 'rb') as f:
-            self.restore_layout_dict(json.load(f), load_model=True)
-
     def on_open_model(self, widget):
-        filename = self.file_open(ext="py", ext_name="Python files")
+        filename = self.file_open(ext=settings.PYTHON_FILE_EXTENSION, 
+                                  ext_name=settings.PYTHON_FILE_EXTENSION_NAME)
         if not filename:
             return
         self.load_model_from_filename(filename, load_layout=True)
@@ -98,7 +88,8 @@ class VisualizerController(object):
 
         # Restore model file
         if load_model:
-            self.load_model_from_filename(layout_dict['model'], load_layout=False)
+            self.load_model_from_filename(layout_dict['model'], 
+                                          load_layout=False)
 
         # Restore plots
         for plot_dict in layout_dict['plots']:
@@ -109,19 +100,26 @@ class VisualizerController(object):
                 if cap.name == target_cap_name:
                     target_cap = cap
             if not target_cap:
-                raise ValueError("No capability for nengo object: " + target_obj + " with name: " + target_cap_name)
+                raise ValueError("No capability for nengo object: " + \
+                                 target_obj + " with name: " + target_cap_name)
             plot_type = plot_dict['plot_type']
             for plot_cls in self.registered:
                 if plot_type == plot_cls.__name__:
-                    self.add_plot_for_obj(plot_cls, target_obj, target_cap, plot_dict['config'], plot_dict['position'], plot_dict['size'])
+                    self.add_plot_for_obj(plot_cls, target_obj, 
+                                          target_cap, plot_dict['config'], 
+                                          plot_dict['position'], 
+                                          plot_dict['size'])
                     break
             else:
                 # loop exited without break
-                raise ValueError("No plot:" + plot_type + "for nengo object: " + target_obj + " with name: " + target_cap_name)
+                raise ValueError("No plot:" + plot_type + "for nengo object: " \
+                                 + target_obj + " with name: " + \
+                                 target_cap_name)
 
         # Restore network
         net_dict = layout_dict['network']
-        self.main_frame.set_item_position(self.network_view, net_dict['position'])
+        self.main_frame.set_item_position(self.network_view, 
+                                          net_dict['position'])
         self.main_frame.set_item_size(self.network_view, net_dict['size'])
         self.network_view.restore_layout(net_dict['network_layout'])
 
@@ -142,7 +140,8 @@ class VisualizerController(object):
             layout_dict['plots'].append(plot_dict)
         # Save network
         net_dict = {}
-        net_dict['position'] = self.main_frame.get_item_position(self.network_view)
+        net_dict['position'] = \
+            self.main_frame.get_item_position(self.network_view)
         net_dict['size'] = self.main_frame.get_item_size(self.network_view)
         net_dict['network_layout'] = self.network_view.store_layout()
         layout_dict['network'] = net_dict
@@ -151,7 +150,8 @@ class VisualizerController(object):
     def get_uid_for_nengo(self, nengo_obj):
         """Gets a consistent uid for the given nengo object
         """
-        # Let's just use the network view's method right now, since that seems to be working great
+        # Let's just use the network view's method right now, 
+        # since that seems to be working great
         return self.network_view.get_name_from_obj(nengo_obj)
 
     def get_nengo_for_uid(self, uid):
@@ -171,11 +171,13 @@ class VisualizerController(object):
                 self.main_frame.controller_panel.enable_controls()
         except (AttributeError, ImportError, IOError, SyntaxError) as e:
             print e
-            self.show_err_dialog("Error loading model", "Could not load model from " + str(filename))
+            self.show_err_dialog("Error loading model", 
+                                 "Could not load model from " + str(filename))
 
         if load_layout:
             try:
-                layout_file = os.path.splitext(self._loaded_model_file)[0] + '.bpwn'
+                layout_file = \
+                    os.path.splitext(self._loaded_model_file)[0] + '.bpwn'
                 if not layout_file:
                     return
                 with open(layout_file, 'rb') as f:
@@ -184,12 +186,15 @@ class VisualizerController(object):
                 # If the layout file isn't there, don't bug user...
                 if type(e) is not IOError:
                     traceback.print_exc()
-                    self.show_err_dialog("Error loading layout for model", "Could not load layout from " + str(layout_file))
+                    self.show_err_dialog("Error loading layout for model", 
+                                         "Could not load layout from " + \
+                                         str(layout_file))
                     self.load_model_from_filename(filename, load_layout=False)
                     self.network_view.init_default_config()
 
     def show_err_dialog(self, message, secondary):
-        dialog = Gtk.MessageDialog(self.main_frame.window, 0, Gtk.MessageType.INFO,
+        dialog = Gtk.MessageDialog(self.main_frame.window, 0, 
+                                   Gtk.MessageType.INFO,
             Gtk.ButtonsType.OK, message)
         dialog.format_secondary_text(secondary)
         dialog.run()
@@ -206,7 +211,7 @@ class VisualizerController(object):
         self.model = model
         self.main_frame.window.set_title("Nengo Visualizer - " + model.label)
         self.network_view.load_model(model)
-        self.sim_manager.load_new_model(model, self.dt) # do we want to copy the model?
+        self.sim_manager.load_new_model(model, self.dt) 
 
     def load_plots(self):
         plots_dir = os.path.join(os.path.dirname(__file__), "../plots/")
@@ -226,7 +231,8 @@ class VisualizerController(object):
             export_pdf_item.show()
             self.layout_context_menu = gtk.Menu()
             self.layout_context_menu.append(export_pdf_item)
-            self.layout_context_menu.popup(None, None, None, None, event.button, event.time)
+            self.layout_context_menu.popup(None, None, None, None, 
+                                           event.button, event.time)
             return True
         return False
 
@@ -238,7 +244,8 @@ class VisualizerController(object):
             return
         with open(filename, "wb") as f:
             allocation = widget.get_allocation()
-            cr = cairo.Context(cairo.PDFSurface(f, allocation.width, allocation.height))
+            cr = cairo.Context(cairo.PDFSurface(f, allocation.width, 
+                                                allocation.height))
             try:
                 widget.on_draw_event(None, cr)
             except AttributeError:
@@ -247,15 +254,20 @@ class VisualizerController(object):
             cr.get_target().finish()
 
     def file_open(self, ext="", ext_name=""):
-        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)
-        return self._file_browse(gtk.FILE_CHOOSER_ACTION_OPEN, buttons, "", ext, ext_name)
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, 
+                   gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+        return self._file_browse(gtk.FILE_CHOOSER_ACTION_OPEN, 
+                                 buttons, "", ext, ext_name)
 
     def file_save(self, name="", ext="", ext_name=""):
-        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK)
-        return self._file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, buttons, name, ext, ext_name)
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, 
+                   gtk.STOCK_SAVE, gtk.RESPONSE_OK)
+        return self._file_browse(gtk.FILE_CHOOSER_ACTION_SAVE, 
+                                 buttons, name, ext, ext_name)
 
     def _file_browse(self, action, buttons, name="", ext="", ext_name=""):
-        dialog = gtk.FileChooserDialog(title="Select File", action=action, buttons=buttons)
+        dialog = gtk.FileChooserDialog(title="Select File", 
+                                       action=action, buttons=buttons)
         dialog.set_current_folder(os.getcwd())
         dialog.set_do_overwrite_confirmation(True)
         if action == gtk.FILE_CHOOSER_ACTION_SAVE:

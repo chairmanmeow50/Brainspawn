@@ -28,7 +28,8 @@ class SimManager(object):
     def _has_caps(self, obj):
         """ Returns true if we have caps that support the given obj
         """
-        supported_caps = [cap for cap in CapFactory.get_caps() if cap.supports_obj(obj)]
+        supported_caps = [cap for cap in CapFactory.get_caps() \
+                          if cap.supports_obj(obj)]
         if supported_caps:
             return True
         else:
@@ -45,7 +46,8 @@ class SimManager(object):
         self.model = model
         self.dt = dt
         self.adaptors = {}
-        for obj in list(self.model.objs): # copy list! connect() adds objs to model
+        # copy list! connect() adds objs to model
+        for obj in list(self.model.objs): 
             if (self._has_caps(obj)):
                 self.adaptors[obj] = Adaptor(self, obj)
         self.sim = nengo.Simulator(self.model, self.dt)

@@ -59,9 +59,12 @@ class OutputFn(collections.Callable):
 
     def update(self, fn):
         if (self.buffer and self.buffer_start_step is not None):
-            start_step = max(self.buffer_start_step, self.sim_manager.current_step - settings.MAX_WINDOW_SIZE)
+            start_step = max(self.buffer_start_step, 
+                             self.sim_manager.current_step - \
+                             settings.MAX_WINDOW_SIZE)
             start_idx = start_step - self.buffer_start_step
-            end_idx = max(self.sim_manager.current_step - self.buffer_start_step, 0)
+            end_idx = max(self.sim_manager.current_step - \
+                          self.buffer_start_step, 0)
             data = self.buffer.get_data()[start_idx:end_idx]
             fn(start_step, self.sim_manager.dt, data)
 
@@ -127,7 +130,8 @@ class Buffer(object):
 class Adaptor(object):
     """Class for observing an object in a network.
 
-    For a given object, creates a node to observe each capability we have for the object.
+    For a given object, creates a node to observe each capability we have for 
+    the object.
     Views can then subscribe to data from that node.
     Data is buffered only if we have at least one subscription to data.
     """
@@ -151,24 +155,31 @@ class Adaptor(object):
         """Create Nodes to observe data, and connect them to observed object
 
         NOTE:
-        When the model is given to the simulator, the simulator creates a deep copy
-        of the given model in order to perform simulations on.  If we just pass our
-        OutputFn callable, it gets deep copied, and we are unable to subscribe to the
-        new copied OutputFn.
+        When the model is given to the simulator, the simulator 
+        creates a deep copy
+        of the given model in order to perform simulations on.  
+        If we just pass our
+        OutputFn callable, it gets deep copied, and we are unable to subscribe 
+        to the new copied OutputFn.
 
-        Our sort of hacky way of getting around this is to wrap the callable in a lambda
-        (which is atomic, so gets around the deep copy), and pass the desired callable as
+        Our sort of hacky way of getting around this is to wrap the 
+        callable in a lambda
+        (which is atomic, so gets around the deep copy), and pass 
+        the desired callable as
         a default kwarg to the lambda.
 
-        TODO: OutputFn probably no longer needs to be a callable, we should change this and rename it
+        TODO: OutputFn probably no longer needs to be a callable, we s
+        hould change this and rename it
         """
         for cap in self.caps:
             dimensions = cap.get_out_dimensions(self.obj)
             self.out_fns[cap] = OutputFn(sim_manager, dimensions)
-            obj_name = self.obj.name if hasattr(self.obj, 'name') else self.obj.__class__.__name__
+            obj_name = self.obj.name if hasattr(self.obj, 'name') else \
+                self.obj.__class__.__name__
             label = cap.name + '(' + obj_name + ')'
             # see the documentation of this function for an explanation
-            node = nengo.Node(output=lambda time, data, fn=self.out_fns[cap]: fn(time, data), size_in=dimensions, label=label)
+            node = nengo.Node(output=lambda time, data, fn=self.out_fns[cap]: \
+                              fn(time, data), size_in=dimensions, label=label)
             cap.connect_node(node, self.obj)
 
 
