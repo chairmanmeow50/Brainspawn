@@ -14,7 +14,9 @@ class Controller_Panel(gtk.HBox):
 
     def __init__(self, main_frame):
         '''
-        Constructor
+        Initializes panel
+        Creates play, pause, skip to end, skip to beginning, reset buttons
+        Creates playback slider bar
         '''
         
         super(Controller_Panel, self).__init__(False, 10)
@@ -75,6 +77,8 @@ class Controller_Panel(gtk.HBox):
         self.pack_start(self.reset_button, False, False, 10)
         
     def enable_controls(self):
+        """ Enables all UI controls
+        """
         self.play_button.set_sensitive(True)
         self.pause_button.set_sensitive(True)
         self.hscale.set_sensitive(True)
