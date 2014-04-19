@@ -8,6 +8,9 @@ pygtkcompat.enable_gtk(version="3.0")
 import gtk
 import sys
 
+import warnings
+warnings.filterwarnings("ignore", "tight_layout : falling back to Agg renderer")
+
 from simulator.sim_manager import SimManager
 from controllers.visualizer_controller import VisualizerController
 

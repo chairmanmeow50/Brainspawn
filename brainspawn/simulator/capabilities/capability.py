@@ -1,5 +1,7 @@
 """ Abstract base class for Capabilites
-Essentially a 'data type'
+Essentially adaptors to give nengo objects interfaces
+with functionality we require (related to observable data
+they support)
 Capability represents observable data that a given object
 in a nengo model has to offer.  The capablity defines how
 to connect an observer node to the object to be observed

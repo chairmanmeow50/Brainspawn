@@ -8,6 +8,7 @@ import imp
 import gtk
 import cairo
 import json
+import hashlib
 import traceback
 import settings
 from gi.repository import Gtk
@@ -200,6 +201,29 @@ class VisualizerController(object):
         dialog.run()
         dialog.destroy()
 
+    def set_nengo_obj_id(self, nengo_obj):
+        """
+        Creates an id for a given nengo obj
+        We did notice that NengoObject has a key property,
+        however we required an id would give us reasonable behavior
+        given a model with minor changes (ie somewhat resistant to
+        reordering, addition, removal of nodes).  Also we use md5
+        because of its collision resistance.
+
+        NOTE We identify a nengo object given its label, class,
+        and output dimensions.  These are not necessarily unique,
+        and in the case where they are not (ie objects are poorly
+        labeled), we have undefined behavior
+        """
+
+        obj_id = hashlib.md5()
+        obj_id.update(nengo_obj.label)
+        obj_id.update(nengo_obj.__class__.__name__)
+
+        obj_caps = self.sim_manager.get_caps_for_obj(nengo_obj)
+        for cap in obj_caps:
+            obj_id.update(cap.get_out_dimensions(nengo_obj))
+        nengo_obj.id = obj_id.hexdigest()
 
     def load_model(self, model):
         copy_plots = self.plots[:]
@@ -209,6 +233,10 @@ class VisualizerController(object):
         if self.sim_manager.current_step > 0:
             self.main_frame.reset_button(None) # a little hacky, but hey
         self.model = model
+
+        for nengo_obj in model.objs:
+            self.set_nengo_obj_id(nengo_obj)
+
         self.main_frame.window.set_title("Nengo Visualizer - " + model.label)
         self.network_view.load_model(model)
         self.sim_manager.load_new_model(model, self.dt) 
