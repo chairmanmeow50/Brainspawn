@@ -14,12 +14,18 @@ class OutputCap(Capability):
 
     @property
     def name(self):
+        """ Returns name of this capability, which is output
+        """
         return "output" # 'decoded_ouput' for ensembles
 
     def supports_obj(self, obj):
+        """ Returns true if node is type Ensemble or Neurons
+        """
         return issubclass(obj.__class__, (nengo.Node, nengo.Ensemble, nengo.nonlinearities.Neurons))
 
     def get_out_dimensions(self, obj):
+        """ Returns number of dimensions of node
+        """
         if (issubclass(obj.__class__, nengo.Node)):
             return obj.size_out
         elif (issubclass(obj.__class__, nengo.Ensemble)):
