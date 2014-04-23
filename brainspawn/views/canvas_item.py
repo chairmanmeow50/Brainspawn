@@ -1,4 +1,4 @@
-""" Abstract base class for items we put on the canvas
+""" Abstract base class for items we put on the canvas.
 """
 
 import gtk
@@ -15,7 +15,9 @@ class CanvasItem(object):
     """
 
     def __init__(self, main_controller):
-        """ Constructor.
+        """ Initializes figure. Sets a default alpha. Initializes 
+        configuration dictionary. Initializes context menu. Connects 
+        button release event on canvas.
         """
         self.main_controller = main_controller
         self.figure = Figure()
@@ -31,7 +33,8 @@ class CanvasItem(object):
                             self.canvas)
 
     def _build_context_menu(self):
-        """Context menu setup
+        """ Context menu has menu items for exporting to PDF 
+        and customizing plot.
         """
         export_pdf_item = gtk.MenuItem("Export to PDF...")
         export_pdf_item.connect("activate", self.on_export_pdf, self.canvas)
@@ -44,21 +47,42 @@ class CanvasItem(object):
         self._context_menu.show_all()
 
     def init_default_config(self):
+        """ Empty abstract default config.
+        """
         pass
     
     def get_options_dict(self):
+        """ Return configuration dictionary.
+        """
         return self.config
 
     def get_config_values(self):
+        """ Gets values of all items in configuration dictionary.
+        Returns values as keys in new dictionary.
+        """
         return {key : configuration.value for key, configuration in \
                 self.config.iteritems()}
 
     def set_config_values(self, config):
+        """ Sets current configuration values to ones from 
+        configuration dictionary in parameter.
+        """
         if (config):
             for key, val in config.items():
                 self.config[key].value = val
             
     def apply_config(self, revert_data=None, get_function=None):
+        """ For each configuration, if revert data exists,
+        revert configuration. If no revert data is provided, 
+        set configuration value to result from get function. 
+        If no get function is specified, use current value from 
+        configuration.
+        
+        Calls the function within the configuration with the 
+        revert/get function/current value.
+        
+        Calls queue_draw to update after applying configuration.
+        """
         for option_name in self.get_options_dict():
             if (self.config[option_name].configurable):
                 if (self.config[option_name].function):
@@ -77,12 +101,19 @@ class CanvasItem(object):
 
     @property
     def title(self):
+        """ Abstract title getter.
+        """
         raise NotImplementedError
 
     def on_export_pdf(self, widget, canvas):
+        """ Calls controller's export pdf function with plot title.
+        """
         self.main_controller.on_export_pdf(None, canvas, self.title)
 
     def on_button_release(self, widget, event, canvas):
+        """ TODO: is this needed for some behavoiur?
+        ie. the disappearing context menu.
+        """
         if event.button == settings.EVENT_BUTTON_RIGHT_CLICK:
             self._context_menu.popup(None, None, None, None, event.button, \
                                      event.time)
@@ -90,6 +121,9 @@ class CanvasItem(object):
         return False
 
     def show_customize(self, event):
+        """ If plot has customize window already, show that menu.
+        Else, instantiate new customize window and show it.
+        """
         if (self.customize_window and self.customize_window.not_destroyed):
             self.customize_window.window.show()
         else:
