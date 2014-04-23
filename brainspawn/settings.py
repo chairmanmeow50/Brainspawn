@@ -1,7 +1,9 @@
-""" Global app settings.
+""" Global constants, contains default values used throughout the application.
 """
 
+# Size of buffer used to hold simulation data
 MAX_BUFFER_ELEMENTS = 100000
+
 MAX_WINDOW_SIZE = 1000
 
 RESIZE_CONTAINER_DEFAULT_WIDTH = 300
@@ -40,3 +42,5 @@ EVENT_BUTTON_RIGHT_CLICK = 3
 VISUALIZER_WIDTH = 800
 VISUALIZER_HEIGHT = 600
 VISUALIZER_TIMER_INTERVAL = 1
+
+MAIN_FRAME_TITLE = "Nengo Visualizer"
