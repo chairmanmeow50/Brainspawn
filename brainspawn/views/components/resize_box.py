@@ -1,5 +1,5 @@
-""" ResizeBox module, has the ResizeBox class, which 
-is a moveable and resizeable Gtk component, used to 
+""" ResizeBox module, has the ResizeBox class, which
+is a moveable and resizeable Gtk component, used to
 encapsulate plots and give them the ability to be moved
 and resized on the visualizer canvas.
 """
@@ -9,8 +9,9 @@ import settings
 from views.network_view import NetworkView
 import settings
 
+
 class ResizeBox(Gtk.EventBox):
-    """ ResizeBox class. Inherits from EventBox 
+    """ ResizeBox class. Inherits from EventBox
     in order to receive mouse events.
     """
 
@@ -25,7 +26,7 @@ class ResizeBox(Gtk.EventBox):
         self.pos_y = 0
         self._is_resize = False
         self._highlight = False
-        
+
         self._drag_begin_x = 0
         self._drag_begin_y = 0
         self._drag = False
@@ -47,7 +48,7 @@ class ResizeBox(Gtk.EventBox):
 
     def button_press_handler(self, widget, event):
         """ When button is pressed, if not the network view,
-        bring box to top (z-order). If mouse is pressed within 
+        bring box to top (z-order). If mouse is pressed within
         the resize box (bottom right corner), begin resize mode.
         Else, begin move dragging mode.
         """
@@ -74,12 +75,12 @@ class ResizeBox(Gtk.EventBox):
             self._is_resize = False
 
     def motion_notify_handler(self, widget, event):
-        """ If in resize mode, calculate size using current mouse 
-        coordinates and the position of the resize box. Adjust for 
+        """ If in resize mode, calculate size using current mouse
+        coordinates and the position of the resize box. Adjust for
         the offset difference from clicking within the resize corner.
         There is a minimum width and height.
-        
-        If in drag mode, calculate offset from current mouse 
+
+        If in drag mode, calculate offset from current mouse
         coordinates and previous mouse coordinates.
         """
         if self.is_resize():
@@ -103,7 +104,7 @@ class ResizeBox(Gtk.EventBox):
             self._prev_canvas_y = canvas_y
 
     def size_allocate(self, widget, allocation):
-        """ Resize the actual canvas within the resize box 
+        """ Resize the actual canvas within the resize box
         to a size based on the width of border.
         """
         border_width = settings.RESIZE_BOX_WIDTH + \
@@ -147,9 +148,9 @@ class ResizeBox(Gtk.EventBox):
             self.queue_draw()
 
     def do_draw(self, ctx):
-        """ If resize box is highlighted, draw a dashed border 
+        """ If resize box is highlighted, draw a dashed border
         around the box.
-        
+
         Also draws the resize box corner (mouse presses in corner
         resize the box).
         """
@@ -169,8 +170,9 @@ class ResizeBox(Gtk.EventBox):
                 settings.RESIZE_BOX_WIDTH - settings.RESIZE_BOX_LINE_WIDTH / 2
             bottom_right_y = self.get_height() - \
                 settings.RESIZE_BOX_HEIGHT - settings.RESIZE_BOX_LINE_WIDTH / 2
-            ctx.rectangle(bottom_right_x, bottom_right_y, 
-                          settings.RESIZE_BOX_WIDTH, settings.RESIZE_BOX_HEIGHT)
+            ctx.rectangle(bottom_right_x, bottom_right_y,
+                          settings.RESIZE_BOX_WIDTH,
+                          settings.RESIZE_BOX_HEIGHT)
             ctx.set_source_rgba(0, 0, 0, 1)
             ctx.set_dash([], 0)
             ctx.stroke()
@@ -206,7 +208,7 @@ class ResizeBox(Gtk.EventBox):
         return self._is_resize
 
     def set_position(self, new_x, new_y):
-        """ Sets position to new position, then tells canvas 
+        """ Sets position to new position, then tells canvas
         to move the actual resize box to new position.
         """
         self.pos_x = new_x
@@ -216,11 +218,10 @@ class ResizeBox(Gtk.EventBox):
     def set_size(self, new_width, new_height):
         """ Sets size to new size, then makes a call to
         set_size_reqest to resize the resize box.
-        
+
         Calls tight_layout to improve text layout in plot.
         """
         self._width = new_width
         self._height = new_height
         self.set_size_request(self._width, self._height)
         self._canvas.figure.tight_layout()
-
