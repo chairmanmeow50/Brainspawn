@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Laucher for Brainspawn visualization application.
+"""Launcher for Brainspawn visualization application.
 """
 
 from gi import pygtkcompat
@@ -10,11 +10,13 @@ import sys
 
 import warnings
 # Suppress some expected warnings
-warnings.filterwarnings("ignore", "tight_layout : falling back to Agg renderer")
+warnings.filterwarnings("ignore",
+                        "tight_layout : falling back to Agg renderer")
 
 from simulator.sim_manager import SimManager
 from controllers.visualizer_controller import VisualizerController
 import settings
+
 
 def main():
     """ Instantiates simulation manager. Checks for a model file in arguments,
