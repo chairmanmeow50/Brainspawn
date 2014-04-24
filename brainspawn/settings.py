@@ -1,7 +1,7 @@
 """ Global constants, contains default values used throughout the application.
 """
 
-# Size of buffer used to hold simulation data
+# Size of buffer used to hold simulation data.
 MAX_BUFFER_ELEMENTS = 100000
 
 MAX_WINDOW_SIZE = 1000
@@ -34,6 +34,7 @@ CONTROLLER_PANEL_HEIGHT = 50
 CUSTOMIZE_WINDOW_BORDER_WIDTH = 10
 CUSTOMIZE_WINDOW_BUTTON_WIDTH = 80
 CUSTOMIZE_WINDOW_BUTTON_HEIGHT = 20
+CUSTOMIZE_WINDOW_TITLE = "Customize"
 
 MAX_UNSIGNED_SHORT_FLOAT = 65535.0
 
