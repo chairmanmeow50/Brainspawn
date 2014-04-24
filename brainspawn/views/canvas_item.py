@@ -9,31 +9,32 @@ from collections import OrderedDict
 from views.components.customize_window import CustomizeWindow
 import settings
 
+
 class CanvasItem(object):
     """Canvas Item
     Has figure, canvas
     """
 
     def __init__(self, main_controller):
-        """ Initializes figure. Sets a default alpha. Initializes 
-        configuration dictionary. Initializes context menu. Connects 
+        """ Initializes figure. Sets a default alpha. Initializes
+        configuration dictionary. Initializes context menu. Connects
         button release event on canvas.
         """
         self.main_controller = main_controller
         self.figure = Figure()
         self.figure.patch.set_alpha(0.0)
         self.canvas = FigureCanvas(self.figure)
-        
+
         self.customize_window = None
         self.config = OrderedDict()
 
         self._context_menu = gtk.Menu()
         self._build_context_menu()
-        self.canvas.connect("button_release_event", self.on_button_release, 
+        self.canvas.connect("button_release_event", self.on_button_release,
                             self.canvas)
 
     def _build_context_menu(self):
-        """ Context menu has menu items for exporting to PDF 
+        """ Context menu has menu items for exporting to PDF
         and customizing plot.
         """
         export_pdf_item = gtk.MenuItem("Export to PDF...")
@@ -50,7 +51,7 @@ class CanvasItem(object):
         """ Empty abstract default config.
         """
         pass
-    
+
     def get_options_dict(self):
         """ Return configuration dictionary.
         """
@@ -60,27 +61,27 @@ class CanvasItem(object):
         """ Gets values of all items in configuration dictionary.
         Returns values as keys in new dictionary.
         """
-        return {key : configuration.value for key, configuration in \
+        return {key: configuration.value for key, configuration in
                 self.config.iteritems()}
 
     def set_config_values(self, config):
-        """ Sets current configuration values to ones from 
+        """ Sets current configuration values to ones from
         configuration dictionary in parameter.
         """
         if (config):
             for key, val in config.items():
                 self.config[key].value = val
-            
+
     def apply_config(self, revert_data=None, get_function=None):
         """ For each configuration, if revert data exists,
-        revert configuration. If no revert data is provided, 
-        set configuration value to result from get function. 
-        If no get function is specified, use current value from 
+        revert configuration. If no revert data is provided,
+        set configuration value to result from get function.
+        If no get function is specified, use current value from
         configuration.
-        
-        Calls the function within the configuration with the 
+
+        Calls the function within the configuration with the
         revert/get function/current value.
-        
+
         Calls queue_draw to update after applying configuration.
         """
         for option_name in self.get_options_dict():
@@ -93,10 +94,10 @@ class CanvasItem(object):
                         new_val = get_function(option_name)
                     else:
                         new_val = self.config[option_name].value
-                        
+
                     self.config[option_name].value = new_val
                     function(new_val)
-        
+
         self.canvas.queue_draw()
 
     @property
@@ -115,7 +116,7 @@ class CanvasItem(object):
         ie. the disappearing context menu.
         """
         if event.button == settings.EVENT_BUTTON_RIGHT_CLICK:
-            self._context_menu.popup(None, None, None, None, event.button, \
+            self._context_menu.popup(None, None, None, None, event.button,
                                      event.time)
             return True
         return False
