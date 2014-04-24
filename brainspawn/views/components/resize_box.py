@@ -1,11 +1,22 @@
+""" ResizeBox module, has the ResizeBox class, which 
+is a moveable and resizeable Gtk component, used to 
+encapsulate plots and give them the ability to be moved
+and resized on the visualizer canvas.
+"""
 import gtk
 from gi.repository import Gtk
 import settings
 from views.network_view import NetworkView
+import settings
 
 class ResizeBox(Gtk.EventBox):
+    """ ResizeBox class. Inherits from EventBox 
+    in order to receive mouse events.
+    """
 
     def __init__(self, plot, canvas_layout):
+        """ Initializes resize box. Sets up mouse event handlers.
+        """
         super(ResizeBox, self).__init__()
         self._canvas = plot.canvas
         self._plot = plot
@@ -35,6 +46,11 @@ class ResizeBox(Gtk.EventBox):
         self.connect("size_allocate", self.size_allocate)
 
     def button_press_handler(self, widget, event):
+        """ When button is pressed, if not the network view,
+        bring box to top (z-order). If mouse is pressed within 
+        the resize box (bottom right corner), begin resize mode.
+        Else, begin move dragging mode.
+        """
         if (event.button == 1):
             if not isinstance(self._plot, NetworkView):
                 getattr(self.get_window(), 'raise')()
@@ -51,11 +67,21 @@ class ResizeBox(Gtk.EventBox):
             self._original_size = self._width, self._height
 
     def button_release_handler(self, widget, event):
+        """ Unset drag and resize flags.
+        """
         self._drag = False
         if (self.is_resize()):
             self._is_resize = False
 
     def motion_notify_handler(self, widget, event):
+        """ If in resize mode, calculate size using current mouse 
+        coordinates and the position of the resize box. Adjust for 
+        the offset difference from clicking within the resize corner.
+        There is a minimum width and height.
+        
+        If in drag mode, calculate offset from current mouse 
+        coordinates and previous mouse coordinates.
+        """
         if self.is_resize():
             o_width, o_height = self._original_size
             extra_offset_x = o_width - (self._resize_begin_x - self.pos_x)
@@ -77,6 +103,9 @@ class ResizeBox(Gtk.EventBox):
             self._prev_canvas_y = canvas_y
 
     def size_allocate(self, widget, allocation):
+        """ Resize the actual canvas within the resize box 
+        to a size based on the width of border.
+        """
         border_width = settings.RESIZE_BOX_WIDTH + \
             settings.RESIZE_BOX_LINE_WIDTH
         allocation.x = border_width
@@ -87,18 +116,30 @@ class ResizeBox(Gtk.EventBox):
         self._canvas.figure.tight_layout()
 
     def get_canvas(self):
+        """ Returns the canvas object.
+        """
         return self._canvas
 
     def get_canvas_layout(self):
+        """ Returns the canvas layout this resize box
+        is located.
+        """
         return self._canvas_layout
 
     def get_width(self):
+        """ Returns width.
+        """
         return self._width
 
     def get_height(self):
+        """ Returns height.
+        """
         return self._height
 
     def leave_notify_handler(self, widget, event):
+        """ If mouse leaves event box, turn off highlighting.
+        Queus a draw after turning highlighting off.
+        """
         if (self.is_resize()):
             return
         if (event.detail != gtk.gdk.NOTIFY_INFERIOR):
@@ -106,6 +147,12 @@ class ResizeBox(Gtk.EventBox):
             self.queue_draw()
 
     def do_draw(self, ctx):
+        """ If resize box is highlighted, draw a dashed border 
+        around the box.
+        
+        Also draws the resize box corner (mouse presses in corner
+        resize the box).
+        """
         if (self._highlight):
             # selection box
             ctx.new_path()
@@ -131,10 +178,14 @@ class ResizeBox(Gtk.EventBox):
         self.propagate_draw(self._canvas, ctx)
 
     def enter_notify_handler(self, widget, event):
+        """ When mouse is in resize box, highlight it.
+        """
         self._highlight = True
         self.queue_draw()
 
     def is_within_resize_bounds(self, x, y):
+        """ Checks if mouse is inside the resize box corner.
+        """
         x_min = self.get_width() - \
             settings.RESIZE_BOX_WIDTH - \
             settings.RESIZE_BOX_LINE_WIDTH / 2
@@ -150,14 +201,24 @@ class ResizeBox(Gtk.EventBox):
         return False
 
     def is_resize(self):
+        """ Checks if in resize mode.
+        """
         return self._is_resize
 
     def set_position(self, new_x, new_y):
+        """ Sets position to new position, then tells canvas 
+        to move the actual resize box to new position.
+        """
         self.pos_x = new_x
         self.pos_y = new_y
         self._canvas_layout.move(self, self.pos_x, self.pos_y)
 
     def set_size(self, new_width, new_height):
+        """ Sets size to new size, then makes a call to
+        set_size_reqest to resize the resize box.
+        
+        Calls tight_layout to improve text layout in plot.
+        """
         self._width = new_width
         self._height = new_height
         self.set_size_request(self._width, self._height)
