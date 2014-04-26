@@ -1,42 +1,46 @@
-""" Voltage Capablity
-Observes voltage activity within Ensembles or Neurons
+""" Voltage capability module
+Observes voltage activity within Ensembles or Neurons.
 
-*NB* - I don't actually think nengo can support these types of connections at the moment
+*NB* - I don't actually think nengo can support these types of connections at
+the moment.
 Maybe only applies to nengo.LIF and Ensembles using those neurons?
 """
 
 import nengo
 from capability import Capability
 
+
 class VoltageCap(Capability):
-    """VoltageCap class
+    """ VoltageCap class defines the voltage capability.
     """
 
     @property
     def name(self):
-        """ Returns name of this capability, which is voltages
+        """ Returns name of this capability, which is 'voltages'.
         """
         return "voltages"
 
     def supports_obj(self, obj):
-        """ Returns true if node is type Ensemble or Neurons
+        """ Returns true if node is type Ensemble or Neurons.
         """
-        return issubclass(obj.__class__, (nengo.Ensemble, nengo.nonlinearities.Neurons))
+        return issubclass(obj.__class__, (nengo.Ensemble,
+                                          nengo.nonlinearities.Neurons))
 
     def get_out_dimensions(self, obj):
-        """ Returns number of dimensions of node
+        """ Returns number of dimensions of node.
         """
-        if (issubclass(obj.__class__, (nengo.Ensemble, nengo.nonlinearities.Neurons))):
+        if (issubclass(obj.__class__, (nengo.Ensemble,
+                                       nengo.nonlinearities.Neurons))):
             return obj.n_neurons
         else:
             raise ValueError("output_cap does not support given object")
 
-
     def connect_node(self, node, obj):
-        """ Create 'simple' connection between object and neuron voltages
-        Not sure if Connections will support this in current nengo impl
+        """ Create 'simple' connection between object and neuron voltages.
+        Not sure if Connections will support this in current nengo
+        implementation.
 
-        See nengo.Ensemble.probe() for inspiration, also nengo.Connection
+        See nengo.Ensemble.probe() for inspiration, also nengo.Connection.
 
         TODO - specify filters
         """
@@ -46,4 +50,3 @@ class VoltageCap(Capability):
             nengo.Connection(obj.voltage, node, filter=None)
         else:
             raise ValueError("output_cap does not support given object")
-
