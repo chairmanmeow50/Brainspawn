@@ -1,9 +1,11 @@
-""" Abstract base class for Capabilites
-Essentially adaptors to give nengo objects interfaces
+""" Module for abstract base class Capability
+
+Essentially adaptor to give nengo objects interfaces
 with functionality we require (related to observable data
-they support)
+they support).
+
 Capability represents observable data that a given object
-in a nengo model has to offer.  The capablity defines how
+in a nengo model has to offer. The capability defines how
 to connect an observer node to the object to be observed
 in order to collect the data. It also maintains some
 metadata regarding the type of data offered, including
@@ -13,44 +15,44 @@ object.
 
 from abc import ABCMeta, abstractmethod
 
+
 class Capability(object):
-    """Capability class
+    """ Capability class
     """
 
     __metaclass__ = ABCMeta
 
     @property
     def name(self):
-        """
-        Name of the cap.  Should be unique, like an id,
-        but we don't enforce this at the moment
+        """ Name of the cap.  Should be unique, like an id,
+        but we don't enforce this at the moment.
         """
         return "Capability"
 
     def supports_obj(self, obj):
-        """ Determines if the given object offers this cap
+        """ Determines if the given object offers this cap.
 
         Args:
-            obj (object): The object to check
+            obj (object): The object to check.
 
         Returns:
-            bool.  True if given object offers this capability
+            bool.  True if given object offers this capability.
         """
         return False
 
     @abstractmethod
     def get_out_dimensions(self, obj):
-        """ Get the output dimensions of this cap for the given object
+        """ Get the output dimensions of this cap for the given object.
 
         Args:
-            obj (object): The object offering the cap
+            obj (object): The object offering the cap.
 
         Returns:
             int.  The number of dimensions of the data offered by
-            this cap for this obj
+            this cap for this obj.
 
         Raises:
-            ValueError - This is not a cap for the given object
+            ValueError - This is not a cap for the given object.
 
         The output dimensions depend on the object and the capability.
         Also note here that dimensions are *not* like numpy ndarray dimensions,
@@ -61,15 +63,14 @@ class Capability(object):
 
     @abstractmethod
     def connect_node(self, node, obj):
-        """ Connects an observer node to the given object
+        """ Connects an observer node to the given object.
 
         Args:
-            node (nengo.Node): The observer node to connect to the object
-            obj (object): The object to observe
+            node (nengo.Node): The observer node to connect to the object.
+            obj (object): The object to observe.
 
         Raises:
-            ValueError - This is not a cap for the given object
+            ValueError - This is not a cap for the given object.
 
         """
         pass
-
