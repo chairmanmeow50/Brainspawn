@@ -8,15 +8,17 @@ from plots.configuration import Configuration
 
 REGISTERED_PLOTS = {}
 
+
 def registered_plot(cls):
-    """Decorator for plot implementations.
+    """ Decorator for plot implementations.
     """
     REGISTERED_PLOTS[cls.__name__] = cls
     return cls
 
+
 class BasePlot(CanvasItem):
-    """Plot base class.
-    In order to add plots to Brainspawn, you will want to
+    """ Base plot class.
+    In order to add plots to the visualizer, you will want to
     inherit from this class.
 
     Note that subclasses must call the base class constructor.
@@ -28,20 +30,20 @@ class BasePlot(CanvasItem):
         super(BasePlot, self).__init__(main_controller)
         """ Plot constructor.
         Initializes default config values for all plots,
-        Sets up the plot view.
+        and sets up the plot view.
 
         Args:
             main_controller (VisualizerController): The top-level controller
             of the visualizer.
             nengo_obj (Nengo): The nengo object this plot is visualizing.
-            capability (Capability): The capability of the object that this graph
-            is visualizing.
+            capability (Capability): The capability of the object that this
+            graph is visualizing.
         """
         self.nengo_obj = nengo_obj
         self.capability = capability
 
     def _build_context_menu(self):
-        """Context menu setup
+        """ Context menu setup.
         """
         super(BasePlot, self)._build_context_menu()
         remove_item = gtk.MenuItem("Remove")
@@ -52,7 +54,7 @@ class BasePlot(CanvasItem):
         self._context_menu.show_all()
 
     def init_default_config(self):
-        """Sets default config values for all plots
+        """ Sets default config values for all plots.
         The values contained in this dictionary are used to configure
         the plot.
 
@@ -64,13 +66,15 @@ class BasePlot(CanvasItem):
 
         if not self.nengo_obj or not self.capability:
             return
-        
-        self.config['TARGET'] = Configuration(configurable = False, value = self.nengo_obj.label)
-        self.config['DATA'] = Configuration(configurable = False, value = self.capability.name.title())
+
+        self.config['TARGET'] = Configuration(configurable=False,
+                                              value=self.nengo_obj.label)
+        self.config['DATA'] = Configuration(configurable=False,
+                                            value=self.capability.name.title())
 
     @property
     def title(self):
-        """ Return a title for the current graph.
+        """ Returns a title for the current graph.
         Format the string using self.config as the format dictionary.
 
         Returns:
@@ -88,17 +92,17 @@ class BasePlot(CanvasItem):
 
     @property
     def dimensions(self):
-        """Get the dimensions of the object this graph is representing.
+        """ Get the dimensions of the object this graph is representing.
 
         Returns:
-            int. The ouput dimensions we are plotting.
+            int. The output dimensions we are plotting.
         """
         return self.capability.get_out_dimensions(self.nengo_obj)
 
     @staticmethod
     def plot_name():
         """ What we call the plot.
-        (Used when choosing plot from dropdown menu)
+        Used when choosing plot from dropdown menu
         """
         raise NotImplementedError("Not implemented")
 
@@ -107,7 +111,7 @@ class BasePlot(CanvasItem):
         """ Return true if this plot supports the given capability.
 
         Args:
-            capability (Capablility): The capability to check for plotability.
+            capability (Capability): The capability to check for.
         """
         raise NotImplementedError("Not implemented")
 
@@ -117,10 +121,12 @@ class BasePlot(CanvasItem):
 
         Args:
             start_step (int): The initial step of the given data.
-            step_size (float): The time, in simulated seconds, one step represents.
+            step_size (float): The time, in simulated seconds, one step
+            represents.
             data (numpy.ndarray): The data from the simulator to plot.
         """
         pass
 
     def remove_plot(self, widget, canvas):
-        self.main_controller.remove_plot_for_obj(self, self.nengo_obj, self.capability)
+        self.main_controller.remove_plot_for_obj(self, self.nengo_obj,
+                                                 self.capability)
